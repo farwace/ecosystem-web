@@ -1,32 +1,46 @@
-@import "animations";
-@import "reset";
-@import "fonts";
+@use "sass:map";
+@use "animations";
+@use "reset";
+@use "fonts";
 
 $font-family: "Nunito", system-ui;
 
+$white: #FFF6E9;
+$light-bg: #FFF2E2;
+$light-text-primary-color: #BC7D4D;
+$light-text-secondary-color: #BD8848;
+$light-border-light-color: #FBDFC8;
+
+
+$gray: #EDEEF0;
+$gray-2: #EDEEF0;
+$pink: #ff4759;
+$dark: #141414;
+$dark-lite: #333333;
+
 $themes: (
         dark: (
-                --bg-color: #141414,
-                --text-color: #E1E3E6,
-                --bg-color-component: #333333,
-                --text-secondary: #5E5E5E
+                --bg-color: $light-bg,
+                --text-primary: $light-text-primary-color,
+                --text-secondary: $light-text-secondary-color,
+                --white-color: $white,
         ),
         light: (
-                --bg-color: #EDEEF0,
-                --text-color: #210606,
-                --bg-color-component: #FFFFFF,
-                --text-secondary: #5E5E5E
+                --bg-color: $light-bg,
+                --text-primary: $light-text-primary-color,
+                --text-secondary: $light-text-secondary-color,
+                --white-color: $white,
         )
 );
 
 [theme='light'] {
-  @each $key, $value in map-get($themes, light) {
+  @each $key, $value in map.get($themes, light) {
     #{$key}: #{$value};
   }
 }
 
 [theme='dark'] {
-  @each $key, $value in map-get($themes, dark) {
+  @each $key, $value in map.get($themes, dark) {
     #{$key}: #{$value};
   }
 }

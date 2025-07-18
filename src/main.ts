@@ -1,14 +1,13 @@
 import '@/assets/main.scss'
 
 import { createApp } from 'vue'
-import { createPinia } from 'pinia'
 
 import App from '@/App.vue'
 import router from '@/router'
+import {AppBuilder} from "@/app-builder.ts";
 
-const app = createApp(App)
+const $app = createApp(App);
+AppBuilder().build($app);
+$app.use(router);
 
-app.use(createPinia())
-app.use(router)
-
-app.mount('#app')
+$app.mount('#app');

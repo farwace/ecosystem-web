@@ -1,10 +1,10 @@
-@import "base.scss";
+@use "base.scss";
 
 
 * {
   outline: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  font-family: $font-family;
+  font-family: base.$font-family;
 }
 
 body {
