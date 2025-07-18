@@ -1,0 +1,78 @@
+@import "animations";
+@import "reset";
+@import "fonts";
+
+$font-family: "Nunito", system-ui;
+
+$themes: (
+        dark: (
+                --bg-color: #141414,
+                --text-color: #E1E3E6,
+                --bg-color-component: #333333,
+                --text-secondary: #5E5E5E
+        ),
+        light: (
+                --bg-color: #EDEEF0,
+                --text-color: #210606,
+                --bg-color-component: #FFFFFF,
+                --text-secondary: #5E5E5E
+        )
+);
+
+[theme='light'] {
+  @each $key, $value in map-get($themes, light) {
+    #{$key}: #{$value};
+  }
+}
+
+[theme='dark'] {
+  @each $key, $value in map-get($themes, dark) {
+    #{$key}: #{$value};
+  }
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: all 1s;
+}
+
+.slide-enter-to {
+  position: relative;
+  bottom: 100dvi;
+}
+
+.slide-enter-from {
+  position: relative;
+  bottom: -100dvi;
+}
+
+.slide-leave-to {
+  position: relative;
+  top: -200dvi;
+}
+
+.slide-leave-from {
+  position: relative;
+  top: 0;
+}
+
+@media(max-width: 768px){
+  .iziToast-wrapper{
+    &.iziToast-wrapper-topCenter{
+      padding-top: 20px;
+    }
+    .iziToast{
+      padding: 0 35px 0 0;
+      min-height: 36px;
+    }
+    .iziToast>.iziToast-body{
+      margin: 0 0 0 10px;
+    }
+    .iziToast>.iziToast-body .iziToast-message, .iziToast>.iziToast-body .iziToast-title{
+      font-size: 12px;
+      font-family: $font-family;
+      font-weight: 400;
+      line-height: 110%;
+    }
+  }
+}
