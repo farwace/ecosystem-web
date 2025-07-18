@@ -1,6 +1,10 @@
 import {defineStore} from "pinia";
 import type {IEcosystemStore} from "@/stores/Ecosystem/IEcosystemStore";
 import {AgeGroup} from "@/stores/Ecosystem/IEcosystemStore";
+import type {TDailyEnter} from "@/stores/Ecosystem/Types/TDailyEnter.ts";
+import type {TGift} from "@/stores/Ecosystem/Types/TGift.ts";
+import type {TUser} from "@/stores/Ecosystem/Types/TUser.ts";
+import type {TSubscription} from "@/stores/Ecosystem/Types/TSubscription.ts";
 
 export const ecosystemStore = defineStore('ecosystem', {
     state:():IEcosystemStore => ({
@@ -9,20 +13,33 @@ export const ecosystemStore = defineStore('ecosystem', {
 
         /* USER INFO */
         id: 0,
-        name: '',
+        firstName: '',
         lastName: '',
         balance: 0,
         socialId: 0,
         experience: 0,
+        nextLevelExperience: 60,
+        nextLevelPopularity: 1000,
         lvl: 0,
         popularity: 0,
         popularityLevel: 0,
-        sex: 'male',
+        sex: 2,
         avatar: '',
         age: AgeGroup['zoomer'],
         hasNotifications: false,
         isNew: false,
         vipLevel: 0,
+        isBanned: false,
+        vip: false,
+
+        dailyEnter: undefined,
+        consecutiveDays: undefined,
+        isAnonymous: undefined,
+        balanceGift: undefined,
+        topGifts: undefined,
+        topFans: undefined,
+        visitors: undefined,
+        subscription: undefined,
 
         /*  COMMON INFO */
         recentGifts: [],

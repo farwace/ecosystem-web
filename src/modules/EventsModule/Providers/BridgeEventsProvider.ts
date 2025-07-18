@@ -8,7 +8,10 @@ import bridge from '@vkontakte/vk-bridge';
 import {Console} from "@/classes/utils/Console";
 import {calculateAge} from "@/classes/utils/CalculateAge";
 import {getAgeGroup} from "@/classes/utils/GetAgeGroup";
+import type {App} from "vue";
+import {injectable} from "inversify";
 
+@injectable()
 export class BridgeEventsProvider implements IPlatformEvents {
     private _bridgeEvent$ = new Subject<VKBridgeEvent<keyof ReceiveDataMap>>();
     private ecosystemStore: Store<'ecosystem', IEcosystemStore>
@@ -18,6 +21,10 @@ export class BridgeEventsProvider implements IPlatformEvents {
             this._bridgeEvent$.next(event);
         });
         this.ecosystemStore = ecosystemStore();
+    }
+
+    install(app: App, symbol: symbol) {
+        app.provide(symbol, this);
     }
 
     async init(){
@@ -44,7 +51,7 @@ export class BridgeEventsProvider implements IPlatformEvents {
 
                 this.ecosystemStore.$patch({
                     launchParams: launchParams,
-                    name: userInfo.first_name,
+                    firstName: userInfo.first_name,
                     lastName: userInfo.last_name,
                     avatar: userInfo.photo_100,
                     sex: sex,

@@ -7,13 +7,20 @@ import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
 import {Console} from "@/classes/utils/Console.ts";
 import {calculateAge} from "@/classes/utils/CalculateAge.ts";
 import {getAgeGroup} from "@/classes/utils/GetAgeGroup.ts";
+import type {App} from "vue";
+import {injectable} from "inversify";
 
+@injectable()
 export class StubEventsProvider implements IPlatformEvents{
     private _bridgeEvent$ = new Subject<VKBridgeEvent < keyof ReceiveDataMap>>();
     private ecosystemStore: Store<'ecosystem', IEcosystemStore>;
 
     constructor() {
         this.ecosystemStore = ecosystemStore();
+    }
+
+    install(app: App, symbol: symbol) {
+        app.provide(symbol, this);
     }
 
     async init(){
@@ -40,7 +47,7 @@ export class StubEventsProvider implements IPlatformEvents{
 
                 this.ecosystemStore.$patch({
                     launchParams: launchParams,
-                    name: userInfo.first_name,
+                    firstName: userInfo.first_name,
                     lastName: userInfo.last_name,
                     avatar: userInfo.photo_100,
                     sex: sex,
