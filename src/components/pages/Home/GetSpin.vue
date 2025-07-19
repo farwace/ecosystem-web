@@ -1,6 +1,6 @@
 <template>
   <div class="bonus">
-    <ui-icon class="bonus__spinner" name="spin" />
+    <ui-icon class="bonus__spinner" name="animated-spin" />
     <div class="bonus__title">
       Получить<br/>бонусы
     </div>

@@ -1,6 +1,6 @@
 <template>
   <div class="rounded-box">
-    <div>
+    <div class="game-name">
       Силы знаний
     </div>
 
@@ -55,6 +55,11 @@ const getSpinHasBeenClicked = () => {
   display: flex;
   flex-direction: column;
   gap: 15px;
+}
+
+.game-name{
+  font-size: 20px;
+  font-weight: bold;
 }
 
 .start-game{
