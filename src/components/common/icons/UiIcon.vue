@@ -5,7 +5,7 @@
 </template>
 <script lang="ts" setup>
 
-import IconLoader from "@/components/icons/IconLoader.vue";
+import IconLoader from "@/components/common/icons/IconLoader.vue";
 import {useAttrs} from "vue";
 defineProps<{name:string}>();
 const attrs = useAttrs();

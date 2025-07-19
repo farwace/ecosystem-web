@@ -23,13 +23,13 @@ $themes: (
                 --bg-color: $light-bg,
                 --text-primary: $light-text-primary-color,
                 --text-secondary: $light-text-secondary-color,
-                --white-color: $white,
+                --white: $white,
         ),
         light: (
                 --bg-color: $light-bg,
                 --text-primary: $light-text-primary-color,
                 --text-secondary: $light-text-secondary-color,
-                --white-color: $white,
+                --white: $white,
         )
 );
 
