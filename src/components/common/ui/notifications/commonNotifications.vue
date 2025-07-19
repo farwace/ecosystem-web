@@ -241,7 +241,7 @@ const getNotificationBackgroundColor = (eType?: TNotification['type']) => {
     border-radius: 12px;
     padding: 0 20px 40px;
     background-color: var(--bg-color-component);
-    color: var(--text-color);
+    color: var(--text-primary);
     //overflow-y: auto;
     //overflow-x: hidden;
 
