@@ -10,6 +10,7 @@ $light-bg: #FFF2E2;
 $light-text-primary-color: #BC7D4D;
 $light-text-secondary-color: #BD8848;
 $light-border-light-color: #FBDFC8;
+$light-btn-secondary-border-color: #FBE4CD;
 
 
 $gray: #EDEEF0;
@@ -24,12 +25,29 @@ $themes: (
                 --text-primary: $light-text-primary-color,
                 --text-secondary: $light-text-secondary-color,
                 --white: $white,
+                --box-bg: $white,
+                --box-border: $light-border-light-color,
+                --btn-secondary-text: $light-text-primary-color,
+                --btn-secondary-border: $light-btn-secondary-border-color,
+                --btn-secondary-bg: #FFF6EC,
+                --btn-primary-text: #FFF6E9,
+                --btn-primary-border: #FB9B75,
+                --btn-primary-bg: #FFB890,
+
         ),
         light: (
                 --bg-color: $light-bg,
                 --text-primary: $light-text-primary-color,
                 --text-secondary: $light-text-secondary-color,
                 --white: $white,
+                --box-bg: $white,
+                --box-border: $light-border-light-color,
+                --btn-secondary-border: $light-btn-secondary-border-color,
+                --btn-secondary-bg: $white,
+                --btn-secondary-text: $light-text-primary-color,
+                --btn-primary-text: #FFF6E9,
+                --btn-primary-border: #FB9B75,
+                --btn-primary-bg: #FFB890,
         )
 );
 
