@@ -2,6 +2,7 @@ import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.t
 import {ApiProvider} from "@/modules/ApiModule/Providers/ApiProvider.ts";
 import type {TGetUserInfoResponse} from "@/modules/ApiModule/Types/TGetUserInfoResponse.ts";
 import {injectable} from "inversify";
+import type {TResponse} from "@/modules/ApiModule/Types/TResponse.ts";
 
 @injectable()
 export class UserProvider extends ApiProvider implements IUserProvider{
@@ -12,9 +13,17 @@ export class UserProvider extends ApiProvider implements IUserProvider{
             cache: "no-cache",
             headers: this.getHeaders(),
             credentials: "same-origin",
+            body: JSON.stringify({
+                first_name: this.ecosystemStore.firstName,
+                last_name: this.ecosystemStore.lastName,
+                avatar: this.ecosystemStore.avatar,
+                sex: this.ecosystemStore.sex
+            })
         });
 
-        const resData: TGetUserInfoResponse = await response.json();
+        const res: TResponse<TGetUserInfoResponse> = await response.json();
+        const resData = res.data;
+
         this.ecosystemStore.$patch({
             id: resData.id,
             firstName: resData.firstName,

@@ -30,6 +30,9 @@ export const AppBuilder = () => {
             bridgeEventsProvider.install($app, PlatformEventsSymbol);
             userProvider.install($app, UserProviderSymbol);
 
+            await bridgeEventsProvider.init();
+            await userProvider.getUserInfo();
+            await bridgeEventsProvider.setApplicationIsReady();
         }
     }
 }
