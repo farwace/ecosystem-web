@@ -1,10 +1,6 @@
 import {defineStore} from "pinia";
 import type {IEcosystemStore} from "@/stores/Ecosystem/IEcosystemStore";
 import {AgeGroup} from "@/stores/Ecosystem/IEcosystemStore";
-import type {TDailyEnter} from "@/stores/Ecosystem/Types/TDailyEnter.ts";
-import type {TGift} from "@/stores/Ecosystem/Types/TGift.ts";
-import type {TUser} from "@/stores/Ecosystem/Types/TUser.ts";
-import type {TSubscription} from "@/stores/Ecosystem/Types/TSubscription.ts";
 
 export const ecosystemStore = defineStore('ecosystem', {
     state:():IEcosystemStore => ({
