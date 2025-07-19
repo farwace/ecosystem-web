@@ -13,7 +13,7 @@
 <script lang="ts" setup>
   import {storeToRefs} from "pinia";
   import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
-  import {computed, onMounted, ref} from "vue";
+  import {computed, nextTick, onMounted, ref} from "vue";
 
   const {firstName, avatar} = storeToRefs(ecosystemStore());
 
@@ -23,12 +23,17 @@
 
   const avatarName = ref<HTMLDivElement>();
   onMounted(() => {
-    if(avatarName.value){
-      if(avatarName.value.scrollWidth > avatarName.value.clientWidth){
-        avatarName.value.classList.add('marquee');
-        avatarName.value.style.setProperty('--marquee-width', `-${avatarName.value.scrollWidth - avatarName.value.clientWidth}px`);
+    setTimeout(() => {
+      if(avatarName.value){
+        if(avatarName.value.scrollWidth > avatarName.value.clientWidth){
+          avatarName.value.classList.add('marquee');
+          avatarName.value.style.setProperty('--marquee-width', `-${avatarName.value.scrollWidth - avatarName.value.clientWidth}px`);
+          let speed = (avatarName.value.scrollWidth - avatarName.value.clientWidth)/5;
+          if(speed < 10) {speed = 10}
+          avatarName.value.style.setProperty('--marquee-duration', `${speed}s`);
+        }
       }
-    }
+    }, 2000)
   })
 </script>
 <style lang="scss" scoped>
@@ -60,7 +65,7 @@
 
     &__value{
       &.marquee {
-        animation: marquee 10s linear infinite;
+        animation: marquee var(--marquee-duration) ease-in-out infinite;
       }
     }
 
@@ -74,9 +79,9 @@
 
 @keyframes marquee {
   0% {transform: translateX(0%);}
-  50% {transform: translateX(var(--marquee-width));}
+  40% {transform: translateX(var(--marquee-width));}
   52% {transform: translateX(var(--marquee-width));}
-  98% {transform: translateX(0%);}
+  90% {transform: translateX(0%);}
   100% {transform: translateX(0%);}
 }
 </style>
