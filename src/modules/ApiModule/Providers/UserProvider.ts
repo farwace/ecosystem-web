@@ -110,4 +110,9 @@ export class UserProvider extends ApiProvider implements IUserProvider{
             })
         }
     }
+
+    receiveMission = async (missionId: number): Promise<void> => {
+        //todo: 1) Отправка запроса на получение награды за миссию
+        // 2) отметка задания как отмеченное!
+    }
 }

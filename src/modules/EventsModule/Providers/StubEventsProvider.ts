@@ -117,4 +117,7 @@ export class StubEventsProvider implements IPlatformEvents{
         }
     }
 
+    buySubscription = async () => {
+        alert('Вызывать метод на покупку подписки!')
+    }
 }

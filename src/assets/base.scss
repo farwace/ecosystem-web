@@ -65,6 +65,18 @@ $themes: (
   }
 }
 
+.v-popper--theme-dropdown .v-popper__inner{
+  padding: 10px;
+  background: var(--bg-color-component)!important;
+  color: var(--text-primary)!important;
+  border-color: var(--box-border)!important;
+}
+.v-popper--theme-dropdown .v-popper__arrow-outer{
+  border-color: var(--box-border)!important;
+}
+.v-popper--theme-dropdown .v-popper__arrow-inner{
+  border-color: var(--bg-color)!important;
+}
 .slide-enter-active,
 .slide-leave-active {
   transition: all 1s;

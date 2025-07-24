@@ -86,4 +86,9 @@ export class BridgeEventsProvider implements IPlatformEvents {
     setApplicationIsReady = async () => {
         return bridge.send('VKWebAppInit');
     }
+
+    buySubscription = async () => {
+        //todo: вызвать метод на покупку подписки!
+        alert('Вызывать метод на покупку подписки!')
+    }
 }

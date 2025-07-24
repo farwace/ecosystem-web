@@ -208,7 +208,7 @@ const getNotificationBackgroundColor = (eType?: TNotification['type']) => {
   position: fixed;
   width: 100%;
   height: 100%;
-  z-index: 1;
+  z-index: 10000;
 
   &.dark-bg{
     background-color: rgba(0,0,0,.1);
@@ -284,7 +284,7 @@ const getNotificationBackgroundColor = (eType?: TNotification['type']) => {
     }
     &__close{
       position: absolute;
-      z-index: 20;
+      z-index: 100002;
       right: -15px;
       top: -20px;
       padding: 10px;

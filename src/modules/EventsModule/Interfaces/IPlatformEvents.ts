@@ -7,4 +7,5 @@ export interface IPlatformEvents extends IModule{
     getEmitter: () => Subject<VKBridgeEvent<keyof ReceiveDataMap>>;
     setApplicationIsReady: () => Promise<any>;
     setApplicationLoadError: () => Promise<any>;
+    buySubscription: () => Promise<any>;
 }
