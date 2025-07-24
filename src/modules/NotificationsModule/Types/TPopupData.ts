@@ -9,4 +9,5 @@ export type TPopupData = {
     backgroundBlur?: boolean,
     backdropBlur?:boolean,
     darkBg?:boolean,
+    modal?:boolean,
 } | {[key:string]:any}

@@ -22,6 +22,7 @@ export interface IEcosystemStore {
     nextLevelPopularity: number;
     isNew:boolean;
     vip: boolean;
+    canUseTrialSubscription?:boolean;
 
     isBanned?: boolean;
     banReason?: string | null;

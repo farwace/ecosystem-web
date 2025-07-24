@@ -40,6 +40,8 @@ export type TGetUserInfoResponse = {
     topGifts: TGift[];
     visitors: TUser[];
 
+    canUseTrialSubscription: boolean;
+
     subscription: null | TSubscription;
     vip: boolean;
 }

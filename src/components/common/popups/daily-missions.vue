@@ -75,10 +75,13 @@ import DailyMissionsSkeleton from "@/components/common/ui/sceleton/dailyMissions
 import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
 import UiIcon from "@/components/common/icons/UiIcon.vue";
 import type {TDailyMission} from "@/stores/Ecosystem/Types/TDailyMission.ts";
+import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
+import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
 
 const userProvider: IUserProvider | undefined = inject(UserProviderSymbol);
 const {dailyMissionsHasBeenLoaded, dailyMissionsLoadingError, dailyMissionList, isDailyMissionsLoading} = storeToRefs(dailyMissionsStore());
 const {subscription} = storeToRefs(ecosystemStore());
+const notificationsProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
 
 const sortedItems = computed((): TDailyMission[] => {
   if(!dailyMissionList.value){
@@ -102,16 +105,20 @@ const sortedItems = computed((): TDailyMission[] => {
 
 
 const tryReceive = (item: TDailyMission) => {
-  if(item.completed){
-    if(item.personalAccess && !subscription?.value?.personalAccess){
-      //todo: Вывести попап с информацией что это для PREMIUM доступа
-      alert('Вывести попап с информацией что это для PREMIUM доступа')
-    }
-    else{
+  if(item.completed) {
+    if (!(item.personalAccess && !subscription?.value?.personalAccess)) {
       item.received = true;
-      //alert('Отправить запрос на backend для получения награды')
+      //todo: Отправка на бакенд
+      return;
     }
   }
+
+  notificationsProvider?.addPopup('mission-available-only-for-premium', 'daily-mission-detail-popup', {
+    title: item.name,
+    item: item,
+    modal: true,
+    darkBg: true,
+  })
 }
 
 
@@ -189,6 +196,7 @@ onMounted(() => {
     gap: 8px;
     font-weight: 500;
     align-items: center;
+    cursor: pointer;
 
     &.received{
       opacity: 35%;

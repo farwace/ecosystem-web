@@ -8,13 +8,14 @@
           'active': popup.isOpen,
           'backdrop-blur': popup.data?.backdropBlur,
           'dark-bg': popup.data?.darkBg,
+          'centered': popup.data?.modal
         }"
     >
       <div
           v-click-outside="($event: any) => tryClosePopup($event, ''+index, !popup.data?.noClose)"
           class="popup"
           :data-popup="index"
-          :style="{bottom: 'calc(-'+ popup.clientHeight +'px)'}"
+          :style="popup.data?.modal? {} : {bottom: 'calc(-'+ popup.clientHeight +'px)'}"
           :class="{
           ['' + popup.data?.class || '']: popup.data?.class,
           'calculated': popup.initialized,
@@ -227,6 +228,19 @@ const getNotificationBackgroundColor = (eType?: TNotification['type']) => {
       .popup__content{
         height: 100%;
         overflow-y: auto;
+      }
+    }
+  }
+
+  &.centered{
+    .popup{
+      bottom: unset!important;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    &.active{
+      .popup{
+        bottom: unset!important;
       }
     }
   }

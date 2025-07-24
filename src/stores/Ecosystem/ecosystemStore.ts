@@ -36,6 +36,7 @@ export const ecosystemStore = defineStore('ecosystem', {
         topFans: undefined,
         visitors: undefined,
         subscription: undefined,
+        canUseTrialSubscription: false,
 
         /*  COMMON INFO */
         recentGifts: [],
