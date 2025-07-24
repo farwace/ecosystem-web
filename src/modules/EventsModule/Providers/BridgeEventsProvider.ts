@@ -9,14 +9,19 @@ import {Console} from "@/classes/utils/Console";
 import {calculateAge} from "@/classes/utils/CalculateAge";
 import {getAgeGroup} from "@/classes/utils/GetAgeGroup";
 import type {App} from "vue";
-import {injectable} from "inversify";
+import {inject, injectable} from "inversify";
+import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
+import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
 
 @injectable()
 export class BridgeEventsProvider implements IPlatformEvents {
     private _bridgeEvent$ = new Subject<VKBridgeEvent<keyof ReceiveDataMap>>();
     private ecosystemStore: Store<'ecosystem', IEcosystemStore>
 
-    constructor() {
+    constructor(
+        @inject(NotificationsSymbol)
+        private notificationsProvider: INotificationsProvider
+    ) {
         bridge.subscribe((event) => {
             this._bridgeEvent$.next(event);
         });
@@ -54,6 +59,7 @@ export class BridgeEventsProvider implements IPlatformEvents {
                     firstName: userInfo.first_name,
                     lastName: userInfo.last_name,
                     avatar: userInfo.photo_100,
+                    avatarBig: userInfo.photo_max_orig,
                     sex: sex,
                     age: age,
                     socialId: launchParams.vk_user_id,
@@ -65,6 +71,18 @@ export class BridgeEventsProvider implements IPlatformEvents {
         }
     }
 
+    setApplicationLoadError = async () => {
+        this.notificationsProvider.addPopup('load-error', 'simple-popup', {
+            noClose: true,
+            noCloseButton: true,
+            title: 'Ошибка запуска',
+            subtitle: 'Не удалось инициализировать запуск',
+            message: 'Возможно, ведутся технические работы. Попробуйте еще раз или зайдите позже',
+            backdropBlur: true,
+            darkBg: true
+        })
+        return this.setApplicationIsReady();
+    }
     setApplicationIsReady = async () => {
         return bridge.send('VKWebAppInit');
     }

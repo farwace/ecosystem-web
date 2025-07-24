@@ -21,6 +21,7 @@ export const AppBuilder = () => {
 
             const container = new Container();
 
+            container.bind<INotificationsProvider>(NotificationsSymbol).to(NotificationsProvider).inSingletonScope();
             import.meta.env.VITE_ENVELOP === 'development' ?
                 container.bind<IPlatformEvents>(PlatformEventsSymbol).to(StubEventsProvider).inSingletonScope() :
                 container.bind<IPlatformEvents>(PlatformEventsSymbol).to(BridgeEventsProvider).inSingletonScope();
@@ -31,13 +32,12 @@ export const AppBuilder = () => {
             const userProvider = container.get<IUserProvider>(UserProviderSymbol);
             userProvider.install($app, UserProviderSymbol);
 
-            container.bind<INotificationsProvider>(NotificationsSymbol).to(NotificationsProvider).inSingletonScope();
             const notificationsProvider = container.get<INotificationsProvider>(NotificationsSymbol);
             notificationsProvider.install($app, NotificationsSymbol);
 
             await bridgeEventsProvider.init();
             await userProvider.getUserInfo();
-            await bridgeEventsProvider.setApplicationIsReady();
+            //await bridgeEventsProvider.setApplicationIsReady();
         }
     }
 }

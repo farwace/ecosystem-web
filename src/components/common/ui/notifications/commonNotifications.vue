@@ -19,7 +19,8 @@
           ['' + popup.data?.class || '']: popup.data?.class,
           'calculated': popup.initialized,
           'no-paddings': popup.data?.noPaddings,
-          'bg-blur': popup.data?.backgroundBlur
+          'bg-blur': popup.data?.backgroundBlur,
+          'no-title': popup.data?.noTitle,
         }"
       >
         <div
@@ -30,7 +31,7 @@
           <ui-icon class="close-button" name="close" />
         </div>
         <div
-            v-if="(popup.data?.title || popup.data?.subtitle || (!popup.data?.noClose && !popup.data?.noCloseButton))"
+            v-if="(popup.data?.title || popup.data?.subtitle || (!popup.data?.noClose && !popup.data?.noCloseButton && !popup.data?.noTitle))"
             class="popup__title"
         >
           <div v-if="popup.data?.title" v-html="popup.data?.title"></div>
@@ -215,9 +216,18 @@ const getNotificationBackgroundColor = (eType?: TNotification['type']) => {
   &.backdrop-blur{
     backdrop-filter: blur(2px);
     -webkit-backdrop-filter: blur(2px);
+  }
+  .popup{
+    box-shadow: 0 0 15px rgba(0,0,0,.15);
 
-    .popup{
-      box-shadow: 0 0 10px rgba(0,0,0,.2);
+    &.no-title{
+      display: flex;
+      flex-direction: column;
+
+      .popup__content{
+        height: 100%;
+        overflow-y: auto;
+      }
     }
   }
 
@@ -260,7 +270,7 @@ const getNotificationBackgroundColor = (eType?: TNotification['type']) => {
     }
     &__close{
       position: absolute;
-      z-index: 2;
+      z-index: 20;
       right: -15px;
       top: -20px;
       padding: 10px;

@@ -12,9 +12,8 @@ import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfa
 const notificationsProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
 
 const openMissions = () => {
-  notificationsProvider?.addPopup('missions', 'simple-popup', {
-    title: 'Задания',
-    backdropBlur: true,
+  notificationsProvider?.addPopup('daily-missions', 'daily-missions', {
+    noTitle:true,
     darkBg: true,
   })
 }
@@ -22,15 +21,13 @@ const openMissions = () => {
 const openRating = () => {
   notificationsProvider?.addPopup('rating', 'simple-popup', {
     title: 'Рейтинг',
-    backdropBlur: true,
-    darkBg: true
+    darkBg: true,
   })
 }
 
 const openFriends = () => {
   notificationsProvider?.addPopup('friends', 'simple-popup', {
     title: 'Друзья',
-    backdropBlur: true,
     darkBg: true,
   })
 }
@@ -38,7 +35,6 @@ const openFriends = () => {
 const openMessages = () => {
   notificationsProvider?.addPopup('messages', 'simple-popup', {
     title: 'Сообщения',
-    backdropBlur: true,
     darkBg: true,
   })
 }

@@ -1,5 +1,6 @@
 export type TPopupData = {
     title?:string,
+    noTitle?:boolean,
     subtitle?:string,
     noClose?:boolean,
     noCloseButton?:boolean,

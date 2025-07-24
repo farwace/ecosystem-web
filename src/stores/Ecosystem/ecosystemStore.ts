@@ -44,7 +44,6 @@ export const ecosystemStore = defineStore('ecosystem', {
         recentLiked: [],
         topRatingPerson: 'https://vk.com/images/camera_200.png',
 
-        missionList: [],
         giftList: [],
         achievementsList: []
     })
