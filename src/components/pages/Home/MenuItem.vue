@@ -15,12 +15,26 @@ const props = defineProps<{icon: string}>();
 .menu-item {
   cursor: pointer;
   display: flex;
+  position: relative;
   flex-direction: column;
   align-items: center;
   text-transform: uppercase;
   font-size: 12px;
   font-weight: 600;
   flex-grow: 1;
+  &.unread{
+    &:after{
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      content: '';
+      background: #ff9090;
+      border-radius: 100%;
+      right: 5px;
+      top: -7px;
+      border: 2px solid #FFF6E9;
+    }
+  }
   &__icon{
     width: 44px;
     height: 44px;

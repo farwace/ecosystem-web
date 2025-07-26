@@ -70,6 +70,10 @@ export class UserProvider extends ApiProvider implements IUserProvider{
                 nextLevelPopularity: resData.nextLevelPopularity,
             });
 
+            this.dailyMissionsStore.$patch({
+                dailyMissionsHasBeenLoaded: true,
+                dailyMissionList: resData.dailyMissions
+            })
 
             await this.platformEvents.setApplicationIsReady();
 

@@ -7,4 +7,9 @@ interface ImportMetaEnv {
     readonly VITE_ENVELOP: "development" | string
     readonly VITE_VK_USER_ID: string
     readonly VITE_VK_AUTH_STRING: string
+    readonly VITE_REVERB_APP_KEY:string
+    readonly VITE_REVERB_HOST:string
+    readonly VITE_REVERB_PORT:number
+    readonly VITE_REVERB_TLS:string
+    readonly VITE_REVERB_APP_AUTH_ENDPOINT:string
 }

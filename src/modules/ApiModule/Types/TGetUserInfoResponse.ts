@@ -4,6 +4,7 @@ import type {TDailyEnter} from "@/stores/Ecosystem/Types/TDailyEnter.ts";
 import type {TAchievement} from "@/stores/Ecosystem/Types/TAchievement.ts";
 import type {TUser} from "@/stores/Ecosystem/Types/TUser.ts";
 import type {TSubscription} from "@/stores/Ecosystem/Types/TSubscription.ts";
+import type {TDailyMission} from "@/stores/Ecosystem/Types/TDailyMission.ts";
 
 export type TGetUserInfoResponse = {
     id: number;
@@ -21,6 +22,7 @@ export type TGetUserInfoResponse = {
     dailyEnter: TDailyEnter;
     showDailyGift: boolean;
     consecutiveDays: number;
+    dailyMissions: TDailyMission[];
 
     isAnonymous: boolean;
     isNew: boolean;

@@ -12,6 +12,9 @@ import {UserProvider} from "@/modules/ApiModule/Providers/UserProvider.ts";
 import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
 import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
 import {NotificationsProvider} from "@/modules/NotificationsModule/Providers/NotificationsProvider.ts";
+import {ReverbSymbol} from "@/modules/ReverbModule/symbols.ts";
+import type {IReverbProvider} from "@/modules/ReverbModule/Interfaces/IReverbProvider.ts";
+import {ReverbProvider} from "@/modules/ReverbModule/Providers/ReverbProvider.ts";
 
 export const AppBuilder = () => {
     return {
@@ -37,7 +40,10 @@ export const AppBuilder = () => {
 
             await bridgeEventsProvider.init();
             await userProvider.getUserInfo();
-            //await bridgeEventsProvider.setApplicationIsReady();
+
+            container.bind<IReverbProvider>(ReverbSymbol).to(ReverbProvider).inSingletonScope();
+            const reverbProvider = container.get<IReverbProvider>(ReverbSymbol);
+            reverbProvider.install($app, ReverbSymbol);
         }
     }
 }

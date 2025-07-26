@@ -1,7 +1,33 @@
 <template>
   <div class="boxes">
-    <div class="boxes-gifts">
+    <div ref="boxesContainer" class="boxes-gifts">
+
+      <!-- todo: Выставлять атрибут CHECKED! -->
+      <VDropdown
+          v-if="progress < 3 || false"
+          :distance="6"
+          :placement="'top'"
+          :container="boxesContainer"
+      >
+        <div
+            class="box box-1"
+            :class="{
+              active: progress > 2,
+              checked: false,
+            }"
+        >
+          <UiIcon name="box1"/>
+        </div>
+        <template #popper>
+          <div @click.stop.prevent="" class="box-tooltip">
+            <div v-if="progress < 3">
+              Завершите 3 задания для получения награды
+            </div>
+          </div>
+        </template>
+      </VDropdown>
       <div
+          v-else
           class="box box-1"
           :class="{
             active: progress > 2,
@@ -10,6 +36,13 @@
       >
         <UiIcon name="box1"/>
       </div>
+
+      <VDropdown
+          v-if="progress < 5 || false"
+          :distance="6"
+          :placement="'top'"
+          :container="boxesContainer"
+      >
       <div
           class="box box-2"
           :class="{
@@ -19,7 +52,50 @@
       >
         <UiIcon name="box2"/>
       </div>
+        <template #popper>
+          <div @click.stop.prevent="" class="box-tooltip">
+            <div v-if="progress < 5">
+              Завершите 5 заданий для получения награды
+            </div>
+          </div>
+        </template>
+      </VDropdown>
       <div
+          v-else
+          class="box box-2"
+          :class="{
+            active: progress > 4,
+            checked: false,
+          }"
+      >
+        <UiIcon name="box2"/>
+      </div>
+
+      <VDropdown
+          v-if="progress < 7 || false"
+          :distance="-8"
+          :placement="'top'"
+          :container="boxesContainer"
+      >
+        <div
+            class="box box-3"
+            :class="{
+              active: progress > 6,
+              checked: false,
+            }"
+        >
+          <UiIcon name="box3"/>
+        </div>
+        <template #popper>
+          <div @click.stop.prevent="" class="box-tooltip">
+            <div v-if="progress < 7">
+              Завершите 7 заданий для получения награды
+            </div>
+          </div>
+        </template>
+      </VDropdown>
+      <div
+          v-else
           class="box box-3"
           :class="{
             active: progress > 6,
@@ -28,6 +104,9 @@
       >
         <UiIcon name="box3"/>
       </div>
+
+
+
     </div>
     <div
         class="boxes__progress"
@@ -72,6 +151,18 @@ import UiIcon from "@/components/common/icons/UiIcon.vue";
 import {computed, nextTick, onMounted, ref} from "vue";
 import {storeToRefs} from "pinia";
 import {dailyMissionsStore} from "@/stores/DailyMissions/dailyMissionsStore.ts";
+import {Dropdown as VDropdown, vTooltip} from "floating-vue";
+
+defineOptions({
+  components: {
+    VDropdown,
+  },
+  directives: {
+    vTooltip
+  }
+});
+
+const boxesContainer = ref<HTMLDivElement>();
 
 const progressRef = ref<HTMLDivElement>();
 const item3 = ref<HTMLDivElement>();
@@ -293,5 +384,12 @@ onMounted(() => {
     }
 
   }
+}
+
+.box-tooltip{
+  font-size: 12px;
+  font-weight: normal;
+  text-align: left;
+  line-height: 14px;
 }
 </style>

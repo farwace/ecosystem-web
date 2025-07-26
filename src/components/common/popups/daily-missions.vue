@@ -28,7 +28,9 @@
                 <div>
                   Доступно с премиум доступом
                 </div>
-
+                <div v-if="canUseTrialSubscription" class="btn-buy" @click="bridgeEventsProvider?.buySubscription()">
+                  Попробовать бесплатно <UiIcon class="target-icon" name="target-blank" />
+                </div>
               </div>
             </template>
           </VDropdown>
@@ -53,11 +55,15 @@ import DailyMissionItem from "@/components/common/popups/DailyMissions/DailyMiss
 import {Dropdown as VDropdown, vTooltip} from "floating-vue";
 import 'floating-vue/dist/style.css'
 import DailyMissionGifts from "@/components/common/popups/DailyMissions/DailyMissionGifts.vue";
+import UiIcon from "@/components/common/icons/UiIcon.vue";
+import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
+import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
 
 
 const userProvider: IUserProvider | undefined = inject(UserProviderSymbol);
 const {dailyMissionsHasBeenLoaded, dailyMissionsLoadingError, dailyMissionList, isDailyMissionsLoading} = storeToRefs(dailyMissionsStore());
 const {subscription, canUseTrialSubscription} = storeToRefs(ecosystemStore());
+const bridgeEventsProvider: IPlatformEvents | undefined = inject(PlatformEventsSymbol);
 
 defineOptions({
   components: {
