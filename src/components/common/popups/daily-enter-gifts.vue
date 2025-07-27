@@ -1,5 +1,5 @@
 <template>
-  <div class="daily-rewards">
+  <div class="daily-rewards" :class="{loading: isLoading}">
     <div class="daily-rewards__title">
       Ежедневная награда
     </div>
@@ -122,6 +122,21 @@ const receiveDailyReward = async () => {
   color: #9b6c34;
   text-align: center;
   padding: 20px;
+
+
+  &.loading{
+    &:before{
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.1);
+      z-index: 1;
+      left: 0;
+      top: 0;
+      border-radius: 20px;
+    }
+  }
 
   &__title{
     font-size: 24px;

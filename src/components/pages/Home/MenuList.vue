@@ -25,6 +25,7 @@ const openRating = () => {
   notificationsProvider?.addPopup('rating', 'simple-popup', {
     title: 'Рейтинг',
     darkBg: true,
+    modal: true
   })
 }
 

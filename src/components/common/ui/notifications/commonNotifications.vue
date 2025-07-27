@@ -93,7 +93,7 @@ const closePopup = (key: string) => {
     popups.value[key].isOpen = false
     setTimeout(() => {
       notificationLayer?.removePopup?.(key);
-    }, 100)
+    }, popups.value[key].data?.modal ? 10 : 100)
   }
 }
 

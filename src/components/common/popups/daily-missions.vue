@@ -150,46 +150,10 @@ onMounted(() => {
       background-color: rgba(255, 255, 255, 0.4);
       z-index: 20000;
     }
-    &:after{
-      content: '';
-      position: absolute;
-      left: 50%;
-      top: 50vh;
-      transform: translateX(-50%);
-      width: 60px;
-      height: 80px;
-      background-image: url('/assets/img/rocket.svg');
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-      z-index: 21000;
-      animation: rocket 5s infinite;
-    }
   }
 }
 
-@keyframes rocket {
-  0% {
-    top: 50vh;
-    transform: translateX(-50%) rotate(0deg);
-  }
-  25%{
-    top: 40vh;
-    transform: translateX(-100%) rotate(-180deg);
-  }
-  50% {
-    top: 30vh;
-    transform: translateX(-50%) rotate(0deg);
-  }
-  75% {
-    top: 40vh;
-    transform: translateX(0%) rotate(180deg);
-  }
-  100% {
-    top: 50vh;
-    transform: translateX(-50%) rotate(360deg);
-  }
-}
+
 
 .missions-header{
   position: sticky;
