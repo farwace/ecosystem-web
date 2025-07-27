@@ -106,6 +106,14 @@ export class UserProvider extends ApiProvider implements IUserProvider{
         return await this.fetch(`${this.getApiEndpoint()}/user/missed-events`) as TResponse<TReverbMessage<unknown>[]>;
     }
 
+    receiveDailyEnter = (): Promise<TResponse<boolean>> => {
+        return this.fetch(`${this.getApiEndpoint()}/daily-missions/receive-daily-enter`, {
+            method: "POST"
+        }) as Promise<TResponse<boolean>>;
+    }
+
+
+
     receiveMission = async (missionId: number): Promise<void> => {
         //todo: 1) Отправка запроса на получение награды за миссию
         // 2) отметка задания как отмеченное!

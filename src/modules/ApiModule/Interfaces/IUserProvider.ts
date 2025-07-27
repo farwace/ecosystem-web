@@ -7,4 +7,5 @@ export interface IUserProvider  extends IModule{
     loadDailyMissions: () => Promise<void>;
     receiveMission:(itemId: number) => Promise<void>;
     loadMissedEvents: () => Promise<TResponse<TReverbMessage<unknown>[]>>;
+    receiveDailyEnter: () => Promise<TResponse<boolean>>;
 }

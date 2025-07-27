@@ -22,6 +22,7 @@
           'no-paddings': popup.data?.noPaddings,
           'bg-blur': popup.data?.backgroundBlur,
           'no-title': popup.data?.noTitle,
+          'no-bg': popup.data?.noBackground,
         }"
       >
         <div
@@ -268,6 +269,11 @@ const getNotificationBackgroundColor = (eType?: TNotification['type']) => {
     color: var(--text-primary);
     //overflow-y: auto;
     //overflow-x: hidden;
+
+    &.no-bg{
+      background: unset!important;
+      box-shadow: unset!important;
+    }
 
     &.no-paddings{
       padding: 0;
