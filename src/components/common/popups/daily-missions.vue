@@ -1,5 +1,8 @@
 <template>
-  <div>
+  <div
+      class="missions"
+      :class="{loading: isLoading}"
+  >
     <div class="missions-header">
       <div class="title">
         Ежедневные задания
@@ -64,6 +67,7 @@ const userProvider: IUserProvider | undefined = inject(UserProviderSymbol);
 const {dailyMissionsHasBeenLoaded, dailyMissionsLoadingError, dailyMissionList, isDailyMissionsLoading} = storeToRefs(dailyMissionsStore());
 const {subscription, canUseTrialSubscription} = storeToRefs(ecosystemStore());
 const bridgeEventsProvider: IPlatformEvents | undefined = inject(PlatformEventsSymbol);
+const isLoading = ref<boolean>(false);
 
 defineOptions({
   components: {
@@ -97,10 +101,19 @@ const sortedItems = computed((): TDailyMission[] => {
 });
 
 
-const tryReceive = (item: TDailyMission) => {
+const tryReceive = async (item: TDailyMission) => {
   if(item.completed) {
     if (!(item.personalAccess && !subscription?.value?.personalAccess)) {
-      userProvider?.receiveMission(item.id);
+      if(isLoading.value) return;
+
+      isLoading.value = true;
+      try {
+        await userProvider?.receiveMission(item.id);
+      }
+      catch (e:any){}
+      finally {
+        isLoading.value = false;
+      }
       return;
     }
   }
@@ -121,6 +134,63 @@ onMounted(() => {
     color: #C99965;
   }
 }
+
+
+.missions{
+  position: relative;
+  &.loading{
+    pointer-events: none;
+    &:before{
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.4);
+      z-index: 20000;
+    }
+    &:after{
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50vh;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 80px;
+      background-image: url('/assets/img/rocket.svg');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      z-index: 21000;
+      animation: rocket 5s infinite;
+    }
+  }
+}
+
+@keyframes rocket {
+  0% {
+    top: 50vh;
+    transform: translateX(-50%) rotate(0deg);
+  }
+  25%{
+    top: 40vh;
+    transform: translateX(-100%) rotate(-180deg);
+  }
+  50% {
+    top: 30vh;
+    transform: translateX(-50%) rotate(0deg);
+  }
+  75% {
+    top: 40vh;
+    transform: translateX(0%) rotate(180deg);
+  }
+  100% {
+    top: 50vh;
+    transform: translateX(-50%) rotate(360deg);
+  }
+}
+
 .missions-header{
   position: sticky;
   z-index: 10001;

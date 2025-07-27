@@ -89,6 +89,7 @@ const activeReward = computed(() => {
 })
 
 const receiveDailyReward = async () => {
+  if(isLoading.value) return;
   isLoading.value = true;
   try {
     const res = await userProvider?.receiveDailyEnter();

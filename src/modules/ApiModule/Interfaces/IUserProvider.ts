@@ -5,7 +5,7 @@ import type {TReverbMessage} from "@/modules/ReverbModule/Types/TReverbMessage.t
 export interface IUserProvider  extends IModule{
     getUserInfo: () => Promise<void>;
     loadDailyMissions: () => Promise<void>;
-    receiveMission:(itemId: number) => Promise<void>;
+    receiveMission:(itemId: number) => Promise<TResponse<any>>;
     loadMissedEvents: () => Promise<TResponse<TReverbMessage<unknown>[]>>;
     receiveDailyEnter: () => Promise<TResponse<boolean>>;
 }

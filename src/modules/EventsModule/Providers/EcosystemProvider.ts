@@ -14,6 +14,7 @@ import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfa
 import type {TReplenishmentBalance} from "@/modules/EventsModule/Types/TReplenishmentBalance.ts";
 import type {IEcosystemStore} from "@/stores/Ecosystem/IEcosystemStore.ts";
 import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
+import type {TReplenishmentExperience} from "@/modules/EventsModule/Types/TReplenishmentExperience.ts";
 
 @injectable()
 export class EcosystemProvider implements IEcosystemProvider{
@@ -38,6 +39,7 @@ export class EcosystemProvider implements IEcosystemProvider{
         this.subscribeToDailyMissionEvents();
         this.subscribeToNotificationEvents();
         this.subscribeToReplenishmentBalanceEvents();
+        this.subscribeToReplenishmentExperienceEvents();
     }
 
     private subscribeToDailyMissionEvents = () => {
@@ -74,4 +76,17 @@ export class EcosystemProvider implements IEcosystemProvider{
             })
         })
     }
+
+    private subscribeToReplenishmentExperienceEvents = () => {
+        this._reverbObserver$.pipe(
+            filter((message):message is TReverbMessage<TReplenishmentExperience> => message.event === 'replenishment_experience'),
+        ).subscribe((message) => {
+            this.ecosystemStore.$patch({
+                experience: message.data.experience,
+                lvl: message.data.lvl,
+                nextLevelExperience: message.data.nextLevelExperience
+            })
+        })
+    }
+
 }
