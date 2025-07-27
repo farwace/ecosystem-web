@@ -35,6 +35,7 @@ export interface IEcosystemStore {
 
 
     vipLevel:number;
+    currentDay: keyof TDailyEnter
     dailyEnter?:TDailyEnter;
     consecutiveDays?:number;
     isAnonymous?: boolean;

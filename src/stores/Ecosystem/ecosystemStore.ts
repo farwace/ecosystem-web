@@ -28,6 +28,7 @@ export const ecosystemStore = defineStore('ecosystem', {
         isBanned: false,
         vip: false,
 
+        currentDay: 'monday',
         dailyEnter: undefined,
         consecutiveDays: undefined,
         isAnonymous: undefined,

@@ -4,7 +4,7 @@
 
       <!-- todo: Выставлять атрибут CHECKED! -->
       <VDropdown
-          v-if="progress < 3 || false"
+          v-if="progress < 3 || dailyEnter?.[currentDay]?.['box3']"
           :distance="6"
           :placement="'top'"
           :container="boxesContainer"
@@ -13,7 +13,7 @@
             class="box box-1"
             :class="{
               active: progress > 2,
-              checked: false,
+              checked: dailyEnter?.[currentDay]?.['box3'],
             }"
         >
           <UiIcon name="box1"/>
@@ -23,6 +23,9 @@
             <div v-if="progress < 3">
               Завершите 3 задания для получения награды
             </div>
+            <div v-else>
+              Награда получена
+            </div>
           </div>
         </template>
       </VDropdown>
@@ -31,14 +34,15 @@
           class="box box-1"
           :class="{
             active: progress > 2,
-            checked: false,
+            checked: dailyEnter?.[currentDay]?.['box3'],
           }"
+          @click="tryReceiveBox(3)"
       >
         <UiIcon name="box1"/>
       </div>
 
       <VDropdown
-          v-if="progress < 5 || false"
+          v-if="progress < 5 || dailyEnter?.[currentDay]?.['box5']"
           :distance="6"
           :placement="'top'"
           :container="boxesContainer"
@@ -47,7 +51,7 @@
           class="box box-2"
           :class="{
             active: progress > 4,
-            checked: false,
+            checked: dailyEnter?.[currentDay]?.['box5'],
           }"
       >
         <UiIcon name="box2"/>
@@ -57,6 +61,9 @@
             <div v-if="progress < 5">
               Завершите 5 заданий для получения награды
             </div>
+            <div v-else>
+              Награда получена
+            </div>
           </div>
         </template>
       </VDropdown>
@@ -65,14 +72,15 @@
           class="box box-2"
           :class="{
             active: progress > 4,
-            checked: false,
+            checked: dailyEnter?.[currentDay]?.['box5'],
           }"
+          @click="tryReceiveBox(5)"
       >
         <UiIcon name="box2"/>
       </div>
 
       <VDropdown
-          v-if="progress < 7 || false"
+          v-if="progress < 7 || dailyEnter?.[currentDay]?.['box7']"
           :distance="-8"
           :placement="'top'"
           :container="boxesContainer"
@@ -81,7 +89,7 @@
             class="box box-3"
             :class="{
               active: progress > 6,
-              checked: false,
+              checked: dailyEnter?.[currentDay]?.['box7'],
             }"
         >
           <UiIcon name="box3"/>
@@ -91,6 +99,9 @@
             <div v-if="progress < 7">
               Завершите 7 заданий для получения награды
             </div>
+            <div v-else>
+              Награда получена
+            </div>
           </div>
         </template>
       </VDropdown>
@@ -99,8 +110,9 @@
           class="box box-3"
           :class="{
             active: progress > 6,
-            checked: false,
+            checked: dailyEnter?.[currentDay]?.['box7'],
           }"
+          @click="tryReceiveBox(7)"
       >
         <UiIcon name="box3"/>
       </div>
@@ -148,10 +160,13 @@
 <script lang="ts" setup>
 
 import UiIcon from "@/components/common/icons/UiIcon.vue";
-import {computed, nextTick, onMounted, ref} from "vue";
+import {computed, inject, nextTick, onMounted, ref} from "vue";
 import {storeToRefs} from "pinia";
 import {dailyMissionsStore} from "@/stores/DailyMissions/dailyMissionsStore.ts";
 import {Dropdown as VDropdown, vTooltip} from "floating-vue";
+import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
+import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.ts";
+import {UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
 
 defineOptions({
   components: {
@@ -162,14 +177,20 @@ defineOptions({
   }
 });
 
-const boxesContainer = ref<HTMLDivElement>();
+const emits = defineEmits(['loading']);
+const isLoading = ref<boolean>(false);
 
+const userProvider: IUserProvider | undefined = inject(UserProviderSymbol);
+
+const boxesContainer = ref<HTMLDivElement>();
 const progressRef = ref<HTMLDivElement>();
 const item3 = ref<HTMLDivElement>();
 const item5 = ref<HTMLDivElement>();
 const item7 = ref<HTMLDivElement>();
 
 const {dailyMissionList} = storeToRefs(dailyMissionsStore());
+const {currentDay, dailyEnter} = storeToRefs(ecosystemStore());
+
 const isReady = ref<boolean>(false);
 
 const progress = computed(() => {
@@ -209,6 +230,22 @@ const progressOpacity = computed(() => {
   }
   return '100%'
 });
+
+
+const tryReceiveBox = async (box: number) => {
+  if(isLoading.value) return;
+  isLoading.value = true;
+  emits('loading', true);
+
+  try {
+    await userProvider?.receiveMissionBox(box);
+  }
+  catch (e:any){}
+  finally {
+    isLoading.value = false;
+    emits('loading', false);
+  }
+}
 
 onMounted(() => {
   nextTick(() => {

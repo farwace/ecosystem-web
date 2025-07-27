@@ -8,7 +8,7 @@
         Ежедневные задания
       </div>
 
-      <daily-mission-gifts />
+      <daily-mission-gifts @loading="isLoading = $event"/>
 
     </div>
     <div ref="missionsContainer">
@@ -22,7 +22,7 @@
           <VDropdown
               v-if="item.personalAccess && !subscription?.personalAccess"
               :distance="6"
-              :placement="'top'"
+              :placement="sortedItems?.[0]?.personalAccess ? 'bottom': 'top'"
               :container="missionsContainer"
           >
             <daily-mission-item :item="item" @click="tryReceive(item)" />

@@ -61,6 +61,7 @@ export class UserProvider extends ApiProvider implements IUserProvider{
                 lvl: resData.lvl,
                 nextLevelExperience: resData.nextLevelExperience,
                 nextLevelPopularity: resData.nextLevelPopularity,
+                currentDay: resData.currentDay
             });
 
             this.dailyMissionsStore.$patch({
@@ -120,7 +121,14 @@ export class UserProvider extends ApiProvider implements IUserProvider{
         }, {
             id: missionId,
         }) as unknown as Promise<TResponse<any>>;
-        //todo: 1) Отправка запроса на получение награды за миссию
-        // 2) отметка задания как отмеченное!
     }
+
+    receiveMissionBox = async (box: number): Promise<TResponse<boolean>> => {
+        return await this.fetch(`${this.getApiEndpoint()}/daily-missions/receive-daily-enter-box`, {
+            method: "POST",
+        }, {
+            box
+        }) as unknown as Promise<TResponse<boolean>>;
+    }
+
 }

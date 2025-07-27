@@ -15,6 +15,7 @@ import type {TReplenishmentBalance} from "@/modules/EventsModule/Types/TReplenis
 import type {IEcosystemStore} from "@/stores/Ecosystem/IEcosystemStore.ts";
 import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
 import type {TReplenishmentExperience} from "@/modules/EventsModule/Types/TReplenishmentExperience.ts";
+import type {TDailyEnter} from "@/stores/Ecosystem/Types/TDailyEnter.ts";
 
 @injectable()
 export class EcosystemProvider implements IEcosystemProvider{
@@ -36,13 +37,11 @@ export class EcosystemProvider implements IEcosystemProvider{
 
     install(app: App, symbol: symbol) {
         app.provide(symbol, this);
-        this.subscribeToDailyMissionEvents();
-        this.subscribeToNotificationEvents();
-        this.subscribeToReplenishmentBalanceEvents();
-        this.subscribeToReplenishmentExperienceEvents();
+        this.subscribeToEcosystemEvents();
     }
 
-    private subscribeToDailyMissionEvents = () => {
+    private subscribeToEcosystemEvents = () => {
+
         this._reverbObserver$.pipe(
             filter((message):message is TReverbMessage<TDailyMission> => message.event === 'daily_mission_progress'),
         ).subscribe((message) => {
@@ -55,29 +54,22 @@ export class EcosystemProvider implements IEcosystemProvider{
                     }
                 })
             })
-        })
-    }
-
-    private subscribeToNotificationEvents = () => {
+        });
 
         this._reverbObserver$.pipe(
             filter((message):message is TReverbMessage<any> => message.event === 'show_popup'),
         ).subscribe((message) => {
             this.notificationsProvider.addPopup(message.data.key, message.data.componentName, message.data.ppData);
-        })
-    }
+        });
 
-    private subscribeToReplenishmentBalanceEvents = () => {
         this._reverbObserver$.pipe(
             filter((message):message is TReverbMessage<TReplenishmentBalance> => message.event === 'replenishment_balance'),
         ).subscribe((message) => {
             this.ecosystemStore.$patch({
                 balance: message.data.neoBalance
             })
-        })
-    }
+        });
 
-    private subscribeToReplenishmentExperienceEvents = () => {
         this._reverbObserver$.pipe(
             filter((message):message is TReverbMessage<TReplenishmentExperience> => message.event === 'replenishment_experience'),
         ).subscribe((message) => {
@@ -86,7 +78,18 @@ export class EcosystemProvider implements IEcosystemProvider{
                 lvl: message.data.lvl,
                 nextLevelExperience: message.data.nextLevelExperience
             })
-        })
+        });
+
+        this._reverbObserver$.pipe(
+            filter((message):message is TReverbMessage<{day: keyof TDailyEnter, data: TDailyEnter}> => message.event === 'user_receive_daily_enter_box'),
+        ).subscribe((message) => {
+            this.ecosystemStore.$patch({
+                dailyEnter: message.data.data,
+                currentDay: message.data.day
+            })
+        });
+
+
     }
 
 }

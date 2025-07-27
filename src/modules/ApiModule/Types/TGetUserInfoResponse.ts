@@ -19,6 +19,7 @@ export type TGetUserInfoResponse = {
     bannedAt?: string | null;
     bannedUntil?: string | null;
 
+    currentDay: keyof TDailyEnter;
     dailyEnter: TDailyEnter;
     showDailyGift: boolean;
     consecutiveDays: number;

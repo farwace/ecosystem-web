@@ -21,7 +21,7 @@ export abstract class ApiProvider implements IApiProvider{
     }
 
     getApiEndpoint = () => {
-        return `${import.meta.env.VITE_API_ENDPOINT}api/vk/${import.meta.env.VITE_API_VERSION}`
+        return `${import.meta.env.VITE_API_ENDPOINT}api/${import.meta.env.VITE_API_VERSION}`
     }
 
     getHeaders = () => {
@@ -42,7 +42,8 @@ export abstract class ApiProvider implements IApiProvider{
 
         if(opt){
             Object.keys(opt).forEach(key => {
-                options[key] = opt[key];
+                const k = key as keyof RequestInit;
+                options[k] = opt[k] as unknown as any;
             })
         }
 
