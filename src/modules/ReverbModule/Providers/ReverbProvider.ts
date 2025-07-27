@@ -1,6 +1,6 @@
 import type {IReverbProvider} from "@/modules/ReverbModule/Interfaces/IReverbProvider.ts";
-import type {App} from "vue";
-import {injectable} from "inversify";
+import {type App} from "vue";
+import {injectable, inject} from "inversify";
 import type {Store} from "pinia";
 import type {IEcosystemStore} from "@/stores/Ecosystem/IEcosystemStore.ts";
 import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore";
@@ -8,6 +8,9 @@ import {Subject} from "rxjs";
 import type {TReverbMessage} from "@/modules/ReverbModule/Types/TReverbMessage.ts";
 import Pusher from "pusher-js";
 import Echo from "laravel-echo";
+import {Console} from "@/classes/utils/Console.ts";
+import {UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
+import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.ts";
 
 declare global {
     interface Window {
@@ -21,7 +24,10 @@ export class ReverbProvider implements IReverbProvider{
     private readonly ecosystemStore: Store<'ecosystem', IEcosystemStore>;
     private readonly _reverbObserver$: Subject<TReverbMessage<unknown>>;
 
-    constructor() {
+    constructor(
+        @inject(UserProviderSymbol)
+        private userProvider: IUserProvider,
+    ) {
         this.ecosystemStore = ecosystemStore();
         this._reverbObserver$ = new Subject();
         window.Pusher = Pusher;
@@ -55,7 +61,22 @@ export class ReverbProvider implements IReverbProvider{
 
         });
 
-        echo.private(`user.${this.ecosystemStore.$state.id}`)
+        const privateChannel = echo.private(`user.${this.ecosystemStore.$state.id}`);
+
+        privateChannel
+            .subscribed(async () => {
+                try{
+                    const missedEvents = await this.userProvider.loadMissedEvents();
+                    missedEvents.data.forEach((event: TReverbMessage<unknown>) => {
+                        this._reverbObserver$.next(event);
+                    })
+                }
+                catch (e:any){}
+
+            })
+            .error((error: any) => {
+                Console.error('>>> Ошибка подписки на приватный канал:', error);
+            })
             .listen('.UserSocketMessage', (p: TReverbMessage<unknown>) => {
                 this._reverbObserver$.next(p);
             });

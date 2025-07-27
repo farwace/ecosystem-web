@@ -5,6 +5,7 @@ import type {Store} from "pinia";
 import type {App} from "vue";
 import type {IDailyMissionsStore} from "@/stores/DailyMissions/IDailyMissionsStore.ts";
 import {dailyMissionsStore} from "@/stores/DailyMissions/dailyMissionsStore.ts";
+import type {TResponse} from "@/modules/ApiModule/Types/TResponse.ts";
 
 export abstract class ApiProvider implements IApiProvider{
     protected readonly ecosystemStore: Store<'ecosystem', IEcosystemStore>;
@@ -29,5 +30,27 @@ export abstract class ApiProvider implements IApiProvider{
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         }
+    }
+
+    fetch = async (url: string, opt?: RequestInit, body?: any): Promise<TResponse<unknown>> => {
+        const options: RequestInit = {
+            method: "GET",
+            cache: "no-cache",
+            headers: this.getHeaders(),
+            credentials: "same-origin",
+        }
+
+        if(opt){
+            Object.keys(opt).forEach(key => {
+                options[key] = opt[key];
+            })
+        }
+
+        if(body){
+            options.body = JSON.stringify(body);
+        }
+
+        const res = await fetch(url, options);
+        return await res.json();
     }
 }

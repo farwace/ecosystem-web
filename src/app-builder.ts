@@ -4,7 +4,7 @@ import Vue3Lottie from 'vue3-lottie'
 import {StubEventsProvider} from "@/modules/EventsModule/Providers/StubEventsProvider.ts";
 import {BridgeEventsProvider} from "@/modules/EventsModule/Providers/BridgeEventsProvider.ts";
 import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
-import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
+import {EcosystemSymbol, PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
 import {Container} from "inversify";
 import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.ts";
 import {UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
@@ -15,6 +15,10 @@ import {NotificationsProvider} from "@/modules/NotificationsModule/Providers/Not
 import {ReverbSymbol} from "@/modules/ReverbModule/symbols.ts";
 import type {IReverbProvider} from "@/modules/ReverbModule/Interfaces/IReverbProvider.ts";
 import {ReverbProvider} from "@/modules/ReverbModule/Providers/ReverbProvider.ts";
+import {Console} from "@/classes/utils/Console.ts";
+import {filter} from "rxjs";
+import {EcosystemProvider} from "@/modules/EventsModule/Providers/EcosystemProvider.ts";
+import type {IEcosystemProvider} from "@/modules/EventsModule/Interfaces/IEcosystemProvider.ts";
 
 export const AppBuilder = () => {
     return {
@@ -44,6 +48,11 @@ export const AppBuilder = () => {
             container.bind<IReverbProvider>(ReverbSymbol).to(ReverbProvider).inSingletonScope();
             const reverbProvider = container.get<IReverbProvider>(ReverbSymbol);
             reverbProvider.install($app, ReverbSymbol);
+
+            container.bind<IEcosystemProvider>(EcosystemSymbol).to(EcosystemProvider).inSingletonScope();
+            const ecosystemProvider = container.get<IEcosystemProvider>(EcosystemSymbol);
+            ecosystemProvider.install($app, EcosystemSymbol);
+
         }
     }
 }

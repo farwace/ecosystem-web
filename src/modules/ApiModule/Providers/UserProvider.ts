@@ -6,6 +6,7 @@ import type {TResponse} from "@/modules/ApiModule/Types/TResponse.ts";
 import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
 import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
 import type {TDailyMission} from "@/stores/Ecosystem/Types/TDailyMission.ts";
+import type {TReverbMessage} from "@/modules/ReverbModule/Types/TReverbMessage.ts";
 
 @injectable()
 export class UserProvider extends ApiProvider implements IUserProvider{
@@ -20,21 +21,13 @@ export class UserProvider extends ApiProvider implements IUserProvider{
 
     getUserInfo = async () => {
         try{
-            const response:Response = await fetch(`${this.getApiEndpoint()}/user/info`, {
-                method: "POST",
-                cache: "no-cache",
-                headers: this.getHeaders(),
-                credentials: "same-origin",
-                body: JSON.stringify({
-                    first_name: this.ecosystemStore.$state.firstName,
-                    last_name: this.ecosystemStore.$state.lastName,
-                    avatar: this.ecosystemStore.$state.avatar,
-                    avatar_big: this.ecosystemStore.$state.avatarBig,
-                    sex: this.ecosystemStore.$state.sex
-                })
-            });
-
-            const res: TResponse<TGetUserInfoResponse> = await response.json();
+            const res: TResponse<TGetUserInfoResponse> = await this.fetch(`${this.getApiEndpoint()}/user/info`, { method: "POST"}, {
+                first_name: this.ecosystemStore.$state.firstName,
+                last_name: this.ecosystemStore.$state.lastName,
+                avatar: this.ecosystemStore.$state.avatar,
+                avatar_big: this.ecosystemStore.$state.avatarBig,
+                sex: this.ecosystemStore.$state.sex
+            }) as TResponse<TGetUserInfoResponse>;
             const resData = res.data;
 
             this.ecosystemStore.$patch({
@@ -89,14 +82,8 @@ export class UserProvider extends ApiProvider implements IUserProvider{
             this.dailyMissionsStore.$patch({
                 isDailyMissionsLoading: true
             })
-            const response: Response = await fetch(`${this.getApiEndpoint()}/user/daily-missions`, {
-                method: 'GET',
-                cache: "no-cache",
-                headers: this.getHeaders(),
-                credentials: "same-origin",
-            });
 
-            const res: TResponse<TDailyMission[]> = await response.json();
+            const res: TResponse<TDailyMission[]> = await this.fetch(`${this.getApiEndpoint()}/daily-missions`) as TResponse<TDailyMission[]>;
             this.dailyMissionsStore.$patch({
                 dailyMissionsHasBeenLoaded: true,
                 dailyMissionList: res.data
@@ -113,6 +100,10 @@ export class UserProvider extends ApiProvider implements IUserProvider{
                 isDailyMissionsLoading: false
             })
         }
+    }
+
+    loadMissedEvents = async (): Promise<TResponse<TReverbMessage<unknown>[]>> => {
+        return await this.fetch(`${this.getApiEndpoint()}/user/missed-events`) as TResponse<TReverbMessage<unknown>[]>;
     }
 
     receiveMission = async (missionId: number): Promise<void> => {
