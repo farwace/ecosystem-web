@@ -11,6 +11,8 @@ import Echo from "laravel-echo";
 import {Console} from "@/classes/utils/Console.ts";
 import {UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
 import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.ts";
+import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
+import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
 
 declare global {
     interface Window {
@@ -27,6 +29,8 @@ export class ReverbProvider implements IReverbProvider{
     constructor(
         @inject(UserProviderSymbol)
         private userProvider: IUserProvider,
+        @inject(NotificationsSymbol)
+        private notificationsProvider: INotificationsProvider
     ) {
         this.ecosystemStore = ecosystemStore();
         this._reverbObserver$ = new Subject();
@@ -69,7 +73,22 @@ export class ReverbProvider implements IReverbProvider{
                     const missedEvents = await this.userProvider.loadMissedEvents();
                     missedEvents.data.forEach((event: TReverbMessage<unknown>) => {
                         this._reverbObserver$.next(event);
-                    })
+                    });
+
+                    const pusherConn = (echo.connector as any).pusher.connection;
+
+                    pusherConn.bind('state_change', (states: { previous: string; current: string }) => {
+                        if(states.current === 'connecting'){ //todo: Переделать работу с addNotification - невозможно программно убрать надпись если timeout => false
+                            this.notificationsProvider.addNotification({
+                                key: 'connection-error',
+                                message: 'Потеряно соединение с сервером...',
+                                type: "warning",
+                            })
+                        }
+                        if(states.current === 'connected'){
+                            this.notificationsProvider.removeNotification('connection-error');
+                        }
+                    });
                 }
                 catch (e:any){}
 
