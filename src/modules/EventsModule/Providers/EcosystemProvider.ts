@@ -16,6 +16,7 @@ import type {IEcosystemStore} from "@/stores/Ecosystem/IEcosystemStore.ts";
 import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
 import type {TReplenishmentExperience} from "@/modules/EventsModule/Types/TReplenishmentExperience.ts";
 import type {TDailyEnter} from "@/stores/Ecosystem/Types/TDailyEnter.ts";
+import type {TNotification} from "@/stores/Notifications/Types/TNotification.ts";
 
 @injectable()
 export class EcosystemProvider implements IEcosystemProvider{
@@ -57,10 +58,25 @@ export class EcosystemProvider implements IEcosystemProvider{
         });
 
         this._reverbObserver$.pipe(
+            filter((message):message is TReverbMessage<any> => message.event === 'achievement_progress'),
+        ).subscribe((message) => {
+            //todo: Записать изменения в прогрессе достижения
+        });
+
+
+
+        this._reverbObserver$.pipe(
             filter((message):message is TReverbMessage<any> => message.event === 'show_popup'),
         ).subscribe((message) => {
             this.notificationsProvider.addPopup(message.data.key, message.data.componentName, message.data.ppData);
         });
+
+        this._reverbObserver$.pipe(
+            filter((message):message is TReverbMessage<TNotification> => message.event === 'show_notification'),
+        ).subscribe((message) => {
+            this.notificationsProvider.addNotification(message.data);
+        });
+
 
         this._reverbObserver$.pipe(
             filter((message):message is TReverbMessage<TReplenishmentBalance> => message.event === 'replenishment_balance'),
@@ -73,6 +89,9 @@ export class EcosystemProvider implements IEcosystemProvider{
         this._reverbObserver$.pipe(
             filter((message):message is TReverbMessage<TReplenishmentExperience> => message.event === 'replenishment_experience'),
         ).subscribe((message) => {
+            if(this.ecosystemStore.$state.lvl < message.data.lvl){
+                //todo: Показывать попап с повышением уровня
+            }
             this.ecosystemStore.$patch({
                 experience: message.data.experience,
                 lvl: message.data.lvl,
