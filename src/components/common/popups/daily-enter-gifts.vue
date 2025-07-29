@@ -188,9 +188,6 @@ const receiveDailyReward = async () => {
 
       &.active{
         &:after{
-          @media(min-width: 390px){
-            display: none;
-          }
           content: '';
           position: absolute;
           top: -10px;
@@ -203,6 +200,10 @@ const receiveDailyReward = async () => {
           background-size: 10px;
           background-position: center;
           background-repeat: no-repeat;
+
+          @media(min-width: 390px){
+            display: none;
+          }
         }
       }
 
