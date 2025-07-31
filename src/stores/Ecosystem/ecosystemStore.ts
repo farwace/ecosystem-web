@@ -6,6 +6,7 @@ export const ecosystemStore = defineStore('ecosystem', {
     state:():IEcosystemStore => ({
 
         authString: '',
+        connectionId: '',
 
         /* USER INFO */
         id: 0,

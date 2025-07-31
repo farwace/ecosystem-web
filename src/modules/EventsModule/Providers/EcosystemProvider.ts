@@ -108,6 +108,25 @@ export class EcosystemProvider implements IEcosystemProvider{
             })
         });
 
+        this._reverbObserver$.pipe(
+            filter((message):message is TReverbMessage<any> => message.event === 'validateConnection'),
+        ).subscribe((message) => {
+            /*@ts-ignore*/
+            if(this.ecosystemStore.$state.connectionId != message.activeConnection){
+                this.notificationsProvider.addPopup('tab-is-unavailable', 'simple-popup', {
+                    noClose: true,
+                    noCloseButton: true,
+                    backdropBlur: true,
+                    darkBg: true,
+                    title: 'Соединение разорвано',
+                    message: 'Приложение открыто в другом окне',
+                    modal: true
+                });//todo: Окно с информацией о разрыве оформить в красивом стиле
+                this.reverbProvider.closeConnections();
+            }
+        });
+
+
 
     }
 

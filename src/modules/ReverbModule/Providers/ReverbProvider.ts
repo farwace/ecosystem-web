@@ -7,7 +7,7 @@ import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore";
 import {Subject} from "rxjs";
 import type {TReverbMessage} from "@/modules/ReverbModule/Types/TReverbMessage.ts";
 import Pusher from "pusher-js";
-import Echo from "laravel-echo";
+import Echo, {type Broadcaster} from "laravel-echo";
 import {Console} from "@/classes/utils/Console.ts";
 import {UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
 import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.ts";
@@ -26,6 +26,7 @@ export class ReverbProvider implements IReverbProvider{
     private readonly ecosystemStore: Store<'ecosystem', IEcosystemStore>;
     private readonly _reverbObserver$: Subject<TReverbMessage<unknown>>;
     private privateChannel: any;
+    private echo: Echo<keyof Broadcaster> | undefined;
 
     constructor(
         @inject(UserProviderSymbol)
@@ -52,7 +53,7 @@ export class ReverbProvider implements IReverbProvider{
     install(app: App, symbol: symbol) {
         app.provide(symbol, this);
 
-        const echo = new Echo({
+        this.echo = new Echo({
             broadcaster: 'reverb',
             key: import.meta.env.VITE_REVERB_APP_KEY,
             wsHost: import.meta.env.VITE_REVERB_HOST,
@@ -73,15 +74,17 @@ export class ReverbProvider implements IReverbProvider{
 
         });
 
-        this.privateChannel = echo.private(`user.${this.ecosystemStore.$state.id}`);
+        this.privateChannel = this.echo.private(`user.${this.ecosystemStore.$state.id}`);
 
         this.privateChannel
             .subscribed(async () => {
                 try{
                     this.privateChannel.whisper('missed-events', this.getAuthData());
 
-                    const pusherConn = (echo.connector as any).pusher.connection;
-
+                    const pusherConn = (this.echo?.connector as any)?.pusher?.connection;
+                    this.ecosystemStore.$patch({
+                        connectionId: pusherConn.socket_id
+                    });
                     pusherConn.bind('state_change', (states: { previous: string; current: string }) => {
                         if(states.current === 'connecting'){ //todo: Переделать работу с addNotification - невозможно программно убрать надпись если timeout => false
                             this.notificationsProvider.addNotification({
@@ -105,7 +108,7 @@ export class ReverbProvider implements IReverbProvider{
                 this._reverbObserver$.next(p);
             });
 
-        echo.channel('general')
+        this.echo.channel('general')
             .listen('.public', (p: TReverbMessage<unknown>) => {
                 this._reverbObserver$.next(p);
             });
@@ -116,6 +119,10 @@ export class ReverbProvider implements IReverbProvider{
 
     getReverbObserver$(){
         return this._reverbObserver$;
+    }
+
+    closeConnections(){
+        this.echo?.disconnect();
     }
 
     onCloseApp() {

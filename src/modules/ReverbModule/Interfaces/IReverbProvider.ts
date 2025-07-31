@@ -5,4 +5,5 @@ import type {TReverbMessage} from "@/modules/ReverbModule/Types/TReverbMessage.t
 export interface IReverbProvider  extends IModule{
     getReverbObserver$(): Subject<TReverbMessage<unknown>>
     onCloseApp(): void;
+    closeConnections():void;
 }

@@ -7,6 +7,7 @@ import type {TSubscription} from "@/stores/Ecosystem/Types/TSubscription.ts";
 
 export interface IEcosystemStore {
     authString: string;
+    connectionId?:any,
     launchParams?:GetLaunchParamsResponse;
     id: TUser['id'];
     avatar?: TUser['avatar'];
