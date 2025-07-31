@@ -7,7 +7,10 @@ const router = createRouter({
       {
         path: '/',
         component: () => import('../layouts/MainLayout/MainLayout.vue'),
-        children: [{name: 'home', path: '', component: () => import('../pages/Home/HomePage.vue') }],
+        children: [
+            {name: 'home', path: '', component: () => import('../pages/Home/HomePage.vue') },
+            {name: 'profile', path: 'profile/:id', component: () => import('../pages/Profile/ProfilePage.vue') }
+        ],
       },
       {
         path: '/about',

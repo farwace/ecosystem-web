@@ -1,7 +1,7 @@
 <template>
-  <div class="home">
+  <div class="page-container">
     <div class="header">
-      <user-avatar/>
+      <user-avatar @click="() => id && router.push({name: 'profile', params: {id: id}})"/>
       <user-experience />
     </div>
 
@@ -35,8 +35,13 @@ import MenuItem from "@/components/pages/Home/MenuItem.vue";
 import UiIcon from "@/components/common/icons/UiIcon.vue";
 import {storeToRefs} from "pinia";
 import {bridgeStore} from "@/stores/Bridge/bridgeStore.ts";
+import {useRoute, useRouter} from "vue-router";
+import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
 
+const {id} = storeToRefs(ecosystemStore());
 const {inFavorites, inHomeScreen} = storeToRefs(bridgeStore());
+
+const router = useRouter();
 
 const openSettings = () => {
   alert('Настройки')
@@ -49,8 +54,10 @@ const addToFavorite = () => {
 
 </script>
 <style lang="scss" scoped>
-.home{
+.page-container{
   padding: 20px;
+  overflow-y: auto;
+  max-height: 100%;
 }
 
 .header{

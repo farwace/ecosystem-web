@@ -25,6 +25,7 @@ export class ReverbProvider implements IReverbProvider{
 
     private readonly ecosystemStore: Store<'ecosystem', IEcosystemStore>;
     private readonly _reverbObserver$: Subject<TReverbMessage<unknown>>;
+    private privateChannel: any;
 
     constructor(
         @inject(UserProviderSymbol)
@@ -41,6 +42,13 @@ export class ReverbProvider implements IReverbProvider{
         }
     }
 
+    private getAuthData = (): {[key: string]: string | number} => {
+        return {
+            user_id: this.ecosystemStore.$state.id,
+            auth: this.ecosystemStore.$state.authString,
+        }
+    }
+
     install(app: App, symbol: symbol) {
         app.provide(symbol, this);
 
@@ -51,7 +59,7 @@ export class ReverbProvider implements IReverbProvider{
             wsPort: Number(import.meta.env.VITE_REVERB_PORT),
             forceTLS: import.meta.env.VITE_REVERB_TLS === 'true',
             disableStats: true,
-            enabledTransports: ['ws', 'wss'],
+            enabledTransports: import.meta.env.VITE_REVERB_TLS === 'true' ? ['wss'] : ['ws'],
             auth:{
                 headers: {
                     'X-CSRF-TOKEN': document
@@ -65,15 +73,12 @@ export class ReverbProvider implements IReverbProvider{
 
         });
 
-        const privateChannel = echo.private(`user.${this.ecosystemStore.$state.id}`);
+        this.privateChannel = echo.private(`user.${this.ecosystemStore.$state.id}`);
 
-        privateChannel
+        this.privateChannel
             .subscribed(async () => {
                 try{
-                    const missedEvents = await this.userProvider.loadMissedEvents();
-                    missedEvents.data.forEach((event: TReverbMessage<unknown>) => {
-                        this._reverbObserver$.next(event);
-                    });
+                    this.privateChannel.whisper('missed-events', this.getAuthData());
 
                     const pusherConn = (echo.connector as any).pusher.connection;
 
@@ -104,11 +109,18 @@ export class ReverbProvider implements IReverbProvider{
             .listen('.public', (p: TReverbMessage<unknown>) => {
                 this._reverbObserver$.next(p);
             });
+
+        setInterval(() => this.privateChannel.whisper('heartbeat', this.getAuthData()), 30_000);
+
     }
 
     getReverbObserver$(){
         return this._reverbObserver$;
     }
 
+    onCloseApp() {
+        //todo: вызывать метод по событию VKWebAppCloseResult из bridge!
+        this.privateChannel.whisper('close', this.getAuthData());
+    }
 
 }

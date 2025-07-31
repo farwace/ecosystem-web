@@ -7,6 +7,7 @@ import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
 import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
 import type {TDailyMission} from "@/stores/Ecosystem/Types/TDailyMission.ts";
 import type {TReverbMessage} from "@/modules/ReverbModule/Types/TReverbMessage.ts";
+import type {TUserProfile} from "@/modules/ApiModule/Types/TUserProfile.ts";
 
 @injectable()
 export class UserProvider extends ApiProvider implements IUserProvider{
@@ -129,6 +130,10 @@ export class UserProvider extends ApiProvider implements IUserProvider{
         }, {
             box
         }) as unknown as Promise<TResponse<boolean>>;
+    }
+
+    getProfile = async (id: number | string): Promise<TResponse<TUserProfile>> => {
+        return await this.fetch(`${this.getApiEndpoint()}/user/info/${id}`) as unknown as Promise<TResponse<TUserProfile>>;
     }
 
 }
