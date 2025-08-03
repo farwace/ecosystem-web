@@ -1,56 +1,11 @@
 <template>
-  <div>
-
-    <div class="page-container">
-      <pre>
-        {{route.params}}
-      </pre>
-      <pre>
-        {{ profile }}
-      </pre>
-    </div>
-  </div>
+  <ProfileComponent :profile-id="profileId" />
 </template>
-<script lang="ts" setup>
-import {useRoute, useRouter} from "vue-router";
-import {inject, onMounted, ref} from "vue";
-import { Swiper } from "swiper/vue";
-import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.ts";
-import {UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
-import type {TUserProfile} from "@/modules/ApiModule/Types/TUserProfile.ts";
-
+<script setup lang="ts">
+import ProfileComponent from "@/components/pages/Profile/ProfileComponent.vue";
+import {useRoute} from "vue-router";
 const route = useRoute();
-const router = useRouter();
-const profileId = route?.params?.id;
 
-const userProvider:IUserProvider | undefined = inject(UserProviderSymbol);
-const profile = ref<TUserProfile | undefined>();
-const isLoading = ref<boolean>(true);
-
-
-onMounted(async () => {
-  if(!profileId || !parseInt(profileId.toString())){
-    await router.push({path: '/', replace: true});
-  }
-
-  isLoading.value = true;
-  try {
-    profile.value = (await userProvider?.getProfile(profileId as unknown as number))?.data;
-  }
-  catch (e: any){}
-  finally {
-    isLoading.value = false;
-  }
-
-});
-
-
+const profileId = (route.params.id || 0) as unknown as number;
 
 </script>
-<style lang="scss" scoped>
-.page-container{
-  padding: 20px;
-  max-height: 100%;
-  overflow-y: auto;
-}
-</style>
