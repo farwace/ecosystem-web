@@ -1,5 +1,5 @@
 <template>
-  <div style="background: inherit">
+  <div class="profile">
     <suspense>
       <ProfileComponent :profile-id="profileId" />
       <template #fallback>
@@ -17,3 +17,11 @@ const route = useRoute();
 const profileId = (route.params.id || 0) as unknown as number;
 
 </script>
+<style lang="scss" scoped>
+.profile{
+  height: 100%;
+  overflow-y: auto;
+  position: relative;
+  background-color: inherit;
+}
+</style>

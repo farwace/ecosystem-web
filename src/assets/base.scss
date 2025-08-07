@@ -102,6 +102,15 @@ $themes: (
   top: 0;
 }
 
+.rounded-small-avatar{
+  width: 25px;
+  height: 25px;
+  border-radius: 100%;
+  display: inline;
+  vertical-align: sub;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
 @media(max-width: 768px){
   .iziToast-wrapper{
     &.iziToast-wrapper-topCenter{

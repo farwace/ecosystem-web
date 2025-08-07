@@ -66,6 +66,8 @@
 
     &__value{
       &.marquee {
+        -webkit-animation: marquee var(--marquee-duration) ease-in-out infinite;
+        -moz-animation: marquee var(--marquee-duration) ease-in-out infinite;
         animation: marquee var(--marquee-duration) ease-in-out infinite;
       }
     }
@@ -76,6 +78,22 @@
       font-size: 18px;
     }
   }
+}
+
+@-webkit-keyframes marquee {
+  0% {transform: translateX(0%);}
+  40% {transform: translateX(var(--marquee-width));}
+  52% {transform: translateX(var(--marquee-width));}
+  90% {transform: translateX(0%);}
+  100% {transform: translateX(0%);}
+}
+
+@-moz-keyframes marquee {
+  0% {transform: translateX(0%);}
+  40% {transform: translateX(var(--marquee-width));}
+  52% {transform: translateX(var(--marquee-width));}
+  90% {transform: translateX(0%);}
+  100% {transform: translateX(0%);}
 }
 
 @keyframes marquee {

@@ -1,6 +1,11 @@
 <template>
-  <div class="profile__fans" v-if="fans">
-    Хранители
+  <div class="profile__fans">
+    <template v-if="(fans?.length || 0) > 0">
+
+    </template>
+    <template v-else>
+      Очарование никто не охраняет
+    </template>
   </div>
 </template>
 <script lang="ts" setup>

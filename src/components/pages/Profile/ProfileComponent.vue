@@ -14,16 +14,29 @@
         </div>
       </div>
       <profile-titles :profile="profile"/>
-      <profile-gifts v-if="(profile?.topGifts?.length || 0) > 0" :gifts="profile?.topGifts" />
-      <profile-fans v-if="(profile?.topFans?.length || 0) > 0" :fans="profile?.topFans" />
-      <profile-achievements v-if="(profile?.lastAchievements?.length || 0) > 0" :fans="profile?.lastAchievements" />
+
+      <div class="title">
+        Топ подарков
+      </div>
+      <profile-gifts :avatar="profile?.avatar" :id="profile?.id" :gifts="profile?.topGifts" />
+
+      <template v-if="profile?.topFans?.length || 0 > 0">
+        <div class="title">
+          Хранители
+        </div>
+        <profile-fans :fans="profile?.topFans" />
+      </template>
+      <div class="title">
+        Достижения
+      </div>
+      <profile-achievements :name="profile?.name" :achievements="profile?.recentAchievements" />
 
       <div class="bottom-buttons">
-        <div class="btn btn-add">
+<!--        <div class="btn btn-add">
           <UiIcon name="invite" />
           Добавить
-        </div>
-        <div class="btn btn-gift">
+        </div>-->
+        <div class="btn btn-gift" @click="openGiftPopup">
           <UiIcon name="gift" />
           Подарок
         </div>
@@ -39,7 +52,7 @@
 import {useRoute, useRouter} from "vue-router";
 import {computed, inject, onMounted, ref} from "vue";
 import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.ts";
-import {UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
+import {GiftsProviderSymbol, UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
 import type {TUserProfile} from "@/modules/ApiModule/Types/TUserProfile.ts";
 import ProfileSwiper from "@/components/pages/Profile/ProfileSwiper.vue";
 import ProfileTitles from "@/components/pages/Profile/ProfileTitles.vue";
@@ -51,12 +64,14 @@ import ProfileGifts from "@/components/pages/Profile/ProfileGifts.vue";
 import ProfileFans from "@/components/pages/Profile/ProfileFans.vue";
 import ProfileAchievements from "@/components/pages/Profile/ProfileAchievements.vue";
 import UiIcon from "@/components/common/icons/UiIcon.vue";
+import type {IGiftsProvider} from "@/modules/ApiModule/Interfaces/IGiftsProvider.ts";
 
 const route = useRoute();
 const router = useRouter();
 const {id} = storeToRefs(ecosystemStore());
 
 const notificationProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
+const giftsProvider: IGiftsProvider | undefined = inject(GiftsProviderSymbol);
 
 const props = defineProps<{
   profileId?: number | string,
@@ -78,7 +93,7 @@ profile.value = (await userProvider?.getProfile(props.profileId as unknown as nu
 
 
 const editProfileModal = () => {
-  notificationProvider?.addPopup('edit-profile', 'simple-popup', {
+  notificationProvider?.addPopup?.('edit-profile', 'simple-popup', {
     modal: true,
     title: "Редактировать профиль",
     message: "TODO: редактирование профиля",
@@ -86,6 +101,11 @@ const editProfileModal = () => {
   })
 }
 
+const openGiftPopup = () => {
+  if(profile.value?.id){
+    giftsProvider?.openGiftsPopup(profile.value.id, profile.value.avatar);
+  }
+}
 
 
 onMounted(async () => {
@@ -101,7 +121,7 @@ onMounted(async () => {
 </script>
 <style lang="scss" scoped>
 .page-container{
-  padding: 16px 20px 60px;
+  padding: 16px 20px 88px;
   border-radius: 14px 14px 0 0;
   margin-top: -14px;
   position: relative;
@@ -113,10 +133,7 @@ onMounted(async () => {
 
 .profile-page{
   background-color: inherit;
-  height: 100%;
-  overflow-y: auto;
   color: #895431;
-  position: relative;
 }
 
 .profile{
@@ -154,7 +171,7 @@ onMounted(async () => {
 }
 
 .top-buttons{
-  position: absolute;
+  position: fixed;
   left: 20px;
   top: 20px;
   z-index: 2;
@@ -245,5 +262,12 @@ onMounted(async () => {
       box-shadow: 0 4px 0 #59bbdb;
     }
   }
+}
+
+.title{
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  margin-top: 20px;
 }
 </style>

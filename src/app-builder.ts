@@ -7,7 +7,7 @@ import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformE
 import {EcosystemSymbol, PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
 import {Container} from "inversify";
 import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.ts";
-import {UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
+import {GiftsProviderSymbol, UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
 import {UserProvider} from "@/modules/ApiModule/Providers/UserProvider.ts";
 import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
 import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
@@ -19,6 +19,8 @@ import {Console} from "@/classes/utils/Console.ts";
 import {filter} from "rxjs";
 import {EcosystemProvider} from "@/modules/EventsModule/Providers/EcosystemProvider.ts";
 import type {IEcosystemProvider} from "@/modules/EventsModule/Interfaces/IEcosystemProvider.ts";
+import type {IGiftsProvider} from "@/modules/ApiModule/Interfaces/IGiftsProvider.ts";
+import {GiftsProvider} from "@/modules/ApiModule/Providers/GiftsProvider.ts";
 
 export const AppBuilder = () => {
     return {
@@ -48,6 +50,11 @@ export const AppBuilder = () => {
             container.bind<IReverbProvider>(ReverbSymbol).to(ReverbProvider).inSingletonScope();
             const reverbProvider = container.get<IReverbProvider>(ReverbSymbol);
             reverbProvider.install($app, ReverbSymbol);
+
+            container.bind<IGiftsProvider>(GiftsProviderSymbol).to(GiftsProvider).inSingletonScope();
+            const giftsProvider = container.get<IGiftsProvider>(GiftsProviderSymbol);
+            giftsProvider.install($app, GiftsProviderSymbol);
+
 
             container.bind<IEcosystemProvider>(EcosystemSymbol).to(EcosystemProvider).inSingletonScope();
             const ecosystemProvider = container.get<IEcosystemProvider>(EcosystemSymbol);

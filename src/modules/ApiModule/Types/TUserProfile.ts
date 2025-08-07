@@ -16,5 +16,5 @@ export type TUserProfile = {
     online: boolean;
     topFans: any[];//todo: описать тип
     topGifts: any[];//todo: описать тип
-    lastAchievements: any[];//todo: описать тип
+    recentAchievements: any[];//todo: описать тип
 }
