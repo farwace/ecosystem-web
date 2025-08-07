@@ -41,6 +41,7 @@
   position: relative;
   width: 68px;
   padding-bottom: 27px;
+  cursor: pointer;
   &__img{
     position: relative;
     width: 68px;

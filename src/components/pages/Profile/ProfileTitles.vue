@@ -1,11 +1,11 @@
 <template>
-  <div class="profile__titles">
-    <div class="exp item">
+  <div class="profile__titles" v-if="profile">
+    <div class="exp item" v-if="profile?.lvl">
       <ui-icon name="experience" class="title-icon"/>
       Lv. {{ profile?.lvl }}
     </div>
     <div class="pop item" v-if="(profile?.popularityLevel || 0) > 0">
-
+      {{ profile?.popularityLevel }}
     </div>
   </div>
 </template>

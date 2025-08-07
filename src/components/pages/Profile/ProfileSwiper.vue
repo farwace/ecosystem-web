@@ -3,7 +3,7 @@
     <swiper-slide>
       <img
           class="slide-img-stub"
-          src="/assets/img/rocket.svg"
+          src="/assets/img/avatar-stub.png"
           alt=""
       >
     </swiper-slide>
@@ -42,6 +42,7 @@ const modules = [Pagination];
 <style lang="scss" scoped>
 .profile-swiper{
   height: 100vw;
+  max-height: 400px;
   --swiper-pagination-bottom: 22px;
   --swiper-pagination-bullet-inactive-color: #FFF5DC;
   --swiper-pagination-bullet-inactive-opacity: 50%;

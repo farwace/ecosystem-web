@@ -1,6 +1,6 @@
 <template>
   <div class="exp">
-    <div class="exp__balance exp__item">
+    <div class="exp__balance exp__item" @click="openBuyMoneyModal">
       <div>
         <UiIcon class="exp__icon" name="coin" />
       </div>
@@ -35,10 +35,14 @@
   import {storeToRefs} from "pinia";
   import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
   import UiIcon from "@/components/common/icons/UiIcon.vue";
-  import {computed} from "vue";
+  import {computed, inject} from "vue";
   import {prepareNumber} from "@/classes/utils/PrepareNumber.ts";
+  import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
+  import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
 
   const {lvl, experience, nextLevelExperience, balance, popularity, popularityLevel, nextLevelPopularity} = storeToRefs(ecosystemStore());
+
+  const notificationsProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
 
   const strBalance = computed(() => {
     return prepareNumber(balance.value || 0)
@@ -58,6 +62,15 @@
 
   })
 
+  const openBuyMoneyModal = () => {
+    notificationsProvider?.addPopup('buy-money', 'simple-popup', {
+      modal: true,
+      darkBg: true,
+      title: "Покупка монет",
+      message: 'TODO: Модальное окно покупки монет'
+    })
+  }
+
 </script>
 <style lang="scss" scoped>
 .exp{
@@ -74,7 +87,7 @@
 
   &__balance{
     margin-top: auto;
-
+    cursor: pointer;
     .exp__value{
       margin-top: -4px;
     }

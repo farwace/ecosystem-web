@@ -1,9 +1,17 @@
 <template>
-  <ProfileComponent :profile-id="profileId" />
+  <div style="background: inherit">
+    <suspense>
+      <ProfileComponent :profile-id="profileId" />
+      <template #fallback>
+        <LoadingPage />
+      </template>
+    </suspense>
+  </div>
 </template>
 <script setup lang="ts">
 import ProfileComponent from "@/components/pages/Profile/ProfileComponent.vue";
 import {useRoute} from "vue-router";
+import LoadingPage from "@/components/pages/LoadingPage.vue";
 const route = useRoute();
 
 const profileId = (route.params.id || 0) as unknown as number;
