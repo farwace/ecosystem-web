@@ -52,6 +52,9 @@ export abstract class ApiProvider implements IApiProvider{
         }
 
         const res = await fetch(url, options);
+        if(res.status != 200){
+            throw new Error(res.status.toString());
+        }
         return await res.json();
     }
 }

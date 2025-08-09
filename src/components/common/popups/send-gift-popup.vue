@@ -78,6 +78,8 @@ import {Pagination} from "swiper/modules";
 import 'swiper/css';
 import 'swiper/css/pagination';
 import type {IBalanceProvider} from "@/modules/ApiModule/Interfaces/IBalanceProvider.ts";
+import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
+import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
 
 const props = defineProps<{
   userId: number | string,
@@ -94,6 +96,7 @@ const giftsProvider:IGiftsProvider | undefined = inject(GiftsProviderSymbol);
 const modules = [Pagination];
 
 const balanceProvider: IBalanceProvider | undefined = inject(BalanceProviderSymbol);
+const notificationsProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
 const selectedQuantity = ref<number>(1);
 
 function* chunks<T>(arr: T[], n: number): Generator<T[], void> {
@@ -133,7 +136,15 @@ const sendGift = async () => {
       emit('close');
     }
   }
-  catch (e: any){}
+  catch (e: any){
+    if(e.message == 402){
+      balanceProvider?.openDonutPopup();
+      notificationsProvider?.addNotification({
+        type: "error",
+        message: 'Недостаточно монет для отправки подарка'
+      })
+    }
+  }
   finally {
     loading.value = false;
   }
