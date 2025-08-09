@@ -35,4 +35,15 @@ export class GiftsProvider extends ApiProvider implements IGiftsProvider{
             title: 'Отправить подарок' + (avatar ? ` <img class="rounded-small-avatar" src="${avatar}" />` : ''),
         })
     }
+
+    sendGift(userId: number, giftId: number, count: number): Promise<TResponse<boolean>> {
+        return this.fetch(`${this.getApiEndpoint()}/gifts/send`, {
+            method: 'POST',
+            body: JSON.stringify({
+                receiver: userId,
+                gift: giftId,
+                quantity: count,
+            })
+        }) as unknown as Promise<TResponse<boolean>>;
+    }
 }

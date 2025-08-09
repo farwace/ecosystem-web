@@ -13,9 +13,9 @@
               v-for="gift in group"
               :key="'gift-list-' + gift.id"
               :class="{
-                'selected': selectedGift === gift.code
+                'selected': selectedGift === gift.id
               }"
-              @click="selectedGift = gift.code"
+              @click="selectGift(gift.id)"
           >
             <div class="gift__picture">
               <img :src="'/assets/img/gifts/' + gift.code + '.png'" :alt="gift.name">
@@ -39,14 +39,27 @@
 
   <div class="gift-send">
     <div
-        @click="openDonatPopup"
+        @click="openDonutPopup"
         class="balance"
     >
       <UiIcon class="coin" name="coin"/>
       {{ balance }}
       <span>+</span>
     </div>
-    <span :disabled="!selectedGift">Подарить</span>
+    <div class="send-gift-btn">
+      <div class="quantity" v-if="selectedGift">
+        <span class="quantity__change btn-gift" :class="{disabled:selectedQuantity < 2}" @click="subQuantity">-</span> <span class="quantity__value">{{ selectedQuantity }}</span> <span class="quantity__change btn-gift" @click="addQuantity">+</span>
+      </div>
+      <div
+          class="btn btn-gift"
+          :class="{
+            disabled: !selectedGift || loading
+          }"
+          @click="sendGift"
+      >
+        Подарить
+      </div>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
@@ -71,15 +84,17 @@ const props = defineProps<{
   darkBg?: boolean,
   title?: string,
 }>();
-defineEmits(['close']);
+const emit = defineEmits(['close']);
 
 const isLoading =  ref(true);
+const loading =  ref(false);
 const { giftList, balance } = storeToRefs(ecosystemStore())
-const selectedGift = ref<string>();
+const selectedGift = ref<number>();
 const giftsProvider:IGiftsProvider | undefined = inject(GiftsProviderSymbol);
 const modules = [Pagination];
 
 const balanceProvider: IBalanceProvider | undefined = inject(BalanceProviderSymbol);
+const selectedQuantity = ref<number>(1);
 
 function* chunks<T>(arr: T[], n: number): Generator<T[], void> {
   for (let i = 0; i < arr.length; i += n) {
@@ -92,17 +107,48 @@ const groupedGifts = computed(() => {
   return [...chunks(giftList.value, 8)];
 })
 
+const selectGift = (giftId: number) => {
+  selectedGift.value = giftId;
+  selectedQuantity.value = 1;
+}
+const subQuantity = () => {
+  if(selectedQuantity.value < 2){
+    return;
+  }
+  selectedQuantity.value--;
+}
+
+const addQuantity = () => {
+  selectedQuantity.value++;
+}
+
+const sendGift = async () => {
+  if(!selectedGift.value || !props.userId || loading.value){
+    return;
+  }
+  loading.value = true;
+  try{
+    const res = await giftsProvider?.sendGift?.(props.userId, selectedGift.value, selectedQuantity.value);
+    if(res?.data){
+      emit('close');
+    }
+  }
+  catch (e: any){}
+  finally {
+    loading.value = false;
+  }
+
+}
+
+const openDonutPopup = () => {
+  balanceProvider?.openDonutPopup();
+}
 
 onMounted(async () => {
   isLoading.value = true;
   await giftsProvider?.getGiftList();
   isLoading.value = false;
 })
-
-const openDonatPopup = () => {
-  balanceProvider?.openDonutPopup();
-}
-
 </script>
 
 <style lang="scss" scoped>
@@ -217,6 +263,7 @@ const openDonatPopup = () => {
     align-items: center;
     gap: 2px;
     font-weight: bold;
+    margin-bottom: -4px;
     img{
       width: 15px;
       height: 15px;
@@ -231,5 +278,64 @@ const openDonatPopup = () => {
   width: 12px;
   height: 12px;
   margin-right: 3px;
+}
+
+.btn-gift{
+  border-radius: 12px;
+  padding: 5px 10px 4px;
+  background-color: #FF7E85;
+  color: #FFEDCB;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #F06470;
+  transition: background-color .2s ease-out, box-shadow .2s ease-out;
+  &:hover{
+    background-color: #eb6d73;
+    box-shadow: 0 4px 0 #d8515d;
+  }
+  &:active{
+    background-color: #e66066;
+    box-shadow: 0 2px 0 #d8515d;
+  }
+  &.disabled{
+    background-color: #ffa6a8;
+    box-shadow: 0 4px 0 #e6999b;
+    cursor: not-allowed;
+  }
+}
+
+.send-gift-btn{
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  @media(min-width: 355px){
+    gap: 25px;
+  }
+
+  .quantity{
+    user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    margin-bottom: -2px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    &__change{
+      &.btn-gift{
+        padding: 3px 10px 2px;
+      }
+    }
+    &__value{
+      margin-left: 2px;
+      margin-right: 2px;
+      vertical-align: middle;
+      min-width: 20px;
+      display: inline-block;
+      text-align: center;
+    }
+  }
 }
 </style>
