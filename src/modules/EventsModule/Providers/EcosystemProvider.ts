@@ -18,6 +18,7 @@ import type {TReplenishmentExperience} from "@/modules/EventsModule/Types/TReple
 import type {TDailyEnter} from "@/stores/Ecosystem/Types/TDailyEnter.ts";
 import type {TNotification} from "@/stores/Notifications/Types/TNotification.ts";
 import type {TSendGift} from "@/stores/Ecosystem/Types/TSendGift.ts";
+import type {TReplenishmentPopularity} from "@/modules/EventsModule/Types/TReplenishmentPopularity.ts";
 
 @injectable()
 export class EcosystemProvider implements IEcosystemProvider{
@@ -86,6 +87,18 @@ export class EcosystemProvider implements IEcosystemProvider{
                 balance: message.data.neoBalance
             })
         });
+
+        this._reverbObserver$.pipe(
+            filter((message):message is TReverbMessage<TReplenishmentPopularity> => message.event === 'replenishment_popularity'),
+        ).subscribe((message) => {
+            this.ecosystemStore.$patch({
+                popularity: message.data.popularity,
+                nextLevelPopularity: message.data.nextLevelPopularity,
+                popularityLevel: message.data.popularityLevel,
+            })
+        });
+
+
 
         this._reverbObserver$.pipe(
             filter((message):message is TReverbMessage<TReplenishmentExperience> => message.event === 'replenishment_experience'),

@@ -1,21 +1,41 @@
 <template>
   <div class="profile__titles" v-if="profile">
-    <div class="exp item" v-if="profile?.lvl">
+    <div class="exp item" v-if="cLvl">
       <ui-icon name="experience" class="title-icon"/>
-      Lv. {{ profile?.lvl }}
+      Lv. {{ cLvl }}
     </div>
-    <div class="pop item" v-if="(profile?.popularityLevel || 0) > 0">
-      {{ profile?.popularityLevel }}
+    <div class="pop item" v-if="(cPopularityLevel || 0) > 0">
+      {{ cPopularityLevel }}
     </div>
   </div>
 </template>
 <script lang="ts" setup>
 import type {TUserProfile} from "@/modules/ApiModule/Types/TUserProfile.ts";
 import UiIcon from "@/components/common/icons/UiIcon.vue";
+import {computed} from "vue";
+import {storeToRefs} from "pinia";
+import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
+
+const {id, popularity, popularityLevel, nextLevelPopularity, experience, nextLevelExperience, lvl} = storeToRefs(ecosystemStore());
 
 const props = defineProps<{
   profile?:TUserProfile
 }>();
+
+const cPopularityLevel = computed(() => {
+  if(props.profile?.id == id.value) {
+    return popularityLevel.value;
+  }
+  return props.profile?.popularityLevel;
+});
+
+const cLvl = computed(() => {
+  if(props.profile?.id == id.value) {
+    return lvl.value;
+  }
+  return props.profile?.lvl;
+});
+
 
 
 </script>
