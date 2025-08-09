@@ -7,7 +7,7 @@ import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformE
 import {EcosystemSymbol, PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
 import {Container} from "inversify";
 import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.ts";
-import {GiftsProviderSymbol, UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
+import {BalanceProviderSymbol, GiftsProviderSymbol, UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
 import {UserProvider} from "@/modules/ApiModule/Providers/UserProvider.ts";
 import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
 import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
@@ -21,6 +21,8 @@ import {EcosystemProvider} from "@/modules/EventsModule/Providers/EcosystemProvi
 import type {IEcosystemProvider} from "@/modules/EventsModule/Interfaces/IEcosystemProvider.ts";
 import type {IGiftsProvider} from "@/modules/ApiModule/Interfaces/IGiftsProvider.ts";
 import {GiftsProvider} from "@/modules/ApiModule/Providers/GiftsProvider.ts";
+import type {IBalanceProvider} from "@/modules/ApiModule/Interfaces/IBalanceProvider.ts";
+import {BalanceProvider} from "@/modules/ApiModule/Providers/BalanceProvider.ts";
 
 export const AppBuilder = () => {
     return {
@@ -47,6 +49,10 @@ export const AppBuilder = () => {
             container.bind<IGiftsProvider>(GiftsProviderSymbol).to(GiftsProvider).inSingletonScope();
             const giftsProvider = container.get<IGiftsProvider>(GiftsProviderSymbol);
             giftsProvider.install($app, GiftsProviderSymbol);
+
+            container.bind<IBalanceProvider>(BalanceProviderSymbol).to(BalanceProvider).inSingletonScope();
+            const balanceProvider = container.get<IBalanceProvider>(BalanceProviderSymbol);
+            balanceProvider.install($app, BalanceProviderSymbol);
 
             await bridgeEventsProvider.init();
             await userProvider.getUserInfo();

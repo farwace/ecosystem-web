@@ -57,13 +57,14 @@ import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore";
 import GiftsSkeleton from "@/components/common/popups/Gift/gifts-skeleton.vue";
 import {vMarquee} from "@/classes/directives/marquee.ts";
 import type {IGiftsProvider} from "@/modules/ApiModule/Interfaces/IGiftsProvider.ts";
-import {GiftsProviderSymbol} from "@/modules/ApiModule/symbols.ts";
+import {BalanceProviderSymbol, GiftsProviderSymbol} from "@/modules/ApiModule/symbols.ts";
 import UiIcon from "@/components/common/icons/UiIcon.vue";
 import {Swiper, SwiperSlide} from "swiper/vue";
 import {Pagination} from "swiper/modules";
 
 import 'swiper/css';
 import 'swiper/css/pagination';
+import type {IBalanceProvider} from "@/modules/ApiModule/Interfaces/IBalanceProvider.ts";
 
 const props = defineProps<{
   userId: number | string,
@@ -77,6 +78,8 @@ const { giftList, balance } = storeToRefs(ecosystemStore())
 const selectedGift = ref<string>();
 const giftsProvider:IGiftsProvider | undefined = inject(GiftsProviderSymbol);
 const modules = [Pagination];
+
+const balanceProvider: IBalanceProvider | undefined = inject(BalanceProviderSymbol);
 
 function* chunks<T>(arr: T[], n: number): Generator<T[], void> {
   for (let i = 0; i < arr.length; i += n) {
@@ -97,7 +100,7 @@ onMounted(async () => {
 })
 
 const openDonatPopup = () => {
-  alert('todo: open donut popup')
+  balanceProvider?.openDonutPopup();
 }
 
 </script>
@@ -116,6 +119,7 @@ const openDonatPopup = () => {
   padding-bottom: 25px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   min-height: 286px;
+  align-items: start;
 }
 
 .gift{

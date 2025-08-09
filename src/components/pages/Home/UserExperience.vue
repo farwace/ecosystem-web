@@ -39,10 +39,13 @@
   import {prepareNumber} from "@/classes/utils/PrepareNumber.ts";
   import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
   import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
+  import type {IBalanceProvider} from "@/modules/ApiModule/Interfaces/IBalanceProvider.ts";
+  import {BalanceProviderSymbol} from "@/modules/ApiModule/symbols.ts";
 
   const {lvl, experience, nextLevelExperience, balance, popularity, popularityLevel, nextLevelPopularity} = storeToRefs(ecosystemStore());
 
   const notificationsProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
+  const balanceProvider: IBalanceProvider | undefined = inject(BalanceProviderSymbol);
 
   const strBalance = computed(() => {
     return prepareNumber(balance.value || 0)
@@ -63,12 +66,7 @@
   })
 
   const openBuyMoneyModal = () => {
-    notificationsProvider?.addPopup('buy-money', 'simple-popup', {
-      modal: true,
-      darkBg: true,
-      title: "Покупка монет",
-      message: 'TODO: Модальное окно покупки монет'
-    })
+    balanceProvider?.openDonutPopup();
   }
 
 </script>
