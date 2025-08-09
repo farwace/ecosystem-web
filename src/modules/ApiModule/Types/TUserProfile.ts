@@ -17,4 +17,5 @@ export type TUserProfile = {
     topFans: any[];//todo: описать тип
     topGifts: any[];//todo: описать тип
     recentAchievements: any[];//todo: описать тип
+    animal?:string
 }

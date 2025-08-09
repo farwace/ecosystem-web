@@ -44,6 +44,10 @@ export const AppBuilder = () => {
             const notificationsProvider = container.get<INotificationsProvider>(NotificationsSymbol);
             notificationsProvider.install($app, NotificationsSymbol);
 
+            container.bind<IGiftsProvider>(GiftsProviderSymbol).to(GiftsProvider).inSingletonScope();
+            const giftsProvider = container.get<IGiftsProvider>(GiftsProviderSymbol);
+            giftsProvider.install($app, GiftsProviderSymbol);
+
             await bridgeEventsProvider.init();
             await userProvider.getUserInfo();
 
@@ -51,9 +55,6 @@ export const AppBuilder = () => {
             const reverbProvider = container.get<IReverbProvider>(ReverbSymbol);
             reverbProvider.install($app, ReverbSymbol);
 
-            container.bind<IGiftsProvider>(GiftsProviderSymbol).to(GiftsProvider).inSingletonScope();
-            const giftsProvider = container.get<IGiftsProvider>(GiftsProviderSymbol);
-            giftsProvider.install($app, GiftsProviderSymbol);
 
 
             container.bind<IEcosystemProvider>(EcosystemSymbol).to(EcosystemProvider).inSingletonScope();

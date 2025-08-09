@@ -9,7 +9,7 @@
     </swiper-slide>
   </swiper>
   <swiper v-else :modules="modules" :pagination="{clickable: true}" class="profile-swiper">
-    <swiper-slide v-for="i in 2" :key="'slide-'+i">
+    <swiper-slide>
       <img
           class="slide-img"
           :src="profile.avatar"
@@ -17,7 +17,12 @@
           loading="lazy"
           alt=""
       >
-      <!-- todo: вторая картинка профиля - выбранное животное! -->
+    </swiper-slide>
+    <swiper-slide>
+      <div class="profile-animal">
+        <img class="animal-bg" src="/assets/img/profile/default-avatar-bg.png" alt="Профиль">
+        <UiIcon class="animal" :name="`animals/${animal}`"/>
+      </div>
     </swiper-slide>
   </swiper>
 
@@ -29,6 +34,8 @@ import {Pagination} from "swiper/modules";
 
 import 'swiper/css';
 import 'swiper/css/pagination';
+import UiIcon from "@/components/common/icons/UiIcon.vue";
+import {onMounted, ref} from "vue";
 
 
 const props = defineProps<{
@@ -36,7 +43,20 @@ const props = defineProps<{
 }>();
 
 const modules = [Pagination];
+const animal = ref<string>('tiger');
 
+onMounted(() => {
+  if(props.profile?.animal && [
+      'cat',
+      'chicken',
+      'koala',
+      'fox',
+      'panda',
+      'tiger',
+  ].indexOf(props.profile.animal) > -1){
+    animal.value = props.profile.animal;
+  }
+})
 
 </script>
 <style lang="scss" scoped>
@@ -58,6 +78,27 @@ const modules = [Pagination];
     object-fit: contain;
     object-position: center;
     margin: calc(100vw - 200px) auto auto auto;
+  }
+}
+
+.profile-animal{
+  position: relative;
+  width: 100%;
+  height: 100%;
+  .animal{
+    position: relative;
+    z-index: 2;
+    transform: translateX(-50%);
+    left: 50%;
+    top: 25%;
+  }
+  img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
   }
 }
 </style>
