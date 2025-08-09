@@ -13,10 +13,18 @@
               v-for="gift in group"
               :key="'gift-list-' + gift.id"
               :class="{
-                'selected': selectedGift === gift.id
+                'selected': selectedGift === gift.id,
+                'exclusive': gift.exclusive,
+                'disabled': gift.exclusive && !subscription?.personalAccess,
               }"
-              @click="selectGift(gift.id)"
+              @click="selectGift(gift)"
           >
+            <div
+                v-if="gift.exclusive"
+                class="gift__exclusive"
+            >
+              VIP
+            </div>
             <div class="gift__picture">
               <img :src="'/assets/img/gifts/' + gift.code + '.png'" :alt="gift.name">
             </div>
@@ -81,6 +89,7 @@ import type {IBalanceProvider} from "@/modules/ApiModule/Interfaces/IBalanceProv
 import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
 import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
 import {prepareNumber} from "@/classes/utils/PrepareNumber.ts";
+import type {TGift} from "@/stores/Ecosystem/Types/TGift.ts";
 
 const props = defineProps<{
   userId: number | string,
@@ -91,7 +100,7 @@ const emit = defineEmits(['close']);
 
 const isLoading =  ref(true);
 const loading =  ref(false);
-const { giftList, balance } = storeToRefs(ecosystemStore())
+const { giftList, balance, subscription } = storeToRefs(ecosystemStore())
 const selectedGift = ref<number>();
 const giftsProvider:IGiftsProvider | undefined = inject(GiftsProviderSymbol);
 const modules = [Pagination];
@@ -111,8 +120,12 @@ const groupedGifts = computed(() => {
   return [...chunks(giftList.value, 8)];
 })
 
-const selectGift = (giftId: number) => {
-  selectedGift.value = giftId;
+const selectGift = (gift: TGift) => {
+  if(gift.exclusive && !subscription?.value?.personalAccess){
+    balanceProvider?.openDonutPopup();
+    return;
+  }
+  selectedGift.value = gift.id;
   selectedQuantity.value = 1;
 }
 const subQuantity = () => {
@@ -186,6 +199,14 @@ onMounted(async () => {
   padding-bottom: 7px;
   background-color: rgba(217, 217, 217, 0);
   transition: background-color .2s ease-out;
+  position: relative;
+  &.disabled{
+    cursor: not-allowed;
+
+  }
+  &.exclusive{
+    background-color: rgba(221, 116, 116, 0.1);
+  }
   &.selected{
     background-color: rgba(217, 217, 217, 0.4);
   }
@@ -222,6 +243,17 @@ onMounted(async () => {
         animation: scroll 12s infinite linear;
       }
     }
+  }
+  &__exclusive{
+    position: absolute;
+    top: 5px;
+    left: 4px;
+    border-radius: 100px;
+    padding: 0 5px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #FFF;
+    background-color: #E48F58;
   }
   &__price{
     margin-top: 5px;
