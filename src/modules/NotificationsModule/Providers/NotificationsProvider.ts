@@ -6,6 +6,7 @@ import type {TNotification} from "@/stores/Notifications/Types/TNotification";
 import type {TPopupData} from "@/modules/NotificationsModule/Types/TPopupData";
 import {injectable} from "inversify";
 import type {App} from "vue";
+import type {TSendGift} from "@/stores/Ecosystem/Types/TSendGift.ts";
 
 @injectable()
 export class NotificationsProvider implements INotificationsProvider {
@@ -73,5 +74,18 @@ export class NotificationsProvider implements INotificationsProvider {
                 delete state.popups[key]
             }
         })
+    }
+
+
+    addBigGift(key: string, gift: TSendGift) {
+        this.notificationsStore.$patch(state => {
+            state.bigGifts[key] = gift;
+        });
+
+        setTimeout(() => {
+            this.notificationsStore.$patch(state => {
+                delete state.bigGifts[key];
+            });
+        }, 750);
     }
 }

@@ -43,7 +43,7 @@
         class="balance"
     >
       <UiIcon class="coin" name="coin"/>
-      {{ balance }}
+      {{ prepareNumber(balance) }}
       <span>+</span>
     </div>
     <div class="send-gift-btn">
@@ -80,6 +80,7 @@ import 'swiper/css/pagination';
 import type {IBalanceProvider} from "@/modules/ApiModule/Interfaces/IBalanceProvider.ts";
 import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
 import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
+import {prepareNumber} from "@/classes/utils/PrepareNumber.ts";
 
 const props = defineProps<{
   userId: number | string,

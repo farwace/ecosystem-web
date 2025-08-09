@@ -1,5 +1,5 @@
 import type {IEcosystemProvider} from "@/modules/EventsModule/Interfaces/IEcosystemProvider.ts";
-import type {App} from "vue";
+import {type App, onUnmounted} from "vue";
 import {inject, injectable} from "inversify";
 import {ReverbSymbol} from "@/modules/ReverbModule/symbols.ts";
 import type {IReverbProvider} from "@/modules/ReverbModule/Interfaces/IReverbProvider.ts";
@@ -17,6 +17,7 @@ import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
 import type {TReplenishmentExperience} from "@/modules/EventsModule/Types/TReplenishmentExperience.ts";
 import type {TDailyEnter} from "@/stores/Ecosystem/Types/TDailyEnter.ts";
 import type {TNotification} from "@/stores/Notifications/Types/TNotification.ts";
+import type {TSendGift} from "@/stores/Ecosystem/Types/TSendGift.ts";
 
 @injectable()
 export class EcosystemProvider implements IEcosystemProvider{
@@ -97,6 +98,17 @@ export class EcosystemProvider implements IEcosystemProvider{
                 lvl: message.data.lvl,
                 nextLevelExperience: message.data.nextLevelExperience
             })
+        });
+
+
+        this._reverbObserver$?.pipe(
+            filter((message):message is TReverbMessage<TSendGift> => message.event === 'send_gift'),
+        )?.subscribe((message) => {
+            if(message.data.senderId == this.ecosystemStore.$state.id){
+                const key = `${message.data.senderId}-${message.data.receiverId}-${message.data.quantity}-${message.data.gift.code}-${new Date()}`;
+                this.notificationsProvider.addBigGift(key, message.data);
+                console.log('>>>>> AAAAA', message.data);
+            }
         });
 
         this._reverbObserver$.pipe(

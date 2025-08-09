@@ -5,6 +5,7 @@ export const notificationsStore = defineStore('notifications', {
     state:():INotificationsStore => ({
         notifications: {},
         isNotificationsInitialized: false,
-        popups: {}
+        popups: {},
+        bigGifts: {},
     })
 })
