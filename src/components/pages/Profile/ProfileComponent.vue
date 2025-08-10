@@ -28,7 +28,7 @@
       </div>
 
       <div class="title">
-        Достижения <UiIcon class="inline-icon" name="chevron-right"></UiIcon>
+        Достижения <span v-if="hasUnclaimedCompletedAchievement && profile?.id == id" class="note-circle"></span><UiIcon class="inline-icon" name="chevron-right"></UiIcon>
       </div>
       <profile-achievements :current="profile?.id == id" :name="profile?.name" :achievements="profile?.recentAchievements" />
 
@@ -73,6 +73,7 @@ import ProfileFans from "@/components/pages/Profile/ProfileFans.vue";
 import ProfileAchievements from "@/components/pages/Profile/ProfileAchievements.vue";
 import UiIcon from "@/components/common/icons/UiIcon.vue";
 import type {IGiftsProvider} from "@/modules/ApiModule/Interfaces/IGiftsProvider.ts";
+import {achievementsStore} from "@/stores/Achievements/achievementsStore.ts";
 
 const route = useRoute();
 const router = useRouter();
@@ -80,6 +81,7 @@ const {id} = storeToRefs(ecosystemStore());
 
 const notificationProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
 const giftsProvider: IGiftsProvider | undefined = inject(GiftsProviderSymbol);
+const {hasUnclaimedCompletedAchievement} = storeToRefs(achievementsStore());
 
 const props = defineProps<{
   profileId?: number | string,
@@ -230,7 +232,6 @@ onMounted(async () => {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   z-index: 4;
@@ -301,7 +302,7 @@ onMounted(async () => {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  gap: 20px;
+  gap: 5px;
 }
 
 .inline-icon{
@@ -310,4 +311,28 @@ onMounted(async () => {
   vertical-align: middle;
   margin-left: auto;
 }
+
+.note-circle{
+  width: 15px;
+  height: 15px;
+  background: #ff9090;
+  border-radius: 100%;
+  right: 5px;
+  top: -7px;
+  border: 2px solid #FFF6E9;
+  animation: blink-notify 2s infinite;
+}
+
+@keyframes blink-notify {
+  0%{
+    opacity: 1;
+  }
+  70%{
+    opacity: 0;
+  }
+  100%{
+    opacity: 1;
+  }
+}
+
 </style>

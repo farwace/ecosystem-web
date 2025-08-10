@@ -5,6 +5,8 @@ import type {TAchievement} from "@/stores/Ecosystem/Types/TAchievement.ts";
 import type {TUser} from "@/stores/Ecosystem/Types/TUser.ts";
 import type {TSubscription} from "@/stores/Ecosystem/Types/TSubscription.ts";
 import type {TDailyMission} from "@/stores/Ecosystem/Types/TDailyMission.ts";
+import type {TAchievementSection} from "@/stores/Achievements/Types/TAchievementSection.ts";
+import type {TUserAchievement} from "@/stores/Achievements/Types/TUserAchievement.ts";
 
 export type TGetUserInfoResponse = {
     id: number;
@@ -47,4 +49,7 @@ export type TGetUserInfoResponse = {
 
     subscription: null | TSubscription;
     vip: boolean;
+
+    achievementSections: TAchievementSection[],
+    allAchievements: TUserAchievement[],
 }

@@ -68,6 +68,11 @@ export class UserProvider extends ApiProvider implements IUserProvider{
             this.dailyMissionsStore.$patch({
                 dailyMissionsHasBeenLoaded: true,
                 dailyMissionList: resData.dailyMissions
+            });
+
+            this.achievementsStore.$patch({
+                achievementList: resData.allAchievements,
+                achievementSections: resData.achievementSections,
             })
 
             await this.platformEvents.setApplicationIsReady();

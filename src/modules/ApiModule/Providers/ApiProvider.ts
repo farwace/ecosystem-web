@@ -6,14 +6,18 @@ import type {App} from "vue";
 import type {IDailyMissionsStore} from "@/stores/DailyMissions/IDailyMissionsStore.ts";
 import {dailyMissionsStore} from "@/stores/DailyMissions/dailyMissionsStore.ts";
 import type {TResponse} from "@/modules/ApiModule/Types/TResponse.ts";
+import {achievementsStore} from "@/stores/Achievements/achievementsStore.ts";
+import type {IAchievementsStore} from "@/stores/Achievements/IAchievementsStore.ts";
 
 export abstract class ApiProvider implements IApiProvider{
     protected readonly ecosystemStore: Store<'ecosystem', IEcosystemStore>;
     protected readonly dailyMissionsStore: Store<'dailyMissions', IDailyMissionsStore>;
+    protected readonly achievementsStore: Store<'achievements', IAchievementsStore>;
 
     constructor() {
         this.ecosystemStore = ecosystemStore();
         this.dailyMissionsStore = dailyMissionsStore();
+        this.achievementsStore = achievementsStore();
     }
 
     install(app: App, symbol: symbol) {
