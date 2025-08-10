@@ -16,6 +16,7 @@
               checked: dailyEnter?.[currentDay]?.['box3'],
             }"
         >
+          <UiIcon class="lock" name="lock" v-if="progress < 3"/>
           <UiIcon name="box1"/>
         </div>
         <template #popper>
@@ -54,6 +55,7 @@
             checked: dailyEnter?.[currentDay]?.['box5'],
           }"
       >
+        <UiIcon class="lock" name="lock" v-if="progress < 5"/>
         <UiIcon name="box2"/>
       </div>
         <template #popper>
@@ -92,6 +94,7 @@
               checked: dailyEnter?.[currentDay]?.['box7'],
             }"
         >
+          <UiIcon class="lock" name="lock" v-if="progress < 7" />
           <UiIcon name="box3"/>
         </div>
         <template #popper>
@@ -307,12 +310,23 @@ onMounted(() => {
         }
       }
 
+      .lock{
+        width: 24px;
+        height: 24px;
+        position: absolute;
+        right: 0;
+      }
+
     }
 
     .box-1{
       svg{
         width: 50px;
         height: 50px;
+      }
+      .lock{
+        top: -4px;
+        right: -5px;
       }
     }
 
@@ -321,6 +335,10 @@ onMounted(() => {
         width: 65px;
         height: 65px;
         margin-bottom: -4px;
+      }
+      .lock{
+        top: 0;
+        right: -6px;
       }
 
       &.checked{
@@ -340,6 +358,10 @@ onMounted(() => {
         &:after{
           top: 4px;
         }
+      }
+      .lock{
+        top: 4px;
+        right: -5px;
       }
     }
   }
