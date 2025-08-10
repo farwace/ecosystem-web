@@ -34,18 +34,18 @@ export const ecosystemStore = defineStore('ecosystem', {
         consecutiveDays: undefined,
         isAnonymous: undefined,
         balanceGift: undefined,
-        topGifts: undefined,
-        topFans: undefined,
+        // topGifts: undefined,
+        // topFans: undefined,
         visitors: undefined,
         subscription: undefined,
         canUseTrialSubscription: false,
 
         /*  COMMON INFO */
-        recentGifts: [],
-        recentAchievements: [],
-        recentFans: [],
-        recentLiked: [],
-        topRatingPerson: 'https://vk.com/images/camera_200.png',
+        // recentGifts: [],
+        // recentAchievements: [],
+        // recentFans: [],
+        // recentLiked: [],
+        //topRatingPerson: 'https://vk.com/images/camera_200.png',
 
         giftList: [],
         achievementsList: []

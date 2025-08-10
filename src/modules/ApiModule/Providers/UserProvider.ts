@@ -54,7 +54,7 @@ export class UserProvider extends ApiProvider implements IUserProvider{
                 // recentLiked: resData.recentLiked,
                 // topFans: resData.topFans,
                 // topGifts: resData.topGifts,
-                // visitors: resData.visitors,
+                visitors: resData.visitors,
                 subscription: resData.subscription || undefined,
                 canUseTrialSubscription: resData.canUseTrialSubscription,
                 vip: resData.vip,

@@ -43,7 +43,7 @@ export type TGetUserInfoResponse = {
     // recentLiked: TUser[];
     // topFans: TUser[];
     // topGifts: TGift[];
-    // visitors: TUser[];
+    visitors: TUser[];
 
     canUseTrialSubscription: boolean;
 

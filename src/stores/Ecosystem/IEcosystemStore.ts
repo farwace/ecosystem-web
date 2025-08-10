@@ -43,7 +43,7 @@ export interface IEcosystemStore {
     balanceGift?:TGift[];
     // topGifts?:TGift[];
     // topFans?:TUser[];
-    //visitors?:TUser[];
+    visitors?:TUser[];
     subscription?:TSubscription;
     hasNotifications: boolean;
 
