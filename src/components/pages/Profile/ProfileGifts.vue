@@ -53,15 +53,12 @@ import 'swiper/css/pagination';
 const giftsProvider: IGiftsProvider | undefined = inject(GiftsProviderSymbol);
 const modules = [Autoplay, EffectCoverflow];
 
-const openGiftListModal = () => {
-
-}
-
 const props = defineProps<{
   gifts?:TGift[] | null,
   count?:number | null,
   id?: number | string,
-  avatar?: string
+  avatar?: string,
+  openGiftListModal: () => void,
 }>();
 
 

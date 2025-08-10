@@ -15,24 +15,25 @@
       </div>
       <profile-titles :profile="profile"/>
 
-      <div class="title">
-        Стена подарков
+      <div class="title" @click="openGiftListModal">
+        Стена подарков <UiIcon class="inline-icon" name="chevron-right"></UiIcon>
       </div>
-      <profile-gifts :avatar="profile?.avatar" :id="profile?.id" :gifts="profile?.topGifts" :count="profile?.giftsCount" />
+      <profile-gifts :open-gift-list-modal="openGiftListModal" :avatar="profile?.avatar" :id="profile?.id" :gifts="profile?.topGifts" :count="profile?.giftsCount" />
 
-      <template v-if="profile?.topFans?.length || 0 > 0">
+      <div v-if="profile?.topFans?.length || 0 > 0" @click="openTopFansModal">
         <div class="title">
-          Поклонники
+          Поклонники <UiIcon class="inline-icon" name="chevron-right"></UiIcon>
         </div>
         <profile-fans :fans="profile?.topFans" />
-      </template>
+      </div>
+
       <div class="title">
-        Достижения
+        Достижения <UiIcon class="inline-icon" name="chevron-right"></UiIcon>
       </div>
       <profile-achievements :name="profile?.name" :achievements="profile?.recentAchievements" />
       <template v-if="profile?.id == id">
         <div class="title">
-          Гости
+          Гости <UiIcon class="inline-icon" name="chevron-right"></UiIcon>
         </div>
         TODO: список гостей
       </template>
@@ -111,6 +112,24 @@ const openGiftPopup = () => {
     giftsProvider?.openGiftsPopup(profile.value.id, profile.value.avatar);
   }
 }
+
+const openGiftListModal = () => {
+  //todo: Открыть модальное окно со списком всех подарков текущего пользователя
+  notificationProvider?.addPopup?.('gift-page', 'simple-popup', {
+    title: 'Стена подарков',
+    message: 'Тут будет список подарков пользователя',
+    darkBg: true,
+  })
+};
+const openTopFansModal = () => {
+  //todo: Открыть модальное окно со списком поклонников
+  notificationProvider?.addPopup?.('fans-page', 'simple-popup', {
+    title: 'Поклонники',
+    message: 'Тут будет список поклонников пользователя',
+    darkBg: true,
+  })
+};
+
 
 
 onMounted(async () => {
@@ -274,5 +293,19 @@ onMounted(async () => {
   font-weight: 700;
   margin-bottom: 10px;
   margin-top: 20px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 20px;
+}
+
+.inline-icon{
+  width: 14px;
+  height: 14px;
+  vertical-align: middle;
+  margin-left: auto;
 }
 </style>
