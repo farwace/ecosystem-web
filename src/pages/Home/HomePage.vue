@@ -1,7 +1,7 @@
 <template>
   <div class="page-container">
     <div class="header">
-      <user-avatar @click="() => id && router.push({name: 'profile', params: {id: id}})"/>
+      <user-avatar :first-name="firstName" :avatar="avatar" @click="() => id && router.push({name: 'profile', params: {id: id}})"/>
       <user-experience />
     </div>
 
@@ -38,7 +38,7 @@ import {bridgeStore} from "@/stores/Bridge/bridgeStore.ts";
 import {useRoute, useRouter} from "vue-router";
 import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
 
-const {id} = storeToRefs(ecosystemStore());
+const {id, firstName, avatar} = storeToRefs(ecosystemStore());
 const {inFavorites, inHomeScreen} = storeToRefs(bridgeStore());
 
 const router = useRouter();

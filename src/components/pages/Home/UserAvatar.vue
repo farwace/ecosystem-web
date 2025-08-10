@@ -3,7 +3,7 @@
     <div class="avatar__img">
       <img :src="photo" alt="">
     </div>
-    <div class="avatar__name">
+    <div class="avatar__name" :class="{small: small}">
       <div ref="avatarName" class="avatar__name__value">
         {{ firstName }}
       </div>
@@ -11,14 +11,16 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import {storeToRefs} from "pinia";
-  import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
-  import {computed, nextTick, onMounted, ref} from "vue";
+  import {computed, onMounted, ref} from "vue";
 
-  const {firstName, avatar} = storeToRefs(ecosystemStore());
+  const props = defineProps<{
+    firstName: string,
+    avatar?: string,
+    small?: boolean,
+  }>();
 
   const photo = computed(() => {
-    return avatar?.value || '/assets/img/avatar-stub.png'
+    return props.avatar || '/assets/img/avatar-stub.png'
   });
 
   const avatarName = ref<HTMLDivElement>();
@@ -63,6 +65,14 @@
     max-width: 100%;
     overflow: hidden;
     white-space: nowrap;
+
+    &.small{
+      font-weight: 600;
+      font-size: 14px;
+      width: 100%;
+      text-align: center;
+      color: #BA7D50;
+    }
 
     &__value{
       &.marquee {
