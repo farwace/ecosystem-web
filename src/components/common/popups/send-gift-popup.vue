@@ -41,14 +41,15 @@
                 </div>
               </div>
             </div>
+            <div class="gift__price gift__price__old" v-if="gift.oldPrice && gift.personalPrice && gift.oldPrice > gift.personalPrice">
+              <span class="strikethrough">
+                <UiIcon class="coin" name="coin" />
+                {{ gift.oldPrice }}
+              </span>
+            </div>
             <div class="gift__price">
               <UiIcon class="coin" name="coin" />
-              <template v-if="gift.personalPrice < gift.price || (gift.oldPrice && gift.oldPrice != gift.price)">
-                <small><strike>{{ gift.oldPrice || gift.price }}</strike></small>{{ gift.personalPrice || gift.price }}
-              </template>
-              <template v-else>
-                {{ gift.price }}
-              </template>
+              {{ gift.personalPrice || gift.price }}
             </div>
           </div>
         </div>
@@ -285,15 +286,40 @@ onMounted(async () => {
     justify-content: center;
     position: relative;
 
-    small{
-      strike{
-
-      }
+    &__old{
       position: absolute;
-      top: -8px;
-      transform: rotate(-15deg);
-      color: #ff3737;
-      font-size: 11px;
+      margin-top: -4px;
+      //left: 5px;
+      width: 100%;
+      right: 0;
+
+      .coin {
+        width: 8px;
+        height: 8px;
+        margin-bottom: -1px;
+        margin-right: 0;
+      }
+    }
+
+    .strikethrough{
+      position: relative;
+      padding: 0 2px;
+      font-size: 9px;
+      &:before{
+        position: absolute;
+        content: "";
+        left: 0;
+        top: 50%;
+        right: 0;
+        border-top: 1px solid;
+        border-color: #ff4759;
+
+        -webkit-transform:rotate(-5deg);
+        -moz-transform:rotate(-5deg);
+        -ms-transform:rotate(-5deg);
+        -o-transform:rotate(-5deg);
+        transform:rotate(-5deg);
+      }
     }
 
     img{

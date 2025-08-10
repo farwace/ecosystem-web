@@ -37,11 +37,11 @@ export type TGetUserInfoResponse = {
     balance: number;
     balanceGifts: TGift[];
 
-    recentAchievements: TAchievement[];
-    recentLiked: TUser[];
-    topFans: TUser[];
-    topGifts: TGift[];
-    visitors: TUser[];
+    // recentAchievements: TAchievement[];
+    // recentLiked: TUser[];
+    // topFans: TUser[];
+    // topGifts: TGift[];
+    // visitors: TUser[];
 
     canUseTrialSubscription: boolean;
 

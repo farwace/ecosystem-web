@@ -16,13 +16,13 @@
       <profile-titles :profile="profile"/>
 
       <div class="title">
-        Топ подарков
+        Стена подарков
       </div>
-      <profile-gifts :avatar="profile?.avatar" :id="profile?.id" :gifts="profile?.topGifts" />
+      <profile-gifts :avatar="profile?.avatar" :id="profile?.id" :gifts="profile?.topGifts" :count="profile?.giftsCount" />
 
       <template v-if="profile?.topFans?.length || 0 > 0">
         <div class="title">
-          Хранители
+          Поклонники
         </div>
         <profile-fans :fans="profile?.topFans" />
       </template>
@@ -30,7 +30,12 @@
         Достижения
       </div>
       <profile-achievements :name="profile?.name" :achievements="profile?.recentAchievements" />
-
+      <template v-if="profile?.id == id">
+        <div class="title">
+          Гости
+        </div>
+        TODO: список гостей
+      </template>
       <div class="bottom-buttons">
 <!--        <div class="btn btn-add">
           <UiIcon name="invite" />

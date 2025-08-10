@@ -14,7 +14,7 @@
 import type {TAchievement} from "@/stores/Ecosystem/Types/TAchievement.ts";
 
 const props = defineProps<{
-  achievements?:TAchievement[],
+  achievements?:TAchievement[] | null,
   name?:string,
 }>();
 

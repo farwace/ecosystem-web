@@ -13,7 +13,7 @@
 import type {TUser} from "@/stores/Ecosystem/Types/TUser.ts";
 
 const props = defineProps<{
-  fans?:TUser[]
+  fans?:TUser[] | null
 }>();
 
 

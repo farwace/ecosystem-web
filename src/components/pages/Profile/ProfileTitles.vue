@@ -7,6 +7,7 @@
     <div class="pop item" v-if="(cPopularityLevel || 0) > 0">
       {{ cPopularityLevel }}
     </div>
+    <!-- Если премиум пользователь - отображать VIP -->
   </div>
 </template>
 <script lang="ts" setup>

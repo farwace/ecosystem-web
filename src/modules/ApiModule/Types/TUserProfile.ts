@@ -14,8 +14,9 @@ export type TUserProfile = {
     premium: boolean;
     isAnonymous: boolean;
     online: boolean;
-    topFans: any[];//todo: описать тип
-    topGifts: any[];//todo: описать тип
-    recentAchievements: any[];//todo: описать тип
+    topFans: any[] | null;//todo: описать тип
+    topGifts: any[] | null;//todo: описать тип
+    recentAchievements: any[] | null;//todo: описать тип
+    giftsCount: number | null;
     animal?:string
 }

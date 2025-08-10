@@ -41,17 +41,17 @@ export interface IEcosystemStore {
     consecutiveDays?:number;
     isAnonymous?: boolean;
     balanceGift?:TGift[];
-    topGifts?:TGift[];
-    topFans?:TUser[];
-    visitors?:TUser[];
+    // topGifts?:TGift[];
+    // topFans?:TUser[];
+    //visitors?:TUser[];
     subscription?:TSubscription;
     hasNotifications: boolean;
 
-    recentGifts: TGift[];
-    recentAchievements: TAchievement[];
-    recentFans: TUser[];
-    recentLiked: TUser[];
-    topRatingPerson: string;
+    // recentGifts: TGift[];
+    // recentAchievements: TAchievement[];
+    // recentFans: TUser[];
+    // recentLiked: TUser[];
+    // topRatingPerson: string;
 
     giftList: TGift[];
     achievementsList: TAchievement[];
