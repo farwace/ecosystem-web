@@ -67,7 +67,7 @@
     white-space: nowrap;
 
     &.small{
-      font-weight: 600;
+      font-weight: bold;
       font-size: 14px;
       width: 100%;
       text-align: center;

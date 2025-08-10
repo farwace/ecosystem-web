@@ -30,11 +30,10 @@
       <div class="title">
         Достижения <UiIcon class="inline-icon" name="chevron-right"></UiIcon>
       </div>
-      <profile-achievements v-if="profile?.id != id" :name="profile?.name" :achievements="profile?.recentAchievements" />
-      <profile-achievements v-else :name="profile?.name" :achievements="profile?.recentAchievements" />
+      <profile-achievements :current="profile?.id == id" :name="profile?.name" :achievements="profile?.recentAchievements" />
 
 
-      <template v-if="profile?.id == id">
+      <template v-if="profile?.id == id && false">
         <div class="title">
           Гости <UiIcon class="inline-icon" name="chevron-right"></UiIcon>
         </div>
