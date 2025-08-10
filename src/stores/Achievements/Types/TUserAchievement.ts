@@ -10,4 +10,5 @@ export type TUserAchievement = {
     received: boolean,
     replays: number,
     sort: number,
+    sectionId: number,
 }

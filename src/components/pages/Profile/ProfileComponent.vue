@@ -27,11 +27,12 @@
         <profile-fans :fans="profile?.topFans" />
       </div>
 
-      <div class="title">
-        Достижения <span v-if="hasUnclaimedCompletedAchievement && profile?.id == id" class="note-circle"></span><UiIcon class="inline-icon" name="chevron-right"></UiIcon>
+      <div @click="openAchievementsModal">
+        <div class="title">
+          Достижения <span v-if="hasUnclaimedCompletedAchievement && profile?.id == id" class="note-circle"></span><UiIcon class="inline-icon" name="chevron-right"></UiIcon>
+        </div>
+        <profile-achievements :current="profile?.id == id" :name="profile?.name" :achievements="profile?.recentAchievements" />
       </div>
-      <profile-achievements :current="profile?.id == id" :name="profile?.name" :achievements="profile?.recentAchievements" />
-
 
       <template v-if="profile?.id == id && false">
         <div class="title">
@@ -125,6 +126,16 @@ const openGiftListModal = () => {
     darkBg: true,
   })
 };
+const openAchievementsModal = () => {
+  notificationProvider?.addPopup?.('achievements-page', 'achievements-popup', {
+    darkBg: true,
+    noTitle: true,
+    noPaddings: true,
+    id: profile.value?.id,
+    recentAchievements: profile.value?.recentAchievements
+  });
+};
+
 const openTopFansModal = () => {
   //todo: Открыть модальное окно со списком поклонников
   notificationProvider?.addPopup?.('fans-page', 'simple-popup', {

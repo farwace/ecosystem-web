@@ -19,12 +19,16 @@ import type {TDailyEnter} from "@/stores/Ecosystem/Types/TDailyEnter.ts";
 import type {TNotification} from "@/stores/Notifications/Types/TNotification.ts";
 import type {TSendGift} from "@/stores/Ecosystem/Types/TSendGift.ts";
 import type {TReplenishmentPopularity} from "@/modules/EventsModule/Types/TReplenishmentPopularity.ts";
+import type {TUserAchievement} from "@/stores/Achievements/Types/TUserAchievement.ts";
+import {achievementsStore} from "@/stores/Achievements/achievementsStore.ts";
+import type {IAchievementsStore} from "@/stores/Achievements/IAchievementsStore.ts";
 
 @injectable()
 export class EcosystemProvider implements IEcosystemProvider{
 
     private _reverbObserver$: Subject<TReverbMessage<unknown>>;
     private dailyMissionsStore: Store<'dailyMissions', IDailyMissionsStore>;
+    private achievementsStore: Store<'achievements', IAchievementsStore>;
     private ecosystemStore: Store<'ecosystem', IEcosystemStore>;
 
     constructor(
@@ -35,6 +39,7 @@ export class EcosystemProvider implements IEcosystemProvider{
     ) {
         this._reverbObserver$ = this.reverbProvider.getReverbObserver$();
         this.dailyMissionsStore = dailyMissionsStore();
+        this.achievementsStore = achievementsStore();
         this.ecosystemStore = ecosystemStore();
     }
 
@@ -60,9 +65,17 @@ export class EcosystemProvider implements IEcosystemProvider{
         });
 
         this._reverbObserver$.pipe(
-            filter((message):message is TReverbMessage<any> => message.event === 'achievement_progress'),
+            filter((message):message is TReverbMessage<TUserAchievement> => message.event === 'achievement_progress'),
         ).subscribe((message) => {
-            //todo: Записать изменения в прогрессе достижения
+            this.achievementsStore.$patch(state => {
+                state.achievementList.forEach(a => {
+                    if(a.id == message.data.id){
+                        a.completed = message.data.completed;
+                        a.received = message.data.received;
+                        a.replays = message.data.replays;
+                    }
+                })
+            })
         });
 
 

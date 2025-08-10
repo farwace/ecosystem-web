@@ -55,7 +55,7 @@ const modules = [Autoplay, EffectCoverflow];
 
 const props = defineProps<{
   gifts?:TGift[] | null,
-  count?:number | null,
+  count?:number | string | null,
   id?: number | string,
   avatar?: string,
   openGiftListModal: () => void,

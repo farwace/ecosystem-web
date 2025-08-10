@@ -17,21 +17,21 @@
 <script lang="ts" setup>
 
 
-import type {TAchievement} from "@/stores/Ecosystem/Types/TAchievement.ts";
 import {computed} from "vue";
 import {storeToRefs} from "pinia";
 import {achievementsStore} from "@/stores/Achievements/achievementsStore.ts";
+import type {TUserAchievement} from "@/stores/Achievements/Types/TUserAchievement.ts";
 
 const {achievementList} = storeToRefs(achievementsStore());
 
 const props = defineProps<{
-  achievements?:TAchievement[] | null,
+  achievements?:TUserAchievement[] | null,
   name?:string,
   current?:boolean
 }>();
 
 const currentAchievements = computed(() => {
-  if(props.achievements?.length || 0 > 0) {
+  if(!props.current && props.achievements?.length || 0 > 0) {
     return props.achievements;
   }
   return achievementList.value.concat()
@@ -55,8 +55,7 @@ const currentAchievements = computed(() => {
   display: flex;
   flex-wrap: nowrap;
   flex-direction: row;
-  gap: 5px;
-  justify-content: space-between;
+  gap: 10px;
   .item{
     &.disabled{
       opacity: 0.5;

@@ -1,7 +1,7 @@
 <template>
   <div class="page-container">
     <div class="header">
-      <user-avatar :first-name="firstName" :avatar="avatar" @click="() => id && router.push({name: 'profile', params: {id: id}})"/>
+      <user-avatar :alarm="hasUnclaimedCompletedAchievement" :first-name="firstName" :avatar="avatar" @click="() => id && router.push({name: 'profile', params: {id: id}})"/>
       <user-experience />
     </div>
 
@@ -37,10 +37,11 @@ import {storeToRefs} from "pinia";
 import {bridgeStore} from "@/stores/Bridge/bridgeStore.ts";
 import {useRoute, useRouter} from "vue-router";
 import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
+import {achievementsStore} from "@/stores/Achievements/achievementsStore.ts";
 
 const {id, firstName, avatar} = storeToRefs(ecosystemStore());
 const {inFavorites, inHomeScreen} = storeToRefs(bridgeStore());
-
+const {hasUnclaimedCompletedAchievement} = storeToRefs(achievementsStore());
 const router = useRouter();
 
 const openSettings = () => {

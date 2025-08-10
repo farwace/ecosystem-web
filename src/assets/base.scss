@@ -110,7 +110,12 @@ $themes: (
   vertical-align: sub;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
-
+.inline-icon{
+  width: .8em;
+  height: .8em;
+  vertical-align: middle;
+  margin-top: -4px;
+}
 @media(max-width: 768px){
   .iziToast-wrapper{
     &.iziToast-wrapper-topCenter{

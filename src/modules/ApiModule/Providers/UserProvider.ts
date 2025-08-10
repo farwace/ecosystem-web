@@ -128,6 +128,13 @@ export class UserProvider extends ApiProvider implements IUserProvider{
             id: missionId,
         }) as unknown as Promise<TResponse<any>>;
     }
+    receiveAchievement = async (achievementId: number): Promise<TResponse<any>> => {
+        return await this.fetch(`${this.getApiEndpoint()}/achievements/pick`, {
+            method: "POST",
+        }, {
+            id: achievementId,
+        }) as unknown as Promise<TResponse<any>>;
+    }
 
     receiveMissionBox = async (box: number): Promise<TResponse<boolean>> => {
         return await this.fetch(`${this.getApiEndpoint()}/daily-missions/receive-daily-enter-box`, {

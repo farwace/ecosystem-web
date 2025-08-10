@@ -1,5 +1,5 @@
 <template>
-  <div class="avatar">
+  <div class="avatar" :class="{alarm: alarm}">
     <div class="avatar__img">
       <img :src="photo" alt="">
     </div>
@@ -17,6 +17,7 @@
     firstName: string,
     avatar?: string,
     small?: boolean,
+    alarm?:boolean
   }>();
 
   const photo = computed(() => {
@@ -44,6 +45,22 @@
   width: 68px;
   padding-bottom: 27px;
   cursor: pointer;
+
+  &.alarm{
+    &:after{
+      position: absolute;
+      content: '';
+      width: 15px;
+      height: 15px;
+      background: #ff9090;
+      border-radius: 100%;
+      right: 4px;
+      top: 0;
+      border: 2px solid #FFF6E9;
+      animation: blink-user-notify 2s infinite;
+    }
+  }
+
   &__img{
     position: relative;
     width: 68px;
@@ -112,5 +129,39 @@
   52% {transform: translateX(var(--marquee-width));}
   90% {transform: translateX(0%);}
   100% {transform: translateX(0%);}
+}
+
+@-webkit-keyframes blink-user-notify {
+  0%{
+    opacity: 1;
+  }
+  70%{
+    opacity: .5;
+  }
+  100%{
+    opacity: 1;
+  }
+}
+@-moz-keyframes blink-user-notify {
+  0%{
+    opacity: 1;
+  }
+  70%{
+    opacity: .5;
+  }
+  100%{
+    opacity: 1;
+  }
+}
+@keyframes blink-user-notify {
+  0%{
+    opacity: 1;
+  }
+  70%{
+    opacity: .5;
+  }
+  100%{
+    opacity: 1;
+  }
 }
 </style>

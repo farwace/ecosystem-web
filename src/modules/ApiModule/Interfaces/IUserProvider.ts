@@ -7,6 +7,7 @@ export interface IUserProvider  extends IModule{
     getUserInfo: () => Promise<void>;
     loadDailyMissions: () => Promise<void>;
     receiveMission:(itemId: number) => Promise<TResponse<any>>;
+    receiveAchievement:(itemId: number) => Promise<TResponse<any>>;
     loadMissedEvents: () => Promise<TResponse<TReverbMessage<unknown>[]>>;
     receiveDailyEnter: () => Promise<TResponse<boolean>>;
     receiveMissionBox: (box: number) => Promise<TResponse<boolean>>;
