@@ -25,6 +25,12 @@
             >
               VIP
             </div>
+            <div
+                v-if="gift.personalPrice < gift.price || (gift.oldPrice && gift.oldPrice != gift.price)"
+                class="gift__discount"
+            >
+              %
+            </div>
             <div class="gift__picture">
               <img :src="'/assets/img/gifts/' + gift.code + '.png'" :alt="gift.name">
             </div>
@@ -37,7 +43,12 @@
             </div>
             <div class="gift__price">
               <UiIcon class="coin" name="coin" />
-              {{ gift.price }}
+              <template v-if="gift.personalPrice < gift.price || (gift.oldPrice && gift.oldPrice != gift.price)">
+                <small><strike>{{ gift.oldPrice || gift.price }}</strike></small>{{ gift.personalPrice || gift.price }}
+              </template>
+              <template v-else>
+                {{ gift.price }}
+              </template>
             </div>
           </div>
         </div>
@@ -255,12 +266,36 @@ onMounted(async () => {
     color: #FFF;
     background-color: #E48F58;
   }
+  &__discount{
+    position: absolute;
+    top: 5px;
+    right: 4px;
+    border-radius: 100px;
+    padding: 0 5px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #FFF;
+    background-color: #E48F58;
+  }
   &__price{
     margin-top: 5px;
     margin-left: -10px;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+
+    small{
+      strike{
+
+      }
+      position: absolute;
+      top: -8px;
+      transform: rotate(-15deg);
+      color: #ff3737;
+      font-size: 11px;
+    }
+
     img{
       width: 15px;
       height: 15px;

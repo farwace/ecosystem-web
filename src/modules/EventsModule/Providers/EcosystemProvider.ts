@@ -120,7 +120,6 @@ export class EcosystemProvider implements IEcosystemProvider{
             if(message.data.senderId == this.ecosystemStore.$state.id){
                 const key = `${message.data.senderId}-${message.data.receiverId}-${message.data.quantity}-${message.data.gift.code}-${new Date()}`;
                 this.notificationsProvider.addBigGift(key, message.data);
-                console.log('>>>>> AAAAA', message.data);
             }
         });
 
