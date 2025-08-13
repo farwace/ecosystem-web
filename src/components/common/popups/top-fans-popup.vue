@@ -37,91 +37,7 @@ const emit = defineEmits(['close']);
 const userProvider: IUserProvider | undefined = inject(UserProviderSymbol);
 
 const isLoading = ref<boolean>(false);
-const fans = ref<TUser[]>(
-    [
-      {
-        "popularitySum": 1000,
-        "firstName": "Виталий",
-        "id": 1,
-        "popularity": 13440,
-        "popularityLevel": 6,
-        "nextLevelPopularity": 15000,
-        "sex": 2,
-        "avatar": "https://sun70-1.userapi.com/s/v1/ig2/Mnbl4RlowjH_RK3F4WtScE7ZDNV1bEffN0zmkmJMPRlcSU1aSqCExpd3DgQ8pKFC1Lat8JMNx74crBuhsdZiCV7A.jpg?quality=95&crop=67,1,760,760&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720&ava=1&u=xcC0HAjSZgUX3g2E42IUjU3tG-JqrJWCoUrkvX060A8&cs=100x100",
-        "avatarBig": "https://sun70-1.userapi.com/s/v1/ig2/Mnbl4RlowjH_RK3F4WtScE7ZDNV1bEffN0zmkmJMPRlcSU1aSqCExpd3DgQ8pKFC1Lat8JMNx74crBuhsdZiCV7A.jpg?quality=95&crop=67,1,760,760&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720&ava=1&u=xcC0HAjSZgUX3g2E42IUjU3tG-JqrJWCoUrkvX060A8&cs=240x240",
-        "online": true,
-        "experience": 25,
-        "vip": false,
-        "premium": false,
-        "lvl": 6
-      },
-        {
-        "popularitySum": 2000,
-        "firstName": "Виталий",
-        "id": 1,
-        "popularity": 13440,
-        "popularityLevel": 6,
-        "nextLevelPopularity": 15000,
-        "sex": 2,
-        "avatar": "https://sun70-1.userapi.com/s/v1/ig2/Mnbl4RlowjH_RK3F4WtScE7ZDNV1bEffN0zmkmJMPRlcSU1aSqCExpd3DgQ8pKFC1Lat8JMNx74crBuhsdZiCV7A.jpg?quality=95&crop=67,1,760,760&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720&ava=1&u=xcC0HAjSZgUX3g2E42IUjU3tG-JqrJWCoUrkvX060A8&cs=100x100",
-        "avatarBig": "https://sun70-1.userapi.com/s/v1/ig2/Mnbl4RlowjH_RK3F4WtScE7ZDNV1bEffN0zmkmJMPRlcSU1aSqCExpd3DgQ8pKFC1Lat8JMNx74crBuhsdZiCV7A.jpg?quality=95&crop=67,1,760,760&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720&ava=1&u=xcC0HAjSZgUX3g2E42IUjU3tG-JqrJWCoUrkvX060A8&cs=240x240",
-        "online": true,
-        "experience": 25,
-        "vip": false,
-        "premium": false,
-        "lvl": 6
-      },
-        {
-        "popularitySum": 13440,
-        "firstName": "Виталийdsaasd sad sadsadsasadsadsadsadsadsadsadsadsadsa",
-        "id": 1,
-        "popularity": 13440,
-        "popularityLevel": 6,
-        "nextLevelPopularity": 15000,
-        "sex": 2,
-        "avatar": "https://sun70-1.userapi.com/s/v1/ig2/Mnbl4RlowjH_RK3F4WtScE7ZDNV1bEffN0zmkmJMPRlcSU1aSqCExpd3DgQ8pKFC1Lat8JMNx74crBuhsdZiCV7A.jpg?quality=95&crop=67,1,760,760&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720&ava=1&u=xcC0HAjSZgUX3g2E42IUjU3tG-JqrJWCoUrkvX060A8&cs=100x100",
-        "avatarBig": "https://sun70-1.userapi.com/s/v1/ig2/Mnbl4RlowjH_RK3F4WtScE7ZDNV1bEffN0zmkmJMPRlcSU1aSqCExpd3DgQ8pKFC1Lat8JMNx74crBuhsdZiCV7A.jpg?quality=95&crop=67,1,760,760&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720&ava=1&u=xcC0HAjSZgUX3g2E42IUjU3tG-JqrJWCoUrkvX060A8&cs=240x240",
-        "online": true,
-        "experience": 25,
-        "vip": false,
-        "premium": false,
-        "lvl": 6
-      },
-        {
-        "popularitySum": 13440,
-        "firstName": "Виталий",
-        "id": 1,
-        "popularity": 13440,
-        "popularityLevel": 6,
-        "nextLevelPopularity": 15000,
-        "sex": 2,
-        "avatar": "https://sun70-1.userapi.com/s/v1/ig2/Mnbl4RlowjH_RK3F4WtScE7ZDNV1bEffN0zmkmJMPRlcSU1aSqCExpd3DgQ8pKFC1Lat8JMNx74crBuhsdZiCV7A.jpg?quality=95&crop=67,1,760,760&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720&ava=1&u=xcC0HAjSZgUX3g2E42IUjU3tG-JqrJWCoUrkvX060A8&cs=100x100",
-        "avatarBig": "https://sun70-1.userapi.com/s/v1/ig2/Mnbl4RlowjH_RK3F4WtScE7ZDNV1bEffN0zmkmJMPRlcSU1aSqCExpd3DgQ8pKFC1Lat8JMNx74crBuhsdZiCV7A.jpg?quality=95&crop=67,1,760,760&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720&ava=1&u=xcC0HAjSZgUX3g2E42IUjU3tG-JqrJWCoUrkvX060A8&cs=240x240",
-        "online": true,
-        "experience": 25,
-        "vip": false,
-        "premium": false,
-        "lvl": 6
-      },
-        {
-        "popularitySum": 13440,
-        "firstName": "Виталий",
-        "id": 1,
-        "popularity": 13440,
-        "popularityLevel": 6,
-        "nextLevelPopularity": 15000,
-        "sex": 2,
-        "avatar": "https://sun70-1.userapi.com/s/v1/ig2/Mnbl4RlowjH_RK3F4WtScE7ZDNV1bEffN0zmkmJMPRlcSU1aSqCExpd3DgQ8pKFC1Lat8JMNx74crBuhsdZiCV7A.jpg?quality=95&crop=67,1,760,760&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720&ava=1&u=xcC0HAjSZgUX3g2E42IUjU3tG-JqrJWCoUrkvX060A8&cs=100x100",
-        "avatarBig": "https://sun70-1.userapi.com/s/v1/ig2/Mnbl4RlowjH_RK3F4WtScE7ZDNV1bEffN0zmkmJMPRlcSU1aSqCExpd3DgQ8pKFC1Lat8JMNx74crBuhsdZiCV7A.jpg?quality=95&crop=67,1,760,760&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720&ava=1&u=xcC0HAjSZgUX3g2E42IUjU3tG-JqrJWCoUrkvX060A8&cs=240x240",
-        "online": true,
-        "experience": 25,
-        "vip": false,
-        "premium": false,
-        "lvl": 6
-      },
-
-    ]
-);
+const fans = ref<TUser[]>();
 
 
 const loadFans = async () => {
@@ -155,7 +71,7 @@ onMounted(() => {
     emit('close');
     return;
   }
-  //loadFans();
+  loadFans();
 });
 
 </script>
