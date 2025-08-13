@@ -1,3 +1,5 @@
+import type {TUser} from "@/stores/Ecosystem/Types/TUser.ts";
+
 export type TGift = {
     id: number,
     code: string,
@@ -11,5 +13,9 @@ export type TGift = {
     personalPrice: number,
     // popularityMin: number,
     // popularityMax: number,
-    sort: number
+    sort: number,
+
+    topSenderQuantity?: number,
+    totalQuantity?:number,
+    sender?:TUser
 }

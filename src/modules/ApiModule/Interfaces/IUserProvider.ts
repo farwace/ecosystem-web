@@ -3,6 +3,7 @@ import type {TResponse} from "@/modules/ApiModule/Types/TResponse.ts";
 import type {TReverbMessage} from "@/modules/ReverbModule/Types/TReverbMessage.ts";
 import type {TUserProfile} from "@/modules/ApiModule/Types/TUserProfile.ts";
 import type {TUser} from "@/stores/Ecosystem/Types/TUser.ts";
+import type {TGift} from "@/stores/Ecosystem/Types/TGift.ts";
 
 export interface IUserProvider  extends IModule{
     getUserInfo: () => Promise<void>;
@@ -14,4 +15,5 @@ export interface IUserProvider  extends IModule{
     receiveMissionBox: (box: number) => Promise<TResponse<boolean>>;
     getProfile:(id: number) => Promise<TResponse<TUserProfile>>;
     getTopFans: (id: number) => Promise<TResponse<TUser[]>>
+    getTopGifts: (id: number) => Promise<TResponse<TGift[]>>
 }

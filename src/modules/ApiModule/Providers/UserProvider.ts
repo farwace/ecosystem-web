@@ -9,6 +9,7 @@ import type {TDailyMission} from "@/stores/Ecosystem/Types/TDailyMission.ts";
 import type {TReverbMessage} from "@/modules/ReverbModule/Types/TReverbMessage.ts";
 import type {TUserProfile} from "@/modules/ApiModule/Types/TUserProfile.ts";
 import type {TUser} from "@/stores/Ecosystem/Types/TUser.ts";
+import type {TGift} from "@/stores/Ecosystem/Types/TGift.ts";
 
 @injectable()
 export class UserProvider extends ApiProvider implements IUserProvider{
@@ -151,5 +152,8 @@ export class UserProvider extends ApiProvider implements IUserProvider{
 
     getTopFans = async (id: number): Promise<TResponse<TUser[]>> => {
         return await this.fetch(`${this.getApiEndpoint()}/user/${id}/fans?limit=100`) as unknown as Promise<TResponse<TUser[]>>;
+    }
+    getTopGifts = async (id: number): Promise<TResponse<TGift[]>> => {
+        return await this.fetch(`${this.getApiEndpoint()}/user/${id}/gifts`) as unknown as Promise<TResponse<TGift[]>>;
     }
 }

@@ -119,11 +119,16 @@ const openGiftPopup = () => {
 }
 
 const openGiftListModal = () => {
-  //todo: Открыть модальное окно со списком всех подарков текущего пользователя
-  notificationProvider?.addPopup?.('gift-page', 'simple-popup', {
-    title: 'Стена подарков',
-    message: 'Тут будет список подарков пользователя',
+  if((profile.value?.topGifts?.length || 0) < 1){
+    return;
+  }
+
+  notificationProvider?.addPopup?.('gift-page', 'profile-gifts-popup', {
     darkBg: true,
+    noTitle: true,
+    noPaddings: true,
+    pink: true,
+    id: profile.value?.id,
   })
 };
 const openAchievementsModal = () => {

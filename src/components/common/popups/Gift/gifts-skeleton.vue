@@ -38,6 +38,20 @@
   }
 }
 
+@-moz-keyframes shine-loading-image {
+  0% {
+    background-color: rgba(217, 217, 217, 0.3);
+  }
+  33% {
+    background-color: rgba(217, 217, 217, 0.5);
+  }
+  66% {
+    background-color: rgba(217, 217, 217, 0.5);
+  }
+  100%{
+    background-color: rgba(217, 217, 217, 0.3);
+  }
+}
 
 @keyframes shine-loading-image {
   0% {

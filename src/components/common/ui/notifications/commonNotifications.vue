@@ -23,7 +23,9 @@
           'bg-blur': popup.data?.backgroundBlur,
           'no-title': popup.data?.noTitle,
           'no-bg': popup.data?.noBackground,
-          'h-100': popup.data?.fullHeight
+          'h-100': popup.data?.fullHeight,
+          'bg-pink': popup.data?.pink,
+          'small-popup': popup.data?.small,
         }"
       >
         <div
@@ -271,6 +273,12 @@ const getNotificationBackgroundColor = (eType?: TNotification['type']) => {
     //overflow-y: auto;
     //overflow-x: hidden;
 
+    &.small-popup{
+      width: 50%;
+      left: 25%;
+      padding-bottom: 20px;
+    }
+
     &.no-bg{
       background: unset!important;
       box-shadow: unset!important;
@@ -278,6 +286,9 @@ const getNotificationBackgroundColor = (eType?: TNotification['type']) => {
 
     &.h-100{
       height: 100%;
+    }
+    &.bg-pink{
+      background-color: #FFB3D2;
     }
 
     &.no-paddings{
