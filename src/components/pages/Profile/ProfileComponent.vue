@@ -137,12 +137,13 @@ const openAchievementsModal = () => {
 };
 
 const openTopFansModal = () => {
-  //todo: Открыть модальное окно со списком поклонников
-  notificationProvider?.addPopup?.('fans-page', 'simple-popup', {
-    title: 'Поклонники',
-    message: 'Тут будет список поклонников пользователя',
+  notificationProvider?.addPopup?.('fans-page', 'top-fans-popup', {
     darkBg: true,
-  })
+    noTitle: true,
+    noPaddings: true,
+    id: profile.value?.id,
+    fullHeight: true,
+  });
 };
 
 

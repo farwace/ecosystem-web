@@ -23,6 +23,7 @@
           'bg-blur': popup.data?.backgroundBlur,
           'no-title': popup.data?.noTitle,
           'no-bg': popup.data?.noBackground,
+          'h-100': popup.data?.fullHeight
         }"
       >
         <div
@@ -273,6 +274,10 @@ const getNotificationBackgroundColor = (eType?: TNotification['type']) => {
     &.no-bg{
       background: unset!important;
       box-shadow: unset!important;
+    }
+
+    &.h-100{
+      height: 100%;
     }
 
     &.no-paddings{

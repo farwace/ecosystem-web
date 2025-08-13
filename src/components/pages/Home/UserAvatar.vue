@@ -1,6 +1,6 @@
 <template>
   <div class="avatar" :class="{alarm: alarm}">
-    <div class="avatar__img">
+    <div class="avatar__img" :class="{small: avatarSmall}">
       <img :src="photo" alt="">
     </div>
     <div class="avatar__name" :class="{small: small}">
@@ -17,6 +17,7 @@
     firstName: string,
     avatar?: string,
     small?: boolean,
+    avatarSmall?:boolean,
     alarm?:boolean
   }>();
 
@@ -72,6 +73,14 @@
     img{
       width: 100%;
       object-fit: cover;
+    }
+
+    &.small{
+      width: 48px;
+      height: 48px;
+      border-radius: 18px;
+      margin-left: auto;
+      margin-right: auto;
     }
   }
 

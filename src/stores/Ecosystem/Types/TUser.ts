@@ -1,11 +1,16 @@
 export type TUser = {
     id: number,
     avatar: string,
+    avatarBig: string,
     firstName: string,
-    lastName: string,
     sex: number | undefined | null,
     lvl: number,
     popularity: number,
     popularityLevel: number,
+    nextLevelPopularity: number,
+    online: boolean,
+    premium: boolean,
+    vip: boolean,
     experience: number,
+    popularitySum?: number | undefined | null,
 }

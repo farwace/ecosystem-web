@@ -8,6 +8,7 @@ import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformE
 import type {TDailyMission} from "@/stores/Ecosystem/Types/TDailyMission.ts";
 import type {TReverbMessage} from "@/modules/ReverbModule/Types/TReverbMessage.ts";
 import type {TUserProfile} from "@/modules/ApiModule/Types/TUserProfile.ts";
+import type {TUser} from "@/stores/Ecosystem/Types/TUser.ts";
 
 @injectable()
 export class UserProvider extends ApiProvider implements IUserProvider{
@@ -148,4 +149,7 @@ export class UserProvider extends ApiProvider implements IUserProvider{
         return await this.fetch(`${this.getApiEndpoint()}/user/info/${id}`) as unknown as Promise<TResponse<TUserProfile>>;
     }
 
+    getTopFans = async (id: number): Promise<TResponse<TUser[]>> => {
+        return await this.fetch(`${this.getApiEndpoint()}/user/${id}/fans?limit=100`) as unknown as Promise<TResponse<TUser[]>>;
+    }
 }

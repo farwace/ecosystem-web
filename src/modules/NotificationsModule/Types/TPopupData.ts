@@ -6,6 +6,7 @@ export type TPopupData = {
     noCloseButton?:boolean,
     noPaddings?:boolean,
     noBackground?:boolean,
+    fullHeight?:boolean,
     class?:string,
     backgroundBlur?: boolean,
     backdropBlur?:boolean,
