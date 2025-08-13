@@ -6,6 +6,15 @@
       }"
   >
     <div class="gifts-header">
+      <div class="gifts-header__info">
+        <UserAvatar :first-name="props.name || ''" :avatar="props.avatar" small/>
+        <div class="data">
+          <div class="data__body">
+            <div class="data__title">Общее количество подарков:</div>
+            <div class="data__value">{{ isLoading ? '&nbsp;' : (appliedGifts.length || 0) }}</div>
+          </div>
+        </div>
+      </div>
       <div class="title">
         Коллекция подарков
       </div>
@@ -50,9 +59,12 @@ import type {TGift} from "@/stores/Ecosystem/Types/TGift.ts";
 import GiftWallItem from "@/components/common/popups/Gift/gift-wall-item.vue";
 import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
 import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
+import UserAvatar from "@/components/pages/Home/UserAvatar.vue";
 
 const props = defineProps<{
   id?: number,
+  avatar?: string,
+  name?: string,
 }>();
 
 const emit = defineEmits(['close']);
@@ -133,7 +145,7 @@ onMounted(() => {
   &__inner{
     background-color: #FFF;
     border: 3px solid #7DBAFF;
-    border-radius: 22px;
+    border-radius: 35px;
   }
   &.loading{
     pointer-events: none;
@@ -155,17 +167,56 @@ onMounted(() => {
   top: 0;
   padding-top: 20px;
   padding-bottom: 0;
-  margin-bottom: -45px;
+  margin-bottom: -55px;
   background-color: #FFB3D2;
-  border-radius: 0 0 22px 22px;
+  border-radius: 0 0 35px 35px;
+
+  &__info{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+    .avatar{
+      flex-shrink: 0;
+    }
+    :deep(.avatar__name__value){
+      color: #124887;
+    }
+
+    .data{
+      flex-grow: 1;
+      &__body{
+        text-align: center;
+        height: 100%;
+        border-radius: 12px;
+        border: 8px solid #FF8DE3;
+        background-color: #FECDF2;
+        box-shadow: 0 4px 4px rgba(235, 25, 172, 0.4);
+        width: fit-content;
+        margin: -10px auto 0;
+        padding: 5px;
+        color: #124887;
+        font-weight: 600;
+
+      }
+      &__title{
+        font-size: 12px;
+        text-transform: uppercase;
+      }
+      &__value{
+        font-size: 20px;
+        font-weight: bold;
+      }
+    }
+  }
 }
 .title{
   font-size: 22px;
   line-height: 22px;
   font-weight: bold;
   text-align: center;
-  padding: 10px 5px;
-  border-radius: 22px;
+  padding: 20px 5px;
+  border-radius: 35px;
   text-transform: uppercase;
   white-space: nowrap;
   color: #5192DB;

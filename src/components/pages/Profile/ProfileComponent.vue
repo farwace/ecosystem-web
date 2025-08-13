@@ -129,6 +129,8 @@ const openGiftListModal = () => {
     noPaddings: true,
     pink: true,
     id: profile.value?.id,
+    avatar: profile.value?.avatar,
+    name: profile.value?.name,
   })
 };
 const openAchievementsModal = () => {

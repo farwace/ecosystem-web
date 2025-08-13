@@ -66,6 +66,10 @@ const props = defineProps<{
       display: flex;
       flex-direction: column;
       justify-content: center;
+
+      @media(min-width: 400px){
+        font-size: 9px;
+      }
     }
 
     &.deactivated{
