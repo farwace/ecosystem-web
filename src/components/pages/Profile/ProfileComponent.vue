@@ -6,7 +6,7 @@
     <profile-swiper :profile="profile"/>
     <div class="page-container">
       <div class="profile__name">
-        <div class="profile__name__value">
+        <div class="profile__name__value" :class="{vip: profile?.premium}">
           {{ profile?.name ? profile.name : 'Профиль не найден' }} <span v-if="profile?.online" class="online"></span>
         </div>
         <div class="profile-edit-btn" v-if="!modal && profile?.id === id" @click="editProfileModal">
@@ -202,10 +202,28 @@ onMounted(async () => {
       text-overflow: ellipsis;
       position: relative;
       padding-right: 10px;
+
+      &.vip{
+        position: relative;
+        font-weight: bold;
+        background: linear-gradient(120deg, #FFD700, #FF8C00, #FFD700); // золотой градиент
+        background-size: 200% auto;
+        color: transparent;
+        background-clip: text;
+        -webkit-background-clip: text;
+        animation: shine 4s linear infinite;
+      }
     }
   }
 }
-
+@keyframes shine {
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: 0% center;
+  }
+}
 .online{
   display: inline-block;
   width: 8px;

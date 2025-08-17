@@ -1,5 +1,8 @@
 <template>
   <div class="profile__titles" v-if="profile">
+    <div class="item item__vip" v-if="profile.premium">
+      <img class="vip" src="/assets/img/popularity/vip.png" alt="vip">
+    </div>
     <div class="exp item" v-if="cLvl">
       <ui-icon name="experience" class="title-icon"/>
       Lv. {{ cLvl }}
@@ -70,7 +73,6 @@ const popularityPhoto = (level?: number) => {
 <style lang="scss" scoped>
 .profile{
   &__titles{
-    margin-top: 180px;
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
@@ -110,6 +112,16 @@ const popularityPhoto = (level?: number) => {
           height: 18px;
           margin-bottom: 2px;
         }
+      }
+
+      &__vip{
+        padding: 0;
+      }
+      .vip{
+        object-fit: contain;
+        width: 35px;
+        height: 35px;
+        margin-bottom: 4px;
       }
     }
   }
