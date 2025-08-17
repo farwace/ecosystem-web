@@ -4,8 +4,9 @@
       <ui-icon name="experience" class="title-icon"/>
       Lv. {{ cLvl }}
     </div>
-    <div class="pop item" v-if="(cPopularityLevel || 0) > 0">
-      {{ cPopularityLevel }}
+    <div class="pop item popularity-level" v-if="(cPopularityLevel || 0) > 0">
+      <img :src="popularityPhoto(cPopularityLevel)">
+      <span>{{ cPopularityLevel }}</span>
     </div>
     <!-- Если премиум пользователь - отображать VIP -->
   </div>
@@ -37,12 +38,39 @@ const cLvl = computed(() => {
   return props.profile?.lvl;
 });
 
-
+const popularityPhoto = (level?: number) => {
+  if(!level){
+    return '';
+  }
+  if(level < 4){
+    return `/assets/img/popularity/star.png`;
+  }
+  if(level < 7){
+    return `/assets/img/popularity/diamond.png`;
+  }
+  if(level < 10){
+    return `/assets/img/popularity/crown.png`;
+  }
+  if(level < 13){
+    return `/assets/img/popularity/crown2.png`;
+  }
+  if(level < 16){
+    return `/assets/img/popularity/crown3.png`;
+  }
+  if(level < 19){
+    return `/assets/img/popularity/crown4.png`;
+  }
+  if(level < 22){
+    return `/assets/img/popularity/wreath.png`;
+  }
+  return `/assets/img/popularity/super-star.png`;
+}
 
 </script>
 <style lang="scss" scoped>
 .profile{
   &__titles{
+    margin-top: 180px;
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
@@ -75,6 +103,14 @@ const cLvl = computed(() => {
       line-height: 16px;
       height: 22px;
       align-items: center;
+
+      &.popularity-level{
+        img{
+          width: 18px;
+          height: 18px;
+          margin-bottom: 2px;
+        }
+      }
     }
   }
 }
