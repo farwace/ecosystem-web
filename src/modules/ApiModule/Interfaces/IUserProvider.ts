@@ -16,4 +16,5 @@ export interface IUserProvider  extends IModule{
     getProfile:(id: number) => Promise<TResponse<TUserProfile>>;
     getTopFans: (id: number) => Promise<TResponse<TUser[]>>
     getTopGifts: (id: number) => Promise<TResponse<TGift[]>>
+    updateProfile: (body: {[key:string]:string}) => Promise<TResponse<any>>
 }

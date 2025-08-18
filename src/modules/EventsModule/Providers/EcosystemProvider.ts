@@ -164,6 +164,30 @@ export class EcosystemProvider implements IEcosystemProvider{
         });
 
 
+        this._reverbObserver$.pipe(
+            filter((message):message is TReverbMessage<any> => message.event === 'user_profile_change'),
+        ).subscribe((message) => {
+            if(message?.data?.firstName){
+                this.ecosystemStore.$patch({
+                    firstName: message.data.firstName
+                })
+            }
+            if(message?.data?.animal){
+                this.ecosystemStore.$patch({
+                    animal: message.data.animal
+                })
+            }
+            if(message?.data?.sex){
+                this.ecosystemStore.$patch({
+                    sex: message.data.sex
+                })
+            }
+            if(message?.data?.ageGroup){
+                this.ecosystemStore.$patch({
+                    ageGroup: message.data.ageGroup
+                })
+            }
+        })
 
     }
 

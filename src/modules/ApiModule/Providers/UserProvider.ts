@@ -37,7 +37,7 @@ export class UserProvider extends ApiProvider implements IUserProvider{
                 id: resData.id,
                 firstName: resData.firstName,
                 lastName: resData.lastName,
-                age: resData.ageGroup || undefined,
+                ageGroup: resData.ageGroup || undefined,
                 avatar: resData.avatar || undefined,
                 sex: resData.sex,
                 isBanned: resData.isBanned,
@@ -64,7 +64,9 @@ export class UserProvider extends ApiProvider implements IUserProvider{
                 lvl: resData.lvl,
                 nextLevelExperience: resData.nextLevelExperience,
                 nextLevelPopularity: resData.nextLevelPopularity,
-                currentDay: resData.currentDay
+                currentDay: resData.currentDay,
+                animal: resData.animal,
+                animals: resData.animals
             });
 
             this.dailyMissionsStore.$patch({
@@ -155,5 +157,11 @@ export class UserProvider extends ApiProvider implements IUserProvider{
     }
     getTopGifts = async (id: number): Promise<TResponse<TGift[]>> => {
         return await this.fetch(`${this.getApiEndpoint()}/user/${id}/gifts`) as unknown as Promise<TResponse<TGift[]>>;
+    }
+
+    updateProfile = async(body: { [key: string]:string }): Promise<TResponse<any>> => {
+        return await this.fetch(`${this.getApiEndpoint()}/user/edit`, {
+            method: 'POST',
+        }, body) as unknown as Promise<TResponse<any>>;
     }
 }

@@ -21,7 +21,7 @@
     <swiper-slide>
       <div class="profile-animal">
         <img class="animal-bg" src="/assets/img/profile/default-avatar-bg.png" alt="Профиль">
-        <UiIcon class="animal" :name="`animals/${animal}`"/>
+        <UiIcon class="animal" :name="`animals/${currentAnimal}`"/>
       </div>
     </swiper-slide>
   </swiper>
@@ -35,7 +35,9 @@ import {Pagination} from "swiper/modules";
 import 'swiper/css';
 import 'swiper/css/pagination';
 import UiIcon from "@/components/common/icons/UiIcon.vue";
-import {onMounted, ref} from "vue";
+import {onMounted, ref, watch} from "vue";
+import {storeToRefs} from "pinia";
+import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
 
 
 const props = defineProps<{
@@ -43,18 +45,30 @@ const props = defineProps<{
 }>();
 
 const modules = [Pagination];
-const animal = ref<string>('tiger');
+const currentAnimal = ref<string>('tiger');
+const {id, animal} = storeToRefs(ecosystemStore());
+
+watch(animal, (neoVal) => {
+  if(id.value == props?.profile?.id){
+    currentAnimal.value = neoVal;
+  }
+})
 
 onMounted(() => {
-  if(props.profile?.animal && [
+  if(id.value == props?.profile?.id){
+    currentAnimal.value = animal.value
+  }
+  else{
+    if(props.profile?.animal && [
       'cat',
       'chicken',
       'koala',
       'fox',
       'panda',
       'tiger',
-  ].indexOf(props.profile.animal) > -1){
-    animal.value = props.profile.animal;
+    ].indexOf(props.profile.animal) > -1){
+      currentAnimal.value = props.profile.animal;
+    }
   }
 })
 
@@ -91,6 +105,7 @@ onMounted(() => {
     transform: translateX(-50%);
     left: 50%;
     top: 25%;
+    height: 300px;
   }
   img{
     width: 100%;

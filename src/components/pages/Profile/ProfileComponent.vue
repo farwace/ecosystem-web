@@ -7,7 +7,13 @@
     <div class="page-container">
       <div class="profile__name">
         <div class="profile__name__value" :class="{vip: profile?.premium}">
-          {{ profile?.name ? profile.name : 'Профиль не найден' }} <span v-if="profile?.online" class="online"></span>
+          <template v-if="profile?.id == id">
+            {{ firstName }}<UiIcon v-if="sex" :name="sex == 1 ? 'female' : 'male'" class="icon-sex"/>
+          </template>
+          <template v-else>
+            {{ profile?.name ? profile.name : 'Профиль не найден' }}<UiIcon v-if="profile?.sex" :name="profile.sex == 1 ? 'female' : 'male'" class="icon-sex"/>
+          </template>
+          <span v-if="profile?.online" class="online"></span>
         </div>
         <div class="profile-edit-btn" v-if="!modal && profile?.id === id" @click="editProfileModal">
           Редактировать
@@ -78,7 +84,7 @@ import {achievementsStore} from "@/stores/Achievements/achievementsStore.ts";
 
 const route = useRoute();
 const router = useRouter();
-const {id} = storeToRefs(ecosystemStore());
+const {id, firstName, sex} = storeToRefs(ecosystemStore());
 
 const notificationProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
 const giftsProvider: IGiftsProvider | undefined = inject(GiftsProviderSymbol);
@@ -104,10 +110,9 @@ profile.value = (await userProvider?.getProfile(props.profileId as unknown as nu
 
 
 const editProfileModal = () => {
-  notificationProvider?.addPopup?.('edit-profile', 'simple-popup', {
+  notificationProvider?.addPopup?.('edit-profile', 'edit-profile-popup', {
     modal: true,
     title: "Редактировать профиль",
-    message: "TODO: редактирование профиля",
     darkBg: true
   })
 }
@@ -370,6 +375,13 @@ onMounted(async () => {
   100%{
     opacity: 1;
   }
+}
+
+.icon-sex{
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  margin: 0 2px 4px 0;
 }
 
 </style>

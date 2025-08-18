@@ -22,7 +22,7 @@ export const ecosystemStore = defineStore('ecosystem', {
         popularityLevel: 0,
         sex: 2,
         avatar: '',
-        age: AgeGroup['zoomer'],
+        ageGroup: AgeGroup['zoomer'],
         hasNotifications: false,
         isNew: false,
         vipLevel: 0,
@@ -48,6 +48,9 @@ export const ecosystemStore = defineStore('ecosystem', {
         //topRatingPerson: 'https://vk.com/images/camera_200.png',
 
         giftList: [],
-        achievementsList: []
+        achievementsList: [],
+
+        animal: 'tiger',
+        animals: [],
     })
 })

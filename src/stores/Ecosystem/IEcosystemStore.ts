@@ -4,6 +4,7 @@ import type {TUser} from "@/stores/Ecosystem/Types/TUser";
 import type {GetLaunchParamsResponse} from "@vkontakte/vk-bridge";
 import type {TDailyEnter} from "@/stores/Ecosystem/Types/TDailyEnter.ts";
 import type {TSubscription} from "@/stores/Ecosystem/Types/TSubscription.ts";
+import type {TAnimal} from "@/stores/Ecosystem/Types/TAnimal.ts";
 
 export interface IEcosystemStore {
     authString: string;
@@ -13,7 +14,9 @@ export interface IEcosystemStore {
     avatar?: TUser['avatar'];
     avatarBig?: TUser['avatar'];
     firstName: TUser['firstName'];
-    lastName: TUser['lastName'];
+    animal: string,
+    animals: TAnimal[],
+    lastName: TUser['firstName'];
     sex: TUser['sex'];
     lvl: TUser['lvl'];
     popularity: TUser['popularity'];
@@ -32,7 +35,7 @@ export interface IEcosystemStore {
 
     socialId: number;
     balance: number;
-    age?: TAgeGroup;
+    ageGroup?: TAgeGroup;
 
 
     vipLevel:number;
