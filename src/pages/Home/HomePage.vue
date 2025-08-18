@@ -13,9 +13,9 @@
       <menu-list />
     </div>
 
-    <div class="settings-block">
+<!--    <div class="settings-block">
       <MenuItem @click="openSettings" icon="settings">Настройки</MenuItem>
-    </div>
+    </div>-->
     <div class="add-to-block" v-if="!inFavorites && !inHomeScreen">
       <div @click="addToFavorite" class="add-to-favorite" v-if="!inFavorites">
         <ui-icon class="favorite-icon" name="star"/>
@@ -45,7 +45,7 @@ const {hasUnclaimedCompletedAchievement} = storeToRefs(achievementsStore());
 const router = useRouter();
 
 const openSettings = () => {
-  alert('Настройки')
+
 }
 
 const addToFavorite = () => {
