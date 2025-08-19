@@ -57,7 +57,7 @@ export class StubEventsProvider implements IPlatformEvents{
                     avatar: userInfo.photo_100,
                     avatarBig: userInfo.photo_max_orig,
                     sex: sex,
-                    age: age,
+                    ageGroup: age,
                     socialId: launchParams.vk_user_id,
                 });
             }

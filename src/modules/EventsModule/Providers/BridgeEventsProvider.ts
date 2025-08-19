@@ -52,7 +52,7 @@ export class BridgeEventsProvider implements IPlatformEvents {
                 const userInfo = await bridge.send('VKWebAppGetUserInfo', {user_id: launchParams.vk_user_id});
 
                 const sex = userInfo.sex || 2;
-                const age = getAgeGroup(calculateAge(userInfo.bdate));
+                const ageGroup = getAgeGroup(calculateAge(userInfo.bdate));
 
                 this.ecosystemStore.$patch({
                     launchParams: launchParams,
@@ -61,7 +61,7 @@ export class BridgeEventsProvider implements IPlatformEvents {
                     avatar: userInfo.photo_100,
                     avatarBig: userInfo.photo_max_orig,
                     sex: sex,
-                    age: age,
+                    ageGroup: ageGroup,
                     socialId: launchParams.vk_user_id,
                 });
             }
