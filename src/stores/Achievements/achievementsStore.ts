@@ -6,6 +6,10 @@ export const achievementsStore = defineStore('achievements', {
     state: (): IAchievementsStore => ({
         achievementList: [],
         achievementSections: [],
+
+        canUseTrialSubscription: undefined,
+        shopCoins: undefined,
+        shopSubscription: undefined,
     }),
     getters: {
         hasUnclaimedCompletedAchievement(state): boolean {

@@ -10,26 +10,22 @@
 
     </div>
     <div ref="shopContainer">
-
-      <div>
-        <b>canUseTrialSubscription</b>
-        <pre>
-          {{ shop?.canUseTrialSubscription }}
-        </pre>
+      <div class="shop__subscription" v-if="(shop?.subscriptions?.length || 0) > 0">
+        <div class="shop__title">
+          Купить подписку
+        </div>
+        <div class="shop__subscription__list">
+          <SubscriptionItem v-for="subscription in shop?.subscriptions" :key="`subscription-${subscription.code}`" :subscription="subscription"/>
+        </div>
       </div>
-      <div>
-        <b>coins</b>
-        <pre>
-          {{ shop?.coins }}
-        </pre>
+      <div class="shop__coins" v-if="(shop?.coins?.length || 0) > 0">
+        <div class="shop__title">
+          Купить монеты
+        </div>
+        <div class="shop__coins__list">
+          <CoinItem v-for="coin in shop?.coins" :key="`coin-${coin.code}`" :coin="coin"/>
+        </div>
       </div>
-      <div>
-        <b>subscription</b>
-        <pre>
-          {{ shop?.subscriptions }}
-        </pre>
-      </div>
-
 
     </div>
   </div>
@@ -43,6 +39,8 @@ import {Dropdown as VDropdown, vTooltip} from "floating-vue";
 import 'floating-vue/dist/style.css'
 import type {IBalanceProvider} from "@/modules/ApiModule/Interfaces/IBalanceProvider.ts";
 import type {TShopResponse} from "@/modules/ApiModule/Types/TShopResponse.ts";
+import SubscriptionItem from "@/components/common/popups/Shop/SubscriptionItem.vue";
+import CoinItem from "@/components/common/popups/Shop/CoinItem.vue";
 
 
 const userProvider: IUserProvider | undefined = inject(UserProviderSymbol);
@@ -111,8 +109,8 @@ onMounted(() => {
   z-index: 10001;
   top: 0;
   padding-top: 20px;
-  padding-bottom: 15px;
-  margin-bottom: 10px;
+  padding-bottom: 10px;
+  margin-bottom: 5px;
   background-color: var(--bg-color-component);
   padding-right: 5px;
 }
@@ -123,11 +121,38 @@ onMounted(() => {
   text-align: center;
   padding: 10px 12px;
   border-radius: 100px;
-  margin-bottom: 45px;
 
   color: #C99965;
   background-color: #FEE8C7;
   border: 3px solid #F7D7AD;
+}
+
+.shop{
+  &__title{
+    color: #b9845a;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  &__subscription{
+    margin-bottom: 20px;
+
+    &__list{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+  }
+  &__coins{
+    margin-bottom: 20px;
+    &__list{
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+  }
 }
 
 </style>

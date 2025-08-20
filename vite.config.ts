@@ -4,6 +4,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import svgLoader from 'vite-svg-loader'
+import legacy from '@vitejs/plugin-legacy'
 import {builtinModules} from "node:module";
 
 // https://vite.dev/config/
@@ -12,6 +13,11 @@ export default defineConfig({
     vue(),
     vueDevTools({
       launchEditor: "phpstorm"
+    }),
+    legacy({
+      targets: ['defaults', 'Chrome 60'],
+      additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
+      modernPolyfills: true,
     }),
     svgLoader()
   ],

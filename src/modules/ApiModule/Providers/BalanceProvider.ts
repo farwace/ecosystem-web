@@ -23,7 +23,20 @@ export class BalanceProvider extends ApiProvider implements IBalanceProvider{
         })
     }
 
-    getShopItems = async () => {
-        return (await this.fetch(`${this.getApiEndpoint()}/shop/items`))?.data as TShopResponse | undefined;
+    getShopItems = async (): Promise<TShopResponse | undefined> => {
+        if(!this.achievementsStore.$state.shopCoins){
+            const shop = (await this.fetch(`${this.getApiEndpoint()}/shop/items`))?.data as TShopResponse;
+            this.achievementsStore.$patch({
+                canUseTrialSubscription: shop.canUseTrialSubscription,
+                shopCoins: shop.coins,
+                shopSubscription: shop.subscriptions
+            });
+            return shop;
+        }
+        return {
+            canUseTrialSubscription: this.achievementsStore.$state.canUseTrialSubscription || false,
+            coins: this.achievementsStore.$state.shopCoins || [],
+            subscriptions: this.achievementsStore.$state.shopSubscription || []
+        }
     }
 }
