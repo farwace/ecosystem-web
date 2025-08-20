@@ -43,6 +43,13 @@ const props = defineProps<{
   background: linear-gradient(135deg, rgb(255, 150, 58) 0%, rgb(255, 106, 74) 100%);
   color: #FFF;
   position: relative;
+  cursor: pointer;
+  transition: box-shadow .3s ease-out, transform .3s ease-out;
+  will-change: transform;
+  &:hover{
+    box-shadow: 0 0 8px rgba(0,0,0,.3);
+    transform: scale3d(1.02, 1.02, 1.02);
+  }
 
   &__description{
     white-space: nowrap;

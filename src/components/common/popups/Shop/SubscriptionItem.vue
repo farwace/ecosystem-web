@@ -12,7 +12,7 @@
           </span>
         </div>
         <div class="text__description">
-          <CoinText :text="subscription.description" />
+          <CoinText :text="subscription.subtitle" />
         </div>
       </div>
     </div>
@@ -121,6 +121,7 @@ const props = defineProps<{
         font-size: 9px;
         line-height: 10px;
         font-weight: 500;
+        min-height: 72px;
 
         @media (min-width: 360px) {
           font-size: 11px;
@@ -158,10 +159,13 @@ const props = defineProps<{
       width: fit-content;
       padding: 4px 10px;
       margin: 0 auto 8px;
-      transition: background-color .3s ease-out;
+      transition: background-color .3s ease-out, transform .3s ease-out;
+      will-change: transform;
+      cursor: pointer;
 
       &:hover{
         background-color: #eb9567;
+        transform: scale3d(1.02, 1.02, 1.02);
       }
 
       @media(min-width: 360px){

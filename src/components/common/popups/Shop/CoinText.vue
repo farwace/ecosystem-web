@@ -21,8 +21,8 @@ const props = defineProps<{
 
 const parsed = computed(() => {
   return props.text
-      .split('#coin#')
-      .flatMap((chunk, index, arr) => index < arr.length - 1 ? [chunk, '__COIN__'] : [chunk])
-      .filter(Boolean)
+      ?.split?.('#coin#')
+      ?.flatMap?.((chunk, index, arr) => index < arr.length - 1 ? [chunk, '__COIN__'] : [chunk])
+      ?.filter?.(Boolean)
 })
 </script>

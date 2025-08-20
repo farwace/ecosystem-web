@@ -3,6 +3,7 @@ export type TShopSubscription = {
     code: string,
     dailyCoinsBonus: number,
     description: string,
+    subtitle: string,
     name: string,
     oldPrice: number,
     personalAccess: boolean,
