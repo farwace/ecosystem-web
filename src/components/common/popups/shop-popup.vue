@@ -33,8 +33,7 @@
 <script lang="ts" setup>
 
 import {inject, onMounted, ref} from "vue";
-import {BalanceProviderSymbol, UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
-import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.ts";
+import {BalanceProviderSymbol} from "@/modules/ApiModule/symbols.ts";
 import {Dropdown as VDropdown, vTooltip} from "floating-vue";
 import 'floating-vue/dist/style.css'
 import type {IBalanceProvider} from "@/modules/ApiModule/Interfaces/IBalanceProvider.ts";
@@ -42,8 +41,6 @@ import type {TShopResponse} from "@/modules/ApiModule/Types/TShopResponse.ts";
 import SubscriptionItem from "@/components/common/popups/Shop/SubscriptionItem.vue";
 import CoinItem from "@/components/common/popups/Shop/CoinItem.vue";
 
-
-const userProvider: IUserProvider | undefined = inject(UserProviderSymbol);
 const balanceProvider: IBalanceProvider | undefined = inject(BalanceProviderSymbol);
 
 const isLoading = ref<boolean>(false);
@@ -72,6 +69,37 @@ const loadItems = async () => {
 }
 
 onMounted(() => {
+  const tmpCoins: TShopResponse['coins'] = [];
+  for(let i = 0; i < 6; i++){
+    tmpCoins.push({
+      price: 10,
+      name: '\\.(#coin#_#coin#)./',
+      description: '',
+      code: 'stub' + i,
+      id: 1,
+      sort: 1
+    })
+  }
+
+  const tmpSubscriptions: TShopResponse['subscriptions'] = [];
+  for (let i = 0; i < 2; i++){
+    tmpSubscriptions.push({
+      price: 100,
+      name: '',
+      code: 'stub' + i,
+      oldPrice: 0,
+      description: '',
+      dailyCoinsBonus: 1,
+      personalAccess: false,
+      sort: 1
+    })
+  }
+
+  shop.value = {
+    coins: tmpCoins,
+    subscriptions: tmpSubscriptions,
+    canUseTrialSubscription: false,
+  }
   loadItems();
 });
 
@@ -87,6 +115,7 @@ onMounted(() => {
 
 .shop{
   position: relative;
+  padding: 0 15px 40px 15px;
   &.loading{
     pointer-events: none;
     &:before{

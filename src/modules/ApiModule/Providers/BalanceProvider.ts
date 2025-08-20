@@ -20,6 +20,7 @@ export class BalanceProvider extends ApiProvider implements IBalanceProvider{
             modal: true,
             darkBg: true,
             noTitle: true,
+            noPaddings: true,
         })
     }
 
