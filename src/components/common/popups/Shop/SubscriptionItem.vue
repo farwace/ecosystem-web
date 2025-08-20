@@ -1,11 +1,13 @@
 <template>
   <div class="item">
-    <UiIcon name="info" class="info-icon"/>
+    <UiIcon @click.prevent.stop="toggleTooltip()" name="info" class="info-icon" v-if="(subscription.description?.length || 0) > 0"/>
     <div class="item__title">
       <div class="picture" v-if="subscription.imageUrl">
         <img :src="subscription.imageUrl" :alt="subscription.name">
       </div>
-      <div class="text">
+      <div class="text" :class="{
+        'no-photo': !subscription.imageUrl,
+      }">
         <div class="text__title">
           <span>
             {{ subscription.name }}
@@ -43,7 +45,19 @@
         </div>
       </div>
     </template>
-
+    <VDropdown
+        v-if="(subscription.description?.length || 0) > 0"
+        :triggers="[]"
+        :shown="isDropdownOpen"
+        @update:shown="onDropdownUpdate"
+        :container="container"
+    >
+      <template #popper>
+        <div class="subscription-tooltip">
+          <CoinText :text="subscription.description" />
+        </div>
+      </template>
+    </VDropdown>
   </div>
 </template>
 <script lang="ts" setup>
@@ -55,7 +69,7 @@ import {Dropdown as VDropdown, vTooltip} from "floating-vue";
 import UiIcon from "@/components/common/icons/UiIcon.vue";
 import CoinText from "@/components/common/popups/Shop/CoinText.vue";
 import {PluralForm} from "@/classes/utils/PluralForm.ts";
-
+import {ref} from "vue";
 
 defineOptions({
   components: {
@@ -64,15 +78,27 @@ defineOptions({
   directives: {
     vTooltip
   }
-})
+});
 
 const {canUseTrialSubscription} = storeToRefs(achievementsStore());
 
+const isDropdownOpen = ref<boolean>(false);
+const toggleTooltip = () => {
+  if(!isDropdownOpen.value){
+    isDropdownOpen.value = true;
+  }
+}
+
+const onDropdownUpdate = (d: any) => {
+  if(!d){
+    isDropdownOpen.value = false;
+  }
+}
+
 const props = defineProps<{
   subscription: TShopSubscription,
+  container?: HTMLElement
 }>();
-
-//todo: тултип с описанием что входит в подписку;
 
 </script>
 <style lang="scss" scoped>
@@ -99,6 +125,10 @@ const props = defineProps<{
     .text{
       flex-grow: 1;
       margin-top: 8px;
+
+      &.no-photo{
+        padding-left: 5px;
+      }
 
       &__title{
         font-size: 10px;

@@ -16,13 +16,13 @@ import { computed } from 'vue'
 import UiIcon from '@/components/common/icons/UiIcon.vue'
 
 const props = defineProps<{
-  text: string
+  text?: string
 }>()
 
 const parsed = computed(() => {
   return props.text
       ?.split?.('#coin#')
       ?.flatMap?.((chunk, index, arr) => index < arr.length - 1 ? [chunk, '__COIN__'] : [chunk])
-      ?.filter?.(Boolean)
+      ?.filter?.(Boolean) || []
 })
 </script>

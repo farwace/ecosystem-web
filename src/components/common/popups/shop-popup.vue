@@ -9,13 +9,13 @@
       </div>
 
     </div>
-    <div ref="shopContainer">
+    <div ref="shopContainer" class="items-container">
       <div class="shop__subscription" v-if="(shop?.subscriptions?.length || 0) > 0">
         <div class="shop__title">
           Купить подписку
         </div>
         <div class="shop__subscription__list">
-          <SubscriptionItem v-for="subscription in shop?.subscriptions" :key="`subscription-${subscription.code}`" :subscription="subscription"/>
+          <SubscriptionItem :container="shopContainer" v-for="subscription in shop?.subscriptions" :key="`subscription-${subscription.code}`" :subscription="subscription"/>
         </div>
       </div>
       <div class="shop__coins" v-if="(shop?.coins?.length || 0) > 0">
@@ -34,8 +34,6 @@
 
 import {inject, onMounted, ref} from "vue";
 import {BalanceProviderSymbol} from "@/modules/ApiModule/symbols.ts";
-import {Dropdown as VDropdown, vTooltip} from "floating-vue";
-import 'floating-vue/dist/style.css'
 import type {IBalanceProvider} from "@/modules/ApiModule/Interfaces/IBalanceProvider.ts";
 import type {TShopResponse} from "@/modules/ApiModule/Types/TShopResponse.ts";
 import SubscriptionItem from "@/components/common/popups/Shop/SubscriptionItem.vue";
@@ -44,15 +42,6 @@ import CoinItem from "@/components/common/popups/Shop/CoinItem.vue";
 const balanceProvider: IBalanceProvider | undefined = inject(BalanceProviderSymbol);
 
 const isLoading = ref<boolean>(false);
-
-defineOptions({
-  components: {
-    VDropdown,
-  },
-  directives: {
-    vTooltip
-  }
-})
 
 const shopContainer = ref<HTMLDivElement>();
 const shop = ref<TShopResponse>();
@@ -89,6 +78,7 @@ onMounted(() => {
       code: 'stub' + i,
       oldPrice: 0,
       description: '',
+      subtitle: '',
       dailyCoinsBonus: 1,
       personalAccess: false,
       sort: 1
@@ -184,4 +174,13 @@ onMounted(() => {
   }
 }
 
+.items-container{
+  position: relative;
+}
+
+:deep(.subscription-tooltip){
+  font-size: 14px;
+  line-height: 14px;
+  white-space: pre-line;
+}
 </style>
