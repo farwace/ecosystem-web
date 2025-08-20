@@ -1,6 +1,5 @@
 import type {App} from "vue"
 import {createPinia} from "pinia";
-import Vue3Lottie from 'vue3-lottie'
 import {StubEventsProvider} from "@/modules/EventsModule/Providers/StubEventsProvider.ts";
 import {BridgeEventsProvider} from "@/modules/EventsModule/Providers/BridgeEventsProvider.ts";
 import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
@@ -16,7 +15,6 @@ import {ReverbSymbol} from "@/modules/ReverbModule/symbols.ts";
 import type {IReverbProvider} from "@/modules/ReverbModule/Interfaces/IReverbProvider.ts";
 import {ReverbProvider} from "@/modules/ReverbModule/Providers/ReverbProvider.ts";
 import {Console} from "@/classes/utils/Console.ts";
-import {filter} from "rxjs";
 import {EcosystemProvider} from "@/modules/EventsModule/Providers/EcosystemProvider.ts";
 import type {IEcosystemProvider} from "@/modules/EventsModule/Interfaces/IEcosystemProvider.ts";
 import type {IGiftsProvider} from "@/modules/ApiModule/Interfaces/IGiftsProvider.ts";
@@ -28,7 +26,6 @@ export const AppBuilder = () => {
     return {
         build: async ($app: App) => {
             $app.use(createPinia());
-            $app.use(Vue3Lottie, {name: 'Vue3Lottie'});
 
             const container = new Container();
 

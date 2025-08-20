@@ -6,6 +6,8 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 import svgLoader from 'vite-svg-loader'
 import legacy from '@vitejs/plugin-legacy'
 import {builtinModules} from "node:module";
+import { visualizer } from 'rollup-plugin-visualizer'
+
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -19,7 +21,13 @@ export default defineConfig({
       additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
       modernPolyfills: true,
     }),
-    svgLoader()
+    svgLoader(),
+    // visualizer({
+    //   open: true, // откроет в браузере после сборки
+    //   filename: 'dist/stats.html', // путь до отчёта
+    //   gzipSize: true,
+    //   brotliSize: true
+    // })
   ],
   resolve: {
     alias: {
