@@ -142,9 +142,6 @@ const props = defineProps<{
           margin: auto 0;
         }
 
-        @media(min-width: 360px){
-          font-size: 12px;
-        }
       }
 
       &__description{
@@ -152,11 +149,6 @@ const props = defineProps<{
         line-height: 10px;
         font-weight: 500;
         min-height: 72px;
-
-        @media (min-width: 360px) {
-          font-size: 11px;
-          line-height: 12px;
-        }
       }
     }
   }
@@ -198,9 +190,6 @@ const props = defineProps<{
         transform: scale3d(1.02, 1.02, 1.02);
       }
 
-      @media(min-width: 360px){
-        font-size: 14px;
-      }
     }
 
     .price{
@@ -229,6 +218,28 @@ const props = defineProps<{
         &.center{
           margin: 0 auto;
         }
+      }
+    }
+  }
+}
+
+@media(min-width: 360px){
+  .item{
+    &__title{
+      .text{
+        &__title{
+          font-size: 12px;
+        }
+        &__description{
+          font-size: 11px;
+          line-height: 12px;
+        }
+      }
+    }
+
+    &__price{
+      .buy-button{
+        font-size: 14px;
       }
     }
   }

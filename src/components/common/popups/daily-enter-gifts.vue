@@ -172,10 +172,6 @@ const receiveDailyReward = async () => {
     justify-content: space-between;
     margin-left: -10px;
     margin-right: -10px;
-    @media(min-width: 390px){
-      margin-left: 0;
-      margin-right: 0;
-    }
 
     .item{
       white-space: nowrap;
@@ -200,10 +196,6 @@ const receiveDailyReward = async () => {
           background-size: 10px;
           background-position: center;
           background-repeat: no-repeat;
-
-          @media(min-width: 390px){
-            display: none;
-          }
         }
       }
 
@@ -244,9 +236,6 @@ const receiveDailyReward = async () => {
           background-repeat: no-repeat;
         }
 
-        @media(min-width: 390px){
-          display: block;
-        }
       }
 
     }
@@ -295,7 +284,29 @@ const receiveDailyReward = async () => {
   position: absolute;
   bottom: 5px;
   display: none;
-  @media(min-width: 390px){
+}
+
+@media(min-width: 390px){
+  .daily-rewards{
+    &__list{
+      margin-left: 0;
+      margin-right: 0;
+
+      .item{
+        &.active{
+          &:after{
+            display: none;
+          }
+        }
+
+        &__point{
+          display: block;
+        }
+      }
+    }
+  }
+
+  .enter-progress{
     display: block;
   }
 }

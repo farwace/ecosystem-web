@@ -107,12 +107,6 @@
         animation: marquee var(--marquee-duration) ease-in-out infinite;
       }
     }
-
-
-
-    @media(min-width: 390px){
-      font-size: 18px;
-    }
   }
 }
 
@@ -171,6 +165,15 @@
   }
   100%{
     opacity: 1;
+  }
+}
+
+
+@media(min-width: 390px){
+  .avatar{
+    &__name{
+      font-size: 18px;
+    }
   }
 }
 </style>

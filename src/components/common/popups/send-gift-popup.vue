@@ -414,9 +414,6 @@ onMounted(async () => {
   flex-direction: row;
   align-items: center;
   gap: 10px;
-  @media(min-width: 355px){
-    gap: 25px;
-  }
 
   .quantity{
     user-select: none;
@@ -441,6 +438,13 @@ onMounted(async () => {
       display: inline-block;
       text-align: center;
     }
+  }
+}
+
+
+@media(min-width: 355px){
+  .send-gift-btn{
+    gap: 25px;
   }
 }
 </style>

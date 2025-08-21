@@ -103,9 +103,6 @@
 
   &__value{
     font-weight: bolder;
-    @media(min-width: 390px){
-      font-size: 18px;
-    }
   }
 
   &__icon{
@@ -121,9 +118,6 @@
     border: 1px solid #F0CA9F;
     background-color: #FADFBE;
 
-    @media(min-width: 390px){
-      height: 14px;
-    }
 
     &__fill{
       background-color: #B4D6E3;
@@ -141,8 +135,20 @@
       line-height: 11px;
       vertical-align: top;
       position: relative;
+    }
+  }
+}
 
-      @media(min-width: 390px){
+@media(min-width: 390px){
+  .exp{
+    &__value{
+      font-size: 18px;
+    }
+
+    .progressbar{
+      height: 14px;
+
+      &__text{
         font-size: 12px;
         line-height: 12px;
       }

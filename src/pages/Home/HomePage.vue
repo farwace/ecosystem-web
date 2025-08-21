@@ -65,10 +65,6 @@ const addToFavorite = () => {
   display: flex;
   flex-wrap: nowrap;
   gap: 15px;
-
-  @media(min-width: 390px){
-    gap: 28px;
-  }
 }
 
 .game-list{
@@ -110,6 +106,12 @@ const addToFavorite = () => {
 .favorite-icon{
   width: 45px;
   height: 45px;
+}
+
+@media(min-width: 390px){
+  .header{
+    gap: 28px;
+  }
 }
 
 </style>
