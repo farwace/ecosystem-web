@@ -16,7 +16,10 @@
             class="segment-label"
             :style="labelStyle(i)"
         >
-          <span class="icon" v-if="r.icon">{{ r.icon }}</span>
+<!--          <span class="icon" v-if="r.icon">{{ r.icon }}</span>-->
+          <span class="icon" v-if="r.icon">
+            <UiIcon :name="r.icon" />
+          </span>
           <span class="label">{{ r.label }}</span>
         </div>
         <div class="hub"></div>
@@ -27,6 +30,7 @@
 
 <script lang="ts" setup>
 import { ref, computed, nextTick } from 'vue'
+import UiIcon from "@/components/common/icons/UiIcon.vue";
 
 export interface Reward {
   id: string
@@ -94,7 +98,7 @@ function labelStyle(i: number) {
   const angle = i * seg.value + seg.value / 2
   const polar = angle - 90
   const rad = (Math.PI / 180) * polar
-  const radiusPct = 38
+  const radiusPct = 35
   const x = 50 + Math.cos(rad) * radiusPct
   const y = 50 + Math.sin(rad) * radiusPct
 
@@ -236,6 +240,10 @@ defineExpose({ spinTo, spinToId, spinning })
   display: block;
   font-size: 22px;
   line-height: 1;
+  svg{
+    width: 30px;
+    height: 30px;
+  }
 }
 
 .segment-label .label {

@@ -10,15 +10,17 @@
       <div class="subtitle">После просмотра рекламы выпадет случайная награда</div>
     </div>
 
-    <div class="wheel">
-      <div class="wheel__inner">
-        <RewardWheel
-            ref="wheelRef"
-            :rewards="rewards"
-            :duration="5200"
-            @start="onStart"
-            @finished="onFinished"
-        />
+    <div class="wheel__outer">
+      <div class="wheel">
+        <div class="wheel__inner">
+          <RewardWheel
+              ref="wheelRef"
+              :rewards="rewards"
+              :duration="5200"
+              @start="onStart"
+              @finished="onFinished"
+          />
+        </div>
       </div>
     </div>
     <div class="reward-button">
@@ -36,16 +38,28 @@ import type { Reward } from "@/components/common/popups/RewardWheel/RewardWheel.
 import RewardWheel from "@/components/common/popups/RewardWheel/RewardWheel.vue";
 import UiIcon from "@/components/common/icons/UiIcon.vue";
 
+const isLoading = ref<boolean>(false);
+
 const rewards: Reward[] = [
-  { id: 'coins10', label: '+10', icon: '🪙' },
-  { id: 'flask', label: 'Эл-ка', icon: '🧪' },
-  { id: 'coins100', label: '+100', icon: '💰' },
-  { id: 'star', label: '⭐', icon: '⭐' },
-  { id: 'chest', label: 'Сундук', icon: '🎁' },
-  { id: 'boost', label: 'Буст', icon: '⚡' },
-  { id: 'potion', label: 'Зелье', icon: '🧴' },
-  { id: 'mystery', label: '?', icon: '❓' },
+  { id: 'coins5', label: '5', icon: 'coin' },
+  { id: 'coins15', label: '15', icon: 'low-money' },
+  { id: 'coins5-1', label: '5', icon: 'coin' },
+  { id: 'coins1000', label: '1000', icon: 'big-money' },
+  { id: 'coins10', label: '10', icon: 'coin' },
+  { id: 'coins-5-2', label: '5', icon: 'coin' },
+  { id: 'coins10-1', label: '10', icon: 'coin' },
+  { id: 'coins50', label: '50', icon: 'middle-money' },
 ]
+// const rewards: Reward[] = [
+//   { id: 'coins10', label: '+10', icon: '🪙' },
+//   { id: 'flask', label: 'Эл-ка', icon: '🧪' },
+//   { id: 'coins100', label: '+100', icon: '💰' },
+//   { id: 'star', label: '⭐', icon: '⭐' },
+//   { id: 'chest', label: 'Сундук', icon: '🎁' },
+//   { id: 'boost', label: 'Буст', icon: '⚡' },
+//   { id: 'potion', label: 'Зелье', icon: '🧴' },
+//   { id: 'mystery', label: '?', icon: '❓' },
+// ]
 
 const wheelRef = ref<InstanceType<typeof RewardWheel> | null>(null);
 async function onWatchAdAndSpin() {
@@ -128,6 +142,14 @@ function onFinished(payload: { index: number; reward: Reward }) {
   width: 100%;
   padding-top: 100%;
   position: relative;
+
+  &__outer{
+    position: relative;
+    max-width: 392px;
+    max-height: 392px;
+    margin-left: auto;
+    margin-right: auto;
+  }
 
   &__inner{
     position: absolute;
