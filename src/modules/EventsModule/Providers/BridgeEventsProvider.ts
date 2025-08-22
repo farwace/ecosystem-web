@@ -12,6 +12,8 @@ import type {App} from "vue";
 import {inject, injectable} from "inversify";
 import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
 import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
+import type {TShopSubscription} from "@/modules/ApiModule/Types/TShopSubscription.ts";
+import type {TShopCoin} from "@/modules/ApiModule/Types/TShopCoin.ts";
 
 @injectable()
 export class BridgeEventsProvider implements IPlatformEvents {
@@ -87,8 +89,54 @@ export class BridgeEventsProvider implements IPlatformEvents {
         return bridge.send('VKWebAppInit');
     }
 
-    buySubscription = async () => {
-        //todo: вызвать метод на покупку подписки!
-        alert('Вызывать метод на покупку подписки!')
+    buySubscription = async (subscription: TShopSubscription) => {
+        try {
+            const res = await bridge.send('VKWebAppShowSubscriptionBox', {
+                action: 'create',
+                item: subscription.code,
+            });
+
+            if(res.success){
+                this.notificationsProvider.addNotification({
+                    type: 'success',
+                    message: "Спасибо за совершение покупки!"
+                })
+            }
+        }
+        catch (e: any){
+            this.notificationsProvider.addNotification({
+                type: 'error',
+                message: "Не удалось оформить подписку"
+            })
+        }
+    }
+
+    buyMoney = async (item: TShopCoin) => {
+        try{
+            const res = await bridge.send('VKWebAppShowOrderBox', {
+                type: 'item',
+                item: item.code
+            });
+
+            if(res.status == 'fail'){
+                this.notificationsProvider.addNotification({
+                   type: 'error',
+                   message: "Не удалось совершить покупку"
+                })
+            }
+
+            if(res.status == 'success'){
+                this.notificationsProvider.addNotification({
+                    type: 'success',
+                    message: "Спасибо за совершение покупки!"
+                })
+            }
+        }
+        catch (e: any){
+            this.notificationsProvider.addNotification({
+                type: 'error',
+                message: "Не удалось совершить покупку"
+            })
+        }
     }
 }

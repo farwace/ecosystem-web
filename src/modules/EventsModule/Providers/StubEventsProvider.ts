@@ -11,6 +11,8 @@ import type {App} from "vue";
 import {inject, injectable} from "inversify";
 import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
 import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
+import type {TShopSubscription} from "@/modules/ApiModule/Types/TShopSubscription.ts";
+import type {TShopCoin} from "@/modules/ApiModule/Types/TShopCoin.ts";
 
 @injectable()
 export class StubEventsProvider implements IPlatformEvents{
@@ -118,7 +120,12 @@ export class StubEventsProvider implements IPlatformEvents{
         }
     }
 
-    buySubscription = async () => {
-        alert('Вызывать метод на покупку подписки!')
+    buySubscription = async (s: TShopSubscription) => {
+        alert(`Вызывать метод на покупку подписки!`)
+    }
+
+    buyMoney = async (item: TShopCoin) => {
+        //todo: вызвать метод на покупку монет!
+        alert('Вызывать метод на покупку монет!')
     }
 }

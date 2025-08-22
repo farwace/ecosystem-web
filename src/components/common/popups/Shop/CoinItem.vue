@@ -17,7 +17,7 @@
     <div class="item__old-price" v-if="(coin.oldPrice || 0) > 0">
       &nbsp;{{ prepareNumber(coin.oldPrice || 0) }}&nbsp;{{ PluralForm((coin.oldPrice || 0), 'голос', 'голоса', 'голосов') }}&nbsp;
     </div>
-    <div class="item__price">
+    <div class="item__price" @click="openDonateBox(coin)">
       {{ prepareNumber(coin.price) }} {{ PluralForm((coin.price || 0), 'голос', 'голоса', 'голосов') }}
     </div>
   </div>
@@ -28,10 +28,18 @@ import CoinText from "@/components/common/popups/Shop/CoinText.vue";
 import {PluralForm} from "@/classes/utils/PluralForm.ts";
 import {prepareNumber} from "@/classes/utils/PrepareNumber.ts";
 import {vMarquee} from "@/classes/directives/marquee.ts";
+import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
+import {inject} from "vue";
+import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
 
+const platformEventsProvider: IPlatformEvents | undefined = inject(PlatformEventsSymbol);
 const props = defineProps<{
   coin: TShopCoin,
 }>();
+
+const openDonateBox = (coin: TShopCoin) => {
+  platformEventsProvider?.buyMoney(coin);
+}
 
 </script>
 <style lang="scss" scoped>

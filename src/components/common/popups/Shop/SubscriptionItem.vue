@@ -20,7 +20,7 @@
     </div>
     <template v-if="canUseTrialSubscription && (subscription?.trialDuration || 0)> 0">
       <div class="item__price">
-        <div class="buy-button">
+        <div class="buy-button" @click="openSubscriptionBox(subscription)">
           Бесплатно {{ subscription.trialDuration || 0 }} {{ PluralForm((subscription.trialDuration || 0), 'день', 'дня', 'дней')  }}
         </div>
         <div class="price">
@@ -35,7 +35,7 @@
     </template>
     <template v-else>
       <div class="item__price">
-        <div class="buy-button">
+        <div class="buy-button" @click="openSubscriptionBox(subscription)">
           {{ subscription.price }}&nbsp;{{ PluralForm(subscription.price, 'голос', 'голоса', 'голосов') }}
         </div>
         <div class="price">
@@ -69,7 +69,9 @@ import {Dropdown as VDropdown, vTooltip} from "floating-vue";
 import UiIcon from "@/components/common/icons/UiIcon.vue";
 import CoinText from "@/components/common/popups/Shop/CoinText.vue";
 import {PluralForm} from "@/classes/utils/PluralForm.ts";
-import {ref} from "vue";
+import {inject, ref} from "vue";
+import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
+import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
 
 defineOptions({
   components: {
@@ -79,6 +81,8 @@ defineOptions({
     vTooltip
   }
 });
+
+const bridgeEventsProvider: IPlatformEvents | undefined = inject(PlatformEventsSymbol);
 
 const {canUseTrialSubscription} = storeToRefs(achievementsStore());
 
@@ -99,6 +103,10 @@ const props = defineProps<{
   subscription: TShopSubscription,
   container?: HTMLElement
 }>();
+
+const openSubscriptionBox = (s: TShopSubscription) => {
+  bridgeEventsProvider?.buySubscription(s);
+}
 
 </script>
 <style lang="scss" scoped>
