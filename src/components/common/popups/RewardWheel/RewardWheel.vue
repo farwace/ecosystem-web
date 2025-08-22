@@ -45,7 +45,16 @@ const props = withDefaults(defineProps<{
   colors?: string[]
 }>(), {
   duration: 5000,
-  colors: () => ['#f2b36d','#e7806e','#e9cf7a','#9ccf93','#6bb7c9','#6aa6cc','#9ad3f1','#c3e5b5']
+  colors: () => [
+    '#f2b36d',
+    '#e7806e',
+    '#e9cf7a',
+    '#9ccf93',
+    '#6bb7c9',
+    '#6aa6cc',
+    '#9ad3f1',
+    '#c3e5b5'
+  ]
 })
 
 const emit = defineEmits<{

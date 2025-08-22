@@ -1,5 +1,15 @@
 <template>
-  <div class="reward-body">
+  <div
+      class="reward"
+      :class="{loading: isLoading}"
+  >
+    <div class="reward-header">
+      <div class="title">
+        Колесо фортуны
+      </div>
+      <div class="subtitle">После просмотра рекламы выпадет случайная награда</div>
+    </div>
+
     <div class="wheel">
       <div class="wheel__inner">
         <RewardWheel
@@ -11,16 +21,12 @@
         />
       </div>
     </div>
-<!--    <div class="controls">
-      <button
-          v-for="reward in rewards"
-          :key="reward.id"
-          @click="spinToReward(reward.id)"
-      >
-        Выбрать: {{ reward.label }}
-      </button>
-    </div>-->
-    <button @click="onWatchAdAndSpin">Случайный спин</button>
+    <div class="reward-button">
+      <div class="btn" @click="onWatchAdAndSpin">
+        <UiIcon name="gift" />
+        Смотреть и вращать
+      </div>
+    </div>
   </div>
 </template>
 
@@ -28,6 +34,7 @@
 import { ref } from "vue";
 import type { Reward } from "@/components/common/popups/RewardWheel/RewardWheel.vue";
 import RewardWheel from "@/components/common/popups/RewardWheel/RewardWheel.vue";
+import UiIcon from "@/components/common/icons/UiIcon.vue";
 
 const rewards: Reward[] = [
   { id: 'coins10', label: '+10', icon: '🪙' },
@@ -43,12 +50,12 @@ const rewards: Reward[] = [
 const wheelRef = ref<InstanceType<typeof RewardWheel> | null>(null);
 async function onWatchAdAndSpin() {
   // Случайный выбор награды для теста
-  // const randomIndex = Math.floor(Math.random() * rewards.length)
-  // const resultId = rewards[randomIndex].id
+  const randomIndex = Math.floor(Math.random() * rewards.length)
+  const resultId = rewards[randomIndex].id
 
-  //console.log('Выбранная награда:', rewards[randomIndex].label)
+  console.log('Выбранная награда:', rewards[randomIndex].label)
 
-  const resultId = 'star';
+  //const resultId = 'star';
 
   await wheelRef.value?.spinToId(resultId, {
     spins: 15,
@@ -67,27 +74,54 @@ function onFinished(payload: { index: number; reward: Reward }) {
 </script>
 
 <style lang="scss" scoped>
-.reward-body {
+.reward {
+  position: relative;
+  padding: 0 15px 25px;
+
+  &.loading{
+    pointer-events: none;
+    &:before{
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.4);
+      z-index: 20000;
+    }
+  }
+
+
+}
+
+.reward-header{
+  position: relative;
+  z-index: 10001;
+  top: 0;
   padding-top: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
+  padding-bottom: 5px;
+  margin-bottom: 0;
+  background-color: var(--bg-color-component);
+  padding-right: 5px;
 }
-
-button {
-  padding: 12px 24px;
-  background: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
+.title{
+  font-size: 24px;
+  line-height: 22px;
   font-weight: bold;
-}
+  text-align: center;
+  padding: 10px 12px;
+  border-radius: 100px;
+  margin-bottom: 0;
 
-button:hover {
-  background: #45a049;
+  color: #C99965;
+  background-color: #FEE8C7;
+  border: 3px solid #F7D7AD;
+}
+.subtitle{
+  font-size: 14px;
+  text-align: center;
+  margin-top: 5px;
 }
 
 .wheel{
@@ -102,6 +136,41 @@ button:hover {
     width: 100%;
     height: 100%;
     overflow: hidden;
+  }
+}
+
+.reward-button{
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  .btn{
+    padding: 10px 12px 8px 12px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 6px;
+    transition: box-shadow 0.3s ease-out, background-color 0.3s ease-out;
+
+    background-color: #FF7E85;
+    color: #FFEDCB;
+    box-shadow: 0 4px 0 #F06470;
+    &:hover{
+      background-color: #ef7178;
+      box-shadow: 0 4px 0 #dd5864;
+    }
+
+    svg{
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
   }
 }
 </style>

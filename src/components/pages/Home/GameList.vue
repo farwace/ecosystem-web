@@ -43,6 +43,7 @@ const getSpinHasBeenClicked = () => {
     modal: true,
     darkBg: true,
     noTitle: true,
+    noPaddings: true,
   });
 }
 
