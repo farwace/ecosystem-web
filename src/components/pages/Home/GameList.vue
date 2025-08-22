@@ -23,9 +23,12 @@
 import UiBtn from "@/components/common/ui/UiBtn.vue";
 import {storeToRefs} from "pinia";
 import {bridgeStore} from "@/stores/Bridge/bridgeStore.ts";
-import vue from "@vitejs/plugin-vue";
 import GetSpin from "@/components/pages/Home/GetSpin.vue";
+import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
+import {inject} from "vue";
+import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
 
+const notificationsProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
 const {videoAdvAccepted} = storeToRefs(bridgeStore());
 
 const createRoom = () => {
@@ -36,7 +39,11 @@ const startGame = () => {
 }
 
 const getSpinHasBeenClicked = () => {
-  alert('Получить бонусы');
+  notificationsProvider?.addPopup('reward-wheel', 'reward-wheel-popup', {
+    modal: true,
+    darkBg: true,
+    noTitle: true,
+  });
 }
 
 
