@@ -31,7 +31,7 @@
                 <div>
                   Доступно с премиум доступом
                 </div>
-                <div v-if="canUseTrialSubscription" class="btn-buy" @click="bridgeEventsProvider?.buySubscription()">
+                <div v-if="canUseTrialSubscription" class="btn-buy" @click="balanceProvider?.openDonutPopup()">
                   Попробовать бесплатно <UiIcon class="target-icon" name="target-blank" />
                 </div>
               </div>
@@ -47,7 +47,7 @@
 <script lang="ts" setup>
 
 import {computed, inject, onMounted, ref} from "vue";
-import {UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
+import {BalanceProviderSymbol, UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
 import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.ts";
 import {storeToRefs} from "pinia";
 import {dailyMissionsStore} from "@/stores/DailyMissions/dailyMissionsStore.ts";
@@ -59,14 +59,13 @@ import {Dropdown as VDropdown, vTooltip} from "floating-vue";
 import 'floating-vue/dist/style.css'
 import DailyMissionGifts from "@/components/common/popups/DailyMissions/DailyMissionGifts.vue";
 import UiIcon from "@/components/common/icons/UiIcon.vue";
-import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
-import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
+import type {IBalanceProvider} from "@/modules/ApiModule/Interfaces/IBalanceProvider.ts";
 
 
 const userProvider: IUserProvider | undefined = inject(UserProviderSymbol);
 const {dailyMissionsHasBeenLoaded, dailyMissionsLoadingError, dailyMissionList, isDailyMissionsLoading} = storeToRefs(dailyMissionsStore());
 const {subscription, canUseTrialSubscription} = storeToRefs(ecosystemStore());
-const bridgeEventsProvider: IPlatformEvents | undefined = inject(PlatformEventsSymbol);
+const balanceProvider: IBalanceProvider | undefined = inject(BalanceProviderSymbol);
 const isLoading = ref<boolean>(false);
 
 defineOptions({
