@@ -67,6 +67,12 @@ export class BridgeEventsProvider implements IPlatformEvents {
                     socialId: launchParams.vk_user_id,
                 });
             }
+
+            if(launchParams.vk_platform == 'mobile_iphone' || launchParams?.vk_platform == 'mobile_ipad' || launchParams?.vk_platform == 'mobile_iphone_messenger'){
+                bridge.send('VKWebAppSetSwipeSettings', {
+                    history: true
+                });
+            }
         }
         catch (e) {
             Console.log('<<<>>> Launch Params Error <<<>>>');
