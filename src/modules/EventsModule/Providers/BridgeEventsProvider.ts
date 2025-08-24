@@ -73,6 +73,12 @@ export class BridgeEventsProvider implements IPlatformEvents {
                     history: true
                 });
             }
+            if(['desktop_web', 'desktop_app_messenger', 'desktop_web_messenger', 'web_external'].indexOf(launchParams.vk_platform) > -1){
+                document.documentElement.setAttribute('desktop' , '1');
+            }
+
+
+
         }
         catch (e) {
             Console.log('<<<>>> Launch Params Error <<<>>>');

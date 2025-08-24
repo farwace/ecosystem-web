@@ -97,6 +97,7 @@ const props = defineProps<{
       border-radius: 20px;
       padding: 0 20px;
       align-items: center;
+      cursor: pointer;
 
       &__swiper{
         flex-shrink: 0;

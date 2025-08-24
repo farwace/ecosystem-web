@@ -156,7 +156,7 @@ export class EcosystemProvider implements IEcosystemProvider{
                     backdropBlur: true,
                     darkBg: true,
                     title: 'Соединение разорвано',
-                    message: 'Приложение открыто в другом окне',
+                    message: 'Приложение открыто в другом окне или на другом устройстве',
                     modal: true
                 });//todo: Окно с информацией о разрыве оформить в красивом стиле
                 this.reverbProvider.closeConnections();

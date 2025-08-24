@@ -240,7 +240,7 @@ const getNotificationBackgroundColor = (eType?: TNotification['type']) => {
     .popup{
       bottom: unset!important;
       top: 50%;
-      transform: translateY(-50%);
+      transform: translate(-50%, -50%);
       max-height: calc(100% - 200px);
       max-height: calc(100% - 200px - env(safe-area-inset-top, 0px));
     }
@@ -268,7 +268,9 @@ const getNotificationBackgroundColor = (eType?: TNotification['type']) => {
     max-height: calc(100% - 100px);
     max-height: calc(100% - 100px - env(safe-area-inset-top, 0px));
     width: calc(100% - 30px);
-    left: 15px;
+    max-width: 500px;
+    left: 50%;
+    transform: translateX(-50%);
     border-radius: 12px;
     padding: 0 20px 40px;
     background-color: var(--bg-color-component);
@@ -278,7 +280,8 @@ const getNotificationBackgroundColor = (eType?: TNotification['type']) => {
 
     &.small-popup{
       width: 50%;
-      left: 25%;
+      max-width: 250px;
+      //left: 25%;
       padding-bottom: 20px;
     }
 
@@ -343,5 +346,13 @@ const getNotificationBackgroundColor = (eType?: TNotification['type']) => {
     }
   }
 
+}
+
+[desktop="1"]{
+  .modal{
+    .popup{
+      max-height: calc(100% - 40px);
+    }
+  }
 }
 </style>

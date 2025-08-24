@@ -22,7 +22,7 @@
     <div class="top-gifts__inner">
       <div class="gifts-items" v-if="!isLoading">
         <div class="gifts-items__container" >
-          <div class="gifts-items__inner">
+          <div class="gifts-items__inner applied">
             <template v-for="(gift, index) in appliedGifts" :key="`user-${props.id}-gift-${gift.id}-popup-${index}`">
               <gift-wall-item :gift="gift" @click="openGiftDetailPopup(gift)"/>
             </template>
@@ -240,6 +240,12 @@ onMounted(() => {
     flex-wrap: wrap;
     gap: 5px;
     justify-content: space-between;
+
+    &.applied{
+      .item{
+        cursor: pointer;
+      }
+    }
   }
 }
 

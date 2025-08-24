@@ -121,6 +121,10 @@ $themes: (
   vertical-align: middle;
   margin-top: -4px;
 }
+
+.cursor-pointer{
+  cursor: pointer;
+}
 @media(max-width: 768px){
   .iziToast-wrapper{
     &.iziToast-wrapper-topCenter{

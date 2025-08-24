@@ -26,21 +26,21 @@
       </div>
       <profile-gifts :open-gift-list-modal="openGiftListModal" :avatar="profile?.avatar" :id="profile?.id" :gifts="profile?.topGifts" :count="profile?.giftsCount" />
 
-      <div v-if="profile?.topFans?.length || 0 > 0" @click="openTopFansModal">
+      <div class="cursor-pointer" v-if="profile?.topFans?.length || 0 > 0" @click="openTopFansModal">
         <div class="title">
           Поклонники <UiIcon class="inline-icon" name="chevron-right"></UiIcon>
         </div>
         <profile-fans :fans="profile?.topFans" />
       </div>
 
-      <div @click="openAchievementsModal">
+      <div class="cursor-pointer" @click="openAchievementsModal">
         <div class="title">
           Достижения <span v-if="hasUnclaimedCompletedAchievement && profile?.id == id" class="note-circle"></span><UiIcon class="inline-icon" name="chevron-right"></UiIcon>
         </div>
         <profile-achievements :current="profile?.id == id" :name="profile?.name" :achievements="profile?.recentAchievements" />
       </div>
 
-      <template v-if="profile?.id == id && false">
+      <template class="cursor-pointer" v-if="profile?.id == id && false">
         <div class="title">
           Гости <UiIcon class="inline-icon" name="chevron-right"></UiIcon>
         </div>
@@ -346,6 +346,7 @@ onMounted(async () => {
   align-items: center;
   width: 100%;
   gap: 5px;
+  cursor: pointer;
 }
 
 .inline-icon{
