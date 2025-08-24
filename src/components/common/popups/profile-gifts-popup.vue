@@ -11,7 +11,7 @@
         <div class="data">
           <div class="data__body">
             <div class="data__title">Общее количество подарков:</div>
-<!--            <div class="data__value">{{ isLoading ? '&nbsp;' : (appliedGifts.length || 0) }}</div>-->
+            <div class="data__value">{{ isLoading ? '&nbsp;' : (appliedGifts.length || 0) }}</div>
           </div>
         </div>
       </div>
@@ -23,18 +23,18 @@
       <div class="gifts-items" v-if="!isLoading">
         <div class="gifts-items__container" >
           <div class="gifts-items__inner applied">
-<!--            <template v-for="(gift, index) in appliedGifts" :key="`user-${props.id}-gift-${gift.id}-popup-${index}`">
+            <template v-for="(gift, index) in appliedGifts" :key="`user-${props.id}-gift-${gift.id}-popup-${index}`">
               <gift-wall-item :gift="gift" @click="openGiftDetailPopup(gift)"/>
-            </template>-->
+            </template>
           </div>
 
-<!--          <div class="gifts-items__delimiter" v-if="(sortedGifts?.length || 0) > 0">
+          <div class="gifts-items__delimiter" v-if="(gifts?.length || 0) > 0">
             Не получены:
-          </div>-->
+          </div>
           <div class="gifts-items__inner">
-<!--            <template v-for="(gift, index) in notAppliedGifts" :key="`user-${props.id}-gift-${gift.id}-popup-${index}`">
+            <template v-for="(gift, index) in notAppliedGifts" :key="`user-${props.id}-gift-${gift.id}-popup-${index}`">
               <gift-wall-item :gift="gift"/>
-            </template>-->
+            </template>
           </div>
 
         </div>
@@ -89,31 +89,18 @@ const loadGifts = async () => {
 
 }
 
-/*const sortedGifts = computed(() => {
-  return gifts.value?.sort((a,b) => {
-    return (a.sort || 0) > (b.sort || 0) ? 1 : -1;
-  })?.sort((a,b) => {
-    if(a.price > b.price){
-      return -1;
-    }
-    if(a.price < b.price){
-      return 1;
-    }
-    return 0;
+
+const appliedGifts = computed(() => {
+  return gifts.value?.filter?.((g) => {
+    return !!g.sender
   }) || [];
 });
 
-const appliedGifts = computed(() => {
-  return sortedGifts.value.filter((g) => {
-    return !!g.sender
-  });
-});
-
 const notAppliedGifts = computed(() => {
-  return sortedGifts.value.filter((g) => {
+  return gifts.value?.filter?.((g) => {
     return !g.sender
-  });
-});*/
+  }) || [];
+});
 
 const openGiftDetailPopup = (gift: TGift) => {
   notificationsProvider?.addPopup(`user-${props.id}-gift-${gift.id}-detail`, 'gift-detail-info-popup', {
