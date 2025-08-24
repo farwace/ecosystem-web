@@ -287,7 +287,7 @@ const getNotificationBackgroundColor = (eType?: TNotification['type']) => {
 
     &.h-100{
       height: 100%;
-      height: сфдс(100% - env(safe-area-inset-top, 0px));
+      height: calc(100% - env(safe-area-inset-top, 0px));
     }
     &.bg-pink{
       background-color: #FFB3D2;
