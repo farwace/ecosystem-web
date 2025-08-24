@@ -23,18 +23,18 @@
       <div class="gifts-items" v-if="!isLoading">
         <div class="gifts-items__container" >
           <div class="gifts-items__inner applied">
-            <template v-for="(gift, index) in appliedGifts" :key="`user-${props.id}-gift-${gift.id}-popup-${index}`">
+<!--            <template v-for="(gift, index) in appliedGifts" :key="`user-${props.id}-gift-${gift.id}-popup-${index}`">
               <gift-wall-item :gift="gift" @click="openGiftDetailPopup(gift)"/>
-            </template>
+            </template>-->
           </div>
 
           <div class="gifts-items__delimiter" v-if="(sortedGifts?.length || 0) > 0">
             Не получены:
           </div>
           <div class="gifts-items__inner">
-            <template v-for="(gift, index) in notAppliedGifts" :key="`user-${props.id}-gift-${gift.id}-popup-${index}`">
+<!--            <template v-for="(gift, index) in notAppliedGifts" :key="`user-${props.id}-gift-${gift.id}-popup-${index}`">
               <gift-wall-item :gift="gift"/>
-            </template>
+            </template>-->
           </div>
 
         </div>
