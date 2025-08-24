@@ -38,7 +38,7 @@ export class ReverbProvider implements IReverbProvider{
         this._reverbObserver$ = new Subject();
         window.Pusher = Pusher;
 
-        if(import.meta.env.VITE_ENVELOP === 'development'){
+        if(['development', 'preprod'].indexOf(import.meta.env.VITE_ENVELOP) > -1){
             Pusher.logToConsole = true;
         }
     }

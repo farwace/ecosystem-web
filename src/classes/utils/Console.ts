@@ -9,6 +9,6 @@ export const Console = {
         Console.isDevelop() && console.info(...data);
     },
     isDevelop:() => {
-        return import.meta.env.VITE_ENVELOP === 'development';
+        return ['development', 'preprod'].indexOf(import.meta.env.VITE_ENVELOP) > -1;
     }
 }

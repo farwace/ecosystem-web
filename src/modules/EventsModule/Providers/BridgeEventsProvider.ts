@@ -19,7 +19,7 @@ import type {TShopCoin} from "@/modules/ApiModule/Types/TShopCoin.ts";
 export class BridgeEventsProvider implements IPlatformEvents {
     private _bridgeEvent$ = new Subject<VKBridgeEvent<keyof ReceiveDataMap>>();
     private ecosystemStore: Store<'ecosystem', IEcosystemStore>
-
+    private arLaunchParams: any = undefined;
     constructor(
         @inject(NotificationsSymbol)
         private notificationsProvider: INotificationsProvider
@@ -28,6 +28,7 @@ export class BridgeEventsProvider implements IPlatformEvents {
             this._bridgeEvent$.next(event);
         });
         this.ecosystemStore = ecosystemStore();
+        this.arLaunchParams = window?.location?.search?.slice?.(1)?.split?.('&')?.map?.(e => e?.split?.('='));
     }
 
     install(app: App, symbol: symbol) {
@@ -47,9 +48,20 @@ export class BridgeEventsProvider implements IPlatformEvents {
     }
 
     async queryLaunchParams(){
+        /*@ts-ignore*/
+        if(this?.arLaunchParams?.filter?.(p => p?.[0] === 'vk_app_id')?.[0]?.[1] != import.meta.env.VITE_VK_APP_ID){
+            this.notificationsProvider.addPopup('laucnh-error', 'simple-popup', {
+                noClose: true,
+                darkBg: true,
+                backdropBlur: true,
+                title: 'Ошибка инициализации приложения!',
+                message: 'Неизвестная точка запуска. <br/><a href="https://vk.com/app'+import.meta.env.VITE_VK_APP_ID+'">Нажмите для перехода в интерфейс <b>ВКконтакте</b></a>',
+                modal: true,
+            })
+        }
+
         try {
             const launchParams = await bridge.send('VKWebAppGetLaunchParams');
-
             if(launchParams.vk_app_id && launchParams.vk_app_id == import.meta.env.VITE_VK_APP_ID){
                 const userInfo = await bridge.send('VKWebAppGetUserInfo', {user_id: launchParams.vk_user_id});
 

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>{{message}}</div>
+    <div v-html="message"></div>
   </div>
 </template>
 <script lang="ts" setup>
