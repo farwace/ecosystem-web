@@ -18,7 +18,7 @@ const { animateRoute, customSwipeSettings } = storeToRefs(ecosystemStore());
 
 const route = useRoute();
 const isAnimated = computed(() => {
-  return (customSwipeSettings.value && animateRoute.value) || !customSwipeSettings
+  return (customSwipeSettings.value && animateRoute.value) || !customSwipeSettings.value
 })
 
 </script>
