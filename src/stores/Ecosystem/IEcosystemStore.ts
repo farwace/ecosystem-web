@@ -58,6 +58,9 @@ export interface IEcosystemStore {
 
     giftList: TGift[];
     achievementsList: TAchievement[];
+
+    customSwipeSettings: boolean;
+    animateRoute: boolean;
 }
 
 export enum AgeGroup {

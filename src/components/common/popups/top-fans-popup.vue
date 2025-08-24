@@ -25,9 +25,9 @@ import {UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
 import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.ts";
 import type {TUser} from "@/stores/Ecosystem/Types/TUser.ts";
 import TopFanSimple from "@/components/common/popups/TopFans/TopFanSimple.vue";
-import {useRouter} from "vue-router";
+import {useAnimatedRouter} from "@/classes/utils/useAnimatedRouter.ts";
 
-const router = useRouter();
+const router = useAnimatedRouter();
 
 const props = defineProps<{
   id?: number,

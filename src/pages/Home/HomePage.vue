@@ -35,14 +35,14 @@ import MenuItem from "@/components/pages/Home/MenuItem.vue";
 import UiIcon from "@/components/common/icons/UiIcon.vue";
 import {storeToRefs} from "pinia";
 import {bridgeStore} from "@/stores/Bridge/bridgeStore.ts";
-import {useRoute, useRouter} from "vue-router";
 import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
 import {achievementsStore} from "@/stores/Achievements/achievementsStore.ts";
+import {useAnimatedRouter} from "@/classes/utils/useAnimatedRouter.ts";
 
 const {id, firstName, avatar} = storeToRefs(ecosystemStore());
 const {inFavorites, inHomeScreen} = storeToRefs(bridgeStore());
 const {hasUnclaimedCompletedAchievement} = storeToRefs(achievementsStore());
-const router = useRouter();
+const router = useAnimatedRouter();
 
 const openSettings = () => {
 

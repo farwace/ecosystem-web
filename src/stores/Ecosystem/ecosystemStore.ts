@@ -52,5 +52,8 @@ export const ecosystemStore = defineStore('ecosystem', {
 
         animal: 'tiger',
         animals: [],
+
+        animateRoute: false,
+        customSwipeSettings: false,
     })
 })

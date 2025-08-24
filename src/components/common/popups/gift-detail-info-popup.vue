@@ -27,9 +27,9 @@
 import type {TGift} from "@/stores/Ecosystem/Types/TGift.ts";
 import UiIcon from "@/components/common/icons/UiIcon.vue";
 import {prepareNumber} from "@/classes/utils/PrepareNumber.ts";
-import {useRouter} from "vue-router";
 import {storeToRefs} from "pinia";
 import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
+import {useAnimatedRouter} from "@/classes/utils/useAnimatedRouter.ts";
 
 const props = defineProps<{
   gift: TGift,
@@ -38,7 +38,7 @@ const props = defineProps<{
 
 const {id} = storeToRefs(ecosystemStore());
 const emits = defineEmits(['close']);
-const router = useRouter();
+const router = useAnimatedRouter();
 
 const onSenderClick = () => {
   if(!props.gift.sender?.id || props.gift.sender.id == id.value){

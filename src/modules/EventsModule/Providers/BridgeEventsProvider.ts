@@ -81,9 +81,15 @@ export class BridgeEventsProvider implements IPlatformEvents {
             }
 
             if(launchParams.vk_platform == 'mobile_iphone' || launchParams?.vk_platform == 'mobile_ipad' || launchParams?.vk_platform == 'mobile_iphone_messenger'){
-                bridge.send('VKWebAppSetSwipeSettings', {
-                    history: true
-                });
+                try {
+                    await bridge.send('VKWebAppSetSwipeSettings', {
+                        history: true
+                    });
+                    this.ecosystemStore.$patch({
+                        customSwipeSettings: true
+                    })
+                }
+                catch (e: any){}
             }
             if(['desktop_web', 'desktop_app_messenger', 'desktop_web_messenger', 'web_external'].indexOf(launchParams.vk_platform) > -1){
                 document.documentElement.setAttribute('desktop' , '1');

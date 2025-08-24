@@ -64,7 +64,6 @@
   </div>
 </template>
 <script lang="ts" setup>
-import {useRoute, useRouter} from "vue-router";
 import {computed, inject, onMounted, ref} from "vue";
 import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.ts";
 import {GiftsProviderSymbol, UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
@@ -81,9 +80,9 @@ import ProfileAchievements from "@/components/pages/Profile/ProfileAchievements.
 import UiIcon from "@/components/common/icons/UiIcon.vue";
 import type {IGiftsProvider} from "@/modules/ApiModule/Interfaces/IGiftsProvider.ts";
 import {achievementsStore} from "@/stores/Achievements/achievementsStore.ts";
+import {useAnimatedRouter} from "@/classes/utils/useAnimatedRouter.ts";
 
-const route = useRoute();
-const router = useRouter();
+const router = useAnimatedRouter();
 const {id, firstName, sex} = storeToRefs(ecosystemStore());
 
 const notificationProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);

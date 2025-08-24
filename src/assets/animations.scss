@@ -35,6 +35,12 @@
 .fade-enter, .fade-leave-active {
   opacity: 0
 }
+
+.no-animate{
+  transition: none!important;
+  opacity: 1!important;
+}
+
 .loading{
   &:after{
     content: '';
