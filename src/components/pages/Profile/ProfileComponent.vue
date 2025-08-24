@@ -244,6 +244,7 @@ onMounted(async () => {
   position: fixed;
   left: 20px;
   top: 20px;
+  padding-top: env(safe-area-inset-top,0);
   z-index: 2;
 
   .back-btn{

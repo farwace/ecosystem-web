@@ -137,6 +137,7 @@ onMounted(() => {
 
 .missions{
   position: relative;
+  padding: 0 15px 40px;
   &.loading{
     pointer-events: none;
     &:before{

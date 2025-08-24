@@ -18,6 +18,7 @@ const openMissions = () => {
   notificationsProvider?.addPopup('daily-missions', 'daily-missions', {
     noTitle:true,
     darkBg: true,
+    noPaddings: true,
   })
 }
 

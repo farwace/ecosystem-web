@@ -241,6 +241,8 @@ const getNotificationBackgroundColor = (eType?: TNotification['type']) => {
       bottom: unset!important;
       top: 50%;
       transform: translateY(-50%);
+      max-height: calc(100% - 200px);
+      max-height: calc(100% - 200px - env(safe-area-inset-top, 0px));
     }
     &.active{
       .popup{
