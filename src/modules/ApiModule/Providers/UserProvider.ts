@@ -164,4 +164,8 @@ export class UserProvider extends ApiProvider implements IUserProvider{
             method: 'POST',
         }, body) as unknown as Promise<TResponse<any>>;
     }
+
+    getPopularityRating = async (): Promise<TResponse<TUser[]>> => {
+        return await this.fetch(`${this.getApiEndpoint()}/rating/popularity`) as unknown as Promise<TResponse<TUser[]>>;
+    }
 }

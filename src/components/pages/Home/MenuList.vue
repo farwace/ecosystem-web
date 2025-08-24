@@ -23,10 +23,11 @@ const openMissions = () => {
 }
 
 const openRating = () => {
-  notificationsProvider?.addPopup('rating', 'simple-popup', {
-    title: 'Рейтинг',
+  notificationsProvider?.addPopup('rating', 'rating-popup', {
+    noTitle:true,
     darkBg: true,
-    modal: true
+    modal: false,
+    noPaddings: true,
   })
 }
 

@@ -44,9 +44,10 @@ const onSenderClick = () => {
   if(!props.gift.sender?.id || props.gift.sender.id == id.value){
     return;
   }
-  router.push({name: 'profile', params: {id: props.gift.sender?.id}});
   props.onProfileClick?.();
-  emits('close');
+  emits('close', () => {
+    router.push({name: 'profile', params: {id: props.gift.sender?.id}});
+  });
 }
 
 </script>

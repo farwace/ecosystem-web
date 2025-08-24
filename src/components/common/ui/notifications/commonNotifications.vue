@@ -47,7 +47,7 @@
               :component="popup.component"
               :data="popup.data || {}"
               @ready="openPopup(''+index)"
-              @close="closePopup(''+index)"
+              @close="closePopup(''+index, $event)"
           />
         </div>
       </div>
@@ -56,7 +56,7 @@
 </template>
 <script lang="ts" setup>
 
-import {inject, nextTick, watch} from "vue";
+import {inject, nextTick, onBeforeUnmount, onMounted, watch} from "vue";
 import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols";
 import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider";
 import {storeToRefs} from "pinia";
@@ -91,11 +91,16 @@ const tryClosePopup = (event:any, key:string, canClose:boolean = true) => {
     }
   })
 }
-const closePopup = (key: string) => {
+const closePopup = (key: string, event: any = null) => {
   if(key && popups.value[key]){
     popups.value[key].isOpen = false
     setTimeout(() => {
       notificationLayer?.removePopup?.(key);
+      if(event && typeof event === 'function'){
+        setTimeout(() => {
+          event();
+        }, 100)
+      }
     }, popups.value[key].data?.modal ? 10 : 100)
   }
 }
@@ -186,6 +191,20 @@ const getNotificationBackgroundColor = (eType?: TNotification['type']) => {
       return 'rgba(255, 0, 0, 0.75)';
   }
 }
+
+const closeAllPopups = () => {
+  Object.keys(popups.value).forEach((popupKey) => {
+    closePopup(popupKey)
+  })
+}
+
+onMounted(() => {
+  window.addEventListener('popstate', closeAllPopups);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('popstate', closeAllPopups);
+})
 
 </script>
 <style lang="scss" scoped>
