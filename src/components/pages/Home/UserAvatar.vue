@@ -66,7 +66,7 @@
     position: relative;
     width: 68px;
     height: 68px;
-    border: 3px solid var(--white);
+    border: 3px solid #FFF6E9;
     border-radius: 22px;
     overflow: hidden;
     box-shadow: 0 0 10px rgba(254, 227, 185, 1);

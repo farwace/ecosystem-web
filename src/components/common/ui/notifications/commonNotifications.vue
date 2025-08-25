@@ -293,7 +293,7 @@ onBeforeUnmount(() => {
     border-radius: 12px;
     padding: 0 20px 40px;
     background-color: var(--bg-color-component);
-    color: var(--text-primary);
+    color: #BC7D4D;
     //overflow-y: auto;
     //overflow-x: hidden;
 
@@ -356,7 +356,7 @@ onBeforeUnmount(() => {
       .subtitle{
         padding-top: 5px;
         font-size: 14px;
-        color: var(--text-secondary)
+        color: #BD8848
       }
     }
     &__content{

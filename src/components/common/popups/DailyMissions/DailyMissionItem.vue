@@ -61,8 +61,8 @@ const {subscription} = storeToRefs(ecosystemStore());
 <style lang="scss" scoped>
 .item{
   padding: 10px;
-  background-color: var(--box-bg);
-  border-color: var(--box-border);
+  background-color: #FFF6E9;
+  border-color: #FBDFC8;
   border-width: 3px;
   border-style: solid;
   border-radius: 12px;
@@ -81,7 +81,7 @@ const {subscription} = storeToRefs(ecosystemStore());
     .item{
       &__check{
         background-color: #FFAF7B;
-        color: var(--white);
+        color: #FFF6E9;
       }
     }
   }
@@ -90,7 +90,7 @@ const {subscription} = storeToRefs(ecosystemStore());
     .item{
       &__check{
         background-color: #7eba70;
-        color: var(--box-bg);
+        color: #FFF6E9;
       }
     }
   }
@@ -166,7 +166,7 @@ const {subscription} = storeToRefs(ecosystemStore());
       display: block;
       background-color: #7eba70;
       border-color: #6fb75c;
-      color: var(--box-bg);
+      color: #FFF6E9;
       font-weight: 600;
       border-radius: 8px;
       padding: 6px 10px;

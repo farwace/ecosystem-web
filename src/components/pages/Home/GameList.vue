@@ -51,11 +51,11 @@ const getSpinHasBeenClicked = () => {
 </script>
 <style lang="scss" scoped>
 .rounded-box{
-  background-color: var(--box-bg);
+  background-color: #FFF6E9;
   text-align: center;
   border-radius: 20px;
   padding: 15px;
-  border: 2px solid var(--box-border);
+  border: 2px solid #FBDFC8;
   text-transform: uppercase;
   font-size: 18px;
   font-weight: 600;
@@ -71,9 +71,9 @@ const getSpinHasBeenClicked = () => {
 }
 
 .start-game{
-  color: var(--btn-primary-text);
-  background-color: var(--btn-primary-bg);
-  border-color: var(--btn-primary-border);
+  color: #FFF6E9;
+  background-color: #FFB890;
+  border-color: #FB9B75;
   border-style: solid;
   border-width: 2px;
   border-radius: 100px;

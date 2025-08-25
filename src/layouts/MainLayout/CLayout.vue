@@ -14,7 +14,7 @@
   width: 100%;
   padding-top: env(safe-area-inset-top,0);
   height: 100%;
-  background-color: var(--bg-color);
-  color: var(--text-primary);
+  background-color: #FFF2E2;
+  color: #BC7D4D;
 }
 </style>

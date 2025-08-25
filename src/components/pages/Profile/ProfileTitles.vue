@@ -83,7 +83,7 @@ const popularityPhoto = (level?: number) => {
     }
     .pop{
       background-color: #E0CEF0;
-      color: var(--white);
+      color: #FFF6E9;
     }
 
     .title-icon{

@@ -12,10 +12,10 @@ const props = defineProps<{class?: string}>();
     cursor: pointer;
     border-width: 2px;
     border-style: solid;
-    border-color: var(--btn-secondary-border);
-    background-color: var(--btn-secondary-bg);
+    border-color: #FBE4CD;
+    background-color: #FFF6EC;
     padding: 12px 16px;
-    color: var(--btn-secondary-text);
+    color: #BC7D4D;
 
     &:hover{
       box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.05);

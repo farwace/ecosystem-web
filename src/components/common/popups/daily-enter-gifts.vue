@@ -255,9 +255,9 @@ const receiveDailyReward = async () => {
 }
 .get-reward{
   display: block;
-  color: var(--btn-primary-text);
+  color: #FFF6E9;
   background-color: #ff955a;
-  border-color: var(--btn-primary-border);
+  border-color: #FB9B75;
   border-style: solid;
   border-width: 2px;
   border-radius: 100px;

@@ -21,34 +21,9 @@ $dark-lite: #333333;
 
 $themes: (
         dark: (
-                --bg-color: $light-bg,
-                --text-primary: $light-text-primary-color,
-                --text-secondary: $light-text-secondary-color,
-                --white: $white,
-                --box-bg: $white,
-                --box-border: $light-border-light-color,
-                --btn-secondary-text: $light-text-primary-color,
-                --btn-secondary-border: $light-btn-secondary-border-color,
-                --btn-secondary-bg: #FFF6EC,
-                --btn-primary-text: #FFF6E9,
-                --btn-primary-border: #FB9B75,
-                --btn-primary-bg: #FFB890,
                 --bg-color-component: #FEF4E6,
-
         ),
         light: (
-                --bg-color: $light-bg,
-                --text-primary: $light-text-primary-color,
-                --text-secondary: $light-text-secondary-color,
-                --white: $white,
-                --box-bg: $white,
-                --box-border: $light-border-light-color,
-                --btn-secondary-border: $light-btn-secondary-border-color,
-                --btn-secondary-bg: $white,
-                --btn-secondary-text: $light-text-primary-color,
-                --btn-primary-text: #FFF6E9,
-                --btn-primary-border: #FB9B75,
-                --btn-primary-bg: #FFB890,
                 --bg-color-component: #FEF4E6,
         )
 );
@@ -68,14 +43,14 @@ $themes: (
 .v-popper--theme-dropdown .v-popper__inner{
   padding: 10px;
   background: var(--bg-color-component)!important;
-  color: var(--text-primary)!important;
-  border-color: var(--box-border)!important;
+  color: #BC7D4D!important;
+  border-color: #FBDFC8!important;
 }
 .v-popper--theme-dropdown .v-popper__arrow-outer{
-  border-color: var(--box-border)!important;
+  border-color: #FBDFC8!important;
 }
 .v-popper--theme-dropdown .v-popper__arrow-inner{
-  border-color: var(--bg-color)!important;
+  border-color: #FFF2E2!important;
 }
 .slide-enter-active,
 .slide-leave-active {

@@ -27,7 +27,7 @@ const props = defineProps<{
   flex-wrap: nowrap;
   gap: 10px;
   padding-bottom: 10px;
-  border-bottom: 1px solid var(--box-border);
+  border-bottom: 1px solid #FBDFC8;
   margin-bottom: 10px;
   align-items: center;
 
