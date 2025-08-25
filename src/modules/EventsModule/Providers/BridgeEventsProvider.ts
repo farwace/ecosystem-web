@@ -31,6 +31,7 @@ export class BridgeEventsProvider implements IPlatformEvents {
             this._bridgeEvent$.next(event);
         });
         this.ecosystemStore = ecosystemStore();
+        this.themeStore = themeStore();
         this.arLaunchParams = window?.location?.search?.slice?.(1)?.split?.('&')?.map?.(e => e?.split?.('='));
     }
 
