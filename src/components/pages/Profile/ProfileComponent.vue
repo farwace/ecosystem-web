@@ -184,7 +184,6 @@ onMounted(async () => {
 
 .profile-page{
   background-color: inherit;
-  color: #895431;
 }
 
 .profile{
@@ -384,5 +383,9 @@ onMounted(async () => {
   vertical-align: middle;
   margin: 0 2px 4px 0;
 }
-
+[theme=light]{
+  .profile-page{
+    color: #895431;
+  }
+}
 </style>

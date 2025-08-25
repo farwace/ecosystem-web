@@ -101,7 +101,7 @@ const sortedItems = computed((): TDailyMission[] => {
 
 
 const tryReceive = async (item: TDailyMission) => {
-  if(item.completed) {
+  if(item.completed && !item.received) {
     if (!(item.personalAccess && !subscription?.value?.personalAccess)) {
       if(isLoading.value) return;
 
@@ -128,12 +128,6 @@ onMounted(() => {
 
 </script>
 <style scoped lang="scss">
-[theme="dark"]{
-  .title{
-    color: #C99965;
-  }
-}
-
 
 .missions{
   position: relative;
@@ -221,4 +215,11 @@ onMounted(() => {
   }
 }
 
+[theme="dark"]{
+  .title{
+    color: #939393;
+    background-color: #222222;
+    border-color: #363738;
+  }
+}
 </style>

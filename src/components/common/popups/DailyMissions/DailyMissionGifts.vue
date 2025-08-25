@@ -2,7 +2,6 @@
   <div class="boxes">
     <div ref="boxesContainer" class="boxes-gifts">
 
-      <!-- todo: Выставлять атрибут CHECKED! -->
       <VDropdown
           v-if="progress < 3 || dailyEnter?.[currentDay]?.['box3']"
           :distance="6"
@@ -450,5 +449,32 @@ onMounted(() => {
   font-weight: normal;
   text-align: left;
   line-height: 14px;
+}
+
+[theme="dark"] {
+  .boxes {
+    &__bg{
+      background-color: #222222;
+      border-color: #2e2e2e;
+    }
+
+    &__progress {
+      &:before{
+        background-color: #141414;
+        border: 1px solid #141414;
+      }
+      &:after{
+        background-color: #939393;
+        border: 1px solid #141414;
+      }
+      .item{
+        background-color: #2e2e2e;
+        &.active{
+          background-color: #a77e5d;
+          color: #FFEFCC;
+        }
+      }
+    }
+  }
 }
 </style>

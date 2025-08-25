@@ -258,7 +258,8 @@ const toggleEdit = async (field: 'name' | 'animal' | 'sex' | 'age') => {
     transition: border-color 0.2s;
 
     &.item__static{
-      padding: 0 8px!important;
+      padding: 0!important;
+      margin-left: 8px;
     }
 
     .icon{
@@ -329,6 +330,39 @@ const toggleEdit = async (field: 'name' | 'animal' | 'sex' | 'age') => {
   .profile-loading{
     opacity: .7;
     pointer-events: none;
+  }
+}
+
+[theme=dark]{
+  .edit-profile{
+    .item{
+      .item__static{
+        background: #2e2e2e;
+      }
+      button{
+        background: #2e2e2e;
+      }
+      select{
+        background: #141414;
+        border-color: #2e2e2e;
+        color: #939393;
+      }
+      input{
+        color: #939393;
+        background-color: #141414;
+        border-color: #2e2e2e;
+      }
+    }
+    .sex-option{
+      &.selected{
+        border-color: #939393;
+      }
+    }
+    .animal-option{
+      &.selected{
+        border-color: #939393;
+      }
+    }
   }
 }
 </style>

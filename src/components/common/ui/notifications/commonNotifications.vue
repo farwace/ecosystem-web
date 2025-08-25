@@ -211,8 +211,14 @@ onBeforeUnmount(() => {
 [theme="dark"]{
   .modal{
     .popup{
+      color: #939393;
       &.bg-blur{
         background-color: rgba(51, 51, 51, 0.5);
+      }
+      &__title{
+        .subtitle{
+          color: #939393;
+        }
       }
     }
   }

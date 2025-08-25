@@ -112,4 +112,15 @@ const props = defineProps<{
   cursor: pointer;
   text-decoration: underline;
 }
+
+[theme='dark']{
+  .profile{
+    &__gifts{
+      &__wall{
+        background-color: #222222;
+        border-color: #2e2e2e;
+      }
+    }
+  }
+}
 </style>

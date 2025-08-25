@@ -181,5 +181,10 @@
   &__img{
     box-shadow: 0 0 10px rgba(0, 0, 0, .1);
   }
+  &__name{
+    &.small{
+      color: #939393;
+    }
+  }
 }
 </style>

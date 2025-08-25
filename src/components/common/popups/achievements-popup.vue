@@ -107,7 +107,9 @@ const receiveAchievement = async (achievement: TUserAchievement) => {
 <style scoped lang="scss">
 [theme="dark"]{
   .title{
-    color: #C99965;
+    color: #939393;
+    background-color: #222222;
+    border-color: #363738;
   }
 }
 

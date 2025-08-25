@@ -23,10 +23,13 @@ import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.t
 import type {TUser} from "@/stores/Ecosystem/Types/TUser.ts";
 import TopUserItem from "@/components/common/popups/Popularity/TopUserItem.vue";
 import {useAnimatedRouter} from "@/classes/utils/useAnimatedRouter.ts";
+import {useThemeStore} from "@/stores/theme.ts";
+import {storeToRefs} from "pinia";
 
 const userProvider: IUserProvider | undefined = inject(UserProviderSymbol);
 const isLoading = ref<boolean>(false);
 
+const {isDark} = storeToRefs(useThemeStore());
 const router = useAnimatedRouter();
 const stub = ref<boolean>(true);
 const popularityRatingPersons = ref<TUser[]>(
@@ -162,15 +165,23 @@ const loadPopularityRating = async () => {
   }
 }
 
-const arStyles = [
-  ['#FFF9EF', '#EDC0A3'],
-  ['#ECF7F8', '#C9D1D4'],
-  ['#FFE9DC', '#EBBFA0'],
-  ['#FBF7D2', '#F5D19E'],
-]
+const arStyles = computed(() => {
+  if(isDark.value){
+    return [
+      ['#292928', '#32302e'],
+      ['#323232', '#414142'],
+    ]
+  }
+  return [
+    ['#FFF9EF', '#EDC0A3'],
+    ['#ECF7F8', '#C9D1D4'],
+    ['#FFE9DC', '#EBBFA0'],
+    ['#FBF7D2', '#F5D19E'],
+  ]
+});
 
 const getItemStyleVars = (index: number) => {
-  const style = arStyles[index % arStyles.length];
+  const style = arStyles.value[index % arStyles.value.length];
   return {
     '--card-bg': style[0],
     '--card-border': style[1],
@@ -186,7 +197,9 @@ onMounted(() => {
 <style scoped lang="scss">
 [theme="dark"]{
   .title{
-    color: #C99965;
+    color: #939393;
+    background-color: #222222;
+    border-color: #363738;
   }
 }
 

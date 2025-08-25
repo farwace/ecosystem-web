@@ -38,6 +38,21 @@ $themes: (
 .v-popper--theme-dropdown .v-popper__arrow-inner{
   border-color: #FFF2E2!important;
 }
+
+[theme='dark']{
+  .v-popper--theme-dropdown .v-popper__inner{
+    background: var(--bg-color-component)!important;
+    color: #939393!important;
+    border-color: #363738!important;
+  }
+  .v-popper--theme-dropdown .v-popper__arrow-outer{
+    border-color: #363738!important;
+  }
+  .v-popper--theme-dropdown .v-popper__arrow-inner{
+    border-color: #363738!important;
+  }
+}
+
 .slide-enter-active,
 .slide-leave-active {
   transition: all 1s;

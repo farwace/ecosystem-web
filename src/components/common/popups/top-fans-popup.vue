@@ -119,4 +119,12 @@ onMounted(() => {
 .fans-items{
   padding: 0 10px 40px;
 }
+
+[theme=dark]{
+  .title{
+    color: #939393;
+    background-color: #222222;
+    border-color: #363738;
+  }
+}
 </style>

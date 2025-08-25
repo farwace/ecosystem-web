@@ -187,5 +187,20 @@ const {subscription} = storeToRefs(ecosystemStore());
   }
 }
 
+[theme=dark]{
+  .item{
+    background-color: #141414;
+    border-color: #2e2e2e;
 
+    &__check{
+      background-color: #222222;
+    }
+
+    &.locked{
+      .item__check{
+        background-color: #222222;
+      }
+    }
+  }
+}
 </style>

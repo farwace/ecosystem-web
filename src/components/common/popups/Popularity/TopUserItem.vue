@@ -122,4 +122,15 @@ const props = defineProps<{
     }
   }
 }
+
+[theme=dark]{
+  .item{
+    .name{
+      color: #939393;
+    }
+    .value{
+      color: #939393;
+    }
+  }
+}
 </style>
