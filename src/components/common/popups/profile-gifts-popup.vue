@@ -91,15 +91,25 @@ const loadGifts = async () => {
 
 
 const appliedGifts = computed(() => {
-  return gifts.value?.filter?.((g) => {
-    return !!g.sender
-  }) || [];
+  const giftsCopy = gifts.value ? gifts.value.slice() : [];
+
+  return giftsCopy.reduce<TGift[]>((acc, g) => {
+    if (g.sender) {
+      acc.push(g);
+    }
+    return acc;
+  }, []);
 });
 
 const notAppliedGifts = computed(() => {
-  return gifts.value?.filter?.((g) => {
-    return !g.sender
-  }) || [];
+  const giftsCopy = gifts.value ? gifts.value.slice() : [];
+
+  return giftsCopy.reduce<TGift[]>((acc, g) => {
+    if (!g.sender) {
+      acc.push(g);
+    }
+    return acc;
+  }, []);
 });
 
 const openGiftDetailPopup = (gift: TGift) => {
