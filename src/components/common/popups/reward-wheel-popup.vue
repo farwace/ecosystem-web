@@ -202,5 +202,13 @@ function onFinished(payload: { index: number; reward: Reward }) {
     background-color: #222222;
     border-color: #363738;
   }
+
+  .reward{
+    &.loading{
+      &:before{
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
 }
 </style>

@@ -102,6 +102,18 @@ onMounted(() => {
     background-color: #222222;
     border-color: #363738;
   }
+
+  .shop{
+    &__title{
+      color: #939393;
+    }
+
+    &.loading{
+      &:before{
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
 }
 
 

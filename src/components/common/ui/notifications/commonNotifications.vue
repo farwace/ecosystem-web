@@ -210,6 +210,11 @@ onBeforeUnmount(() => {
 <style lang="scss" scoped>
 [theme="dark"]{
   .modal{
+
+    &.dark-bg{
+      background-color: rgba(0,0,0,.5);
+    }
+
     .popup{
       color: #939393;
       &.bg-blur{

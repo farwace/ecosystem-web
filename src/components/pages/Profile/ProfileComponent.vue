@@ -138,6 +138,9 @@ const openGiftListModal = () => {
   })
 };
 const openAchievementsModal = () => {
+  if(profile.value?.id != id.value){
+    return;
+  }
   notificationProvider?.addPopup?.('achievements-page', 'achievements-popup', {
     darkBg: true,
     noTitle: true,

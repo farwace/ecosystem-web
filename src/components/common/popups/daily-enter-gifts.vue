@@ -310,4 +310,30 @@ const receiveDailyReward = async () => {
     display: block;
   }
 }
+
+[theme=dark]{
+  .daily-rewards{
+    color: #939393;
+
+    &__title{
+      color: #939393;
+      background-color: #222222;
+      border-color: #363738;
+    }
+
+    &__list{
+      .item{
+        color: #939393;
+        background-color: #2e2e2e;
+        border-color: #444444;
+
+      }
+    }
+  }
+
+  .get-reward{
+    background-color: #e8703e;
+    border-color: #DE6431;
+  }
+}
 </style>

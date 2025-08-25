@@ -249,4 +249,14 @@ onMounted(() => {
 //.v-popper__popper.v-popper__popper--shown{
 //  z-index: 10002;
 //}
+
+[theme='dark']{
+  .top-gifts{
+    &.loading{
+      &:before{
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
+}
 </style>

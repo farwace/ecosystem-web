@@ -252,4 +252,21 @@ const openSubscriptionBox = (s: TShopSubscription) => {
     }
   }
 }
+
+[theme=dark]{
+  .item{
+    background-color: #2e2e2e;
+    border-color: #444444;
+
+    .info-icon{
+      color: #939393;
+    }
+
+    &__price{
+      .buy-button{
+        background-color: #ff955a;
+      }
+    }
+  }
+}
 </style>

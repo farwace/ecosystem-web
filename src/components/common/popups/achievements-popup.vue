@@ -111,6 +111,14 @@ const receiveAchievement = async (achievement: TUserAchievement) => {
     background-color: #222222;
     border-color: #363738;
   }
+
+  .missions{
+    &.loading{
+      &:before{
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
 }
 
 

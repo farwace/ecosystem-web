@@ -126,5 +126,13 @@ onMounted(() => {
     background-color: #222222;
     border-color: #363738;
   }
+
+  .top-fans{
+    &.loading{
+      &:before{
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
 }
 </style>

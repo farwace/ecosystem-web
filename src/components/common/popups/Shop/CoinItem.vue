@@ -153,4 +153,23 @@ const openDonateBox = (coin: TShopCoin) => {
   90% {transform: translateX(0%);}
   100% {transform: translateX(0%);}
 }
+
+
+[theme=dark]{
+  .item{
+    background: #eb8e4f;
+    background: linear-gradient(135deg, rgb(235, 142, 79) 0%, rgb(178, 81, 60) 100%);
+    color: #e8e8e8;
+
+    &__price{
+      background-color: #e8e8e8;
+    }
+    &__description{
+      .text{
+        background-color: #e8e8e8;
+      }
+    }
+
+  }
+}
 </style>
