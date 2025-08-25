@@ -22,30 +22,42 @@ import type {TReplenishmentPopularity} from "@/modules/EventsModule/Types/TReple
 import type {TUserAchievement} from "@/stores/Achievements/Types/TUserAchievement.ts";
 import {achievementsStore} from "@/stores/Achievements/achievementsStore.ts";
 import type {IAchievementsStore} from "@/stores/Achievements/IAchievementsStore.ts";
+import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
+import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
+import type {ParentConfigData, ReceiveDataMap, SharedUpdateConfigData, VKBridgeEvent} from "@vkontakte/vk-bridge";
+import {themeStore} from "@/stores/Theme/themeStore.ts";
+import type {IThemeStore} from "@/stores/Theme/IThemeStore.ts";
 
 @injectable()
 export class EcosystemProvider implements IEcosystemProvider{
 
+    private _bridgeObserver$: Subject<VKBridgeEvent<keyof ReceiveDataMap>>;
     private _reverbObserver$: Subject<TReverbMessage<unknown>>;
     private dailyMissionsStore: Store<'dailyMissions', IDailyMissionsStore>;
     private achievementsStore: Store<'achievements', IAchievementsStore>;
     private ecosystemStore: Store<'ecosystem', IEcosystemStore>;
+    private themeStore: Store<'theme', IThemeStore>;
 
     constructor(
         @inject(ReverbSymbol)
         private reverbProvider: IReverbProvider,
         @inject(NotificationsSymbol)
-        private notificationsProvider: INotificationsProvider
+        private notificationsProvider: INotificationsProvider,
+        @inject(PlatformEventsSymbol)
+        private platformEventsProvider: IPlatformEvents
     ) {
         this._reverbObserver$ = this.reverbProvider.getReverbObserver$();
+        this._bridgeObserver$ = this.platformEventsProvider.getEmitter();
         this.dailyMissionsStore = dailyMissionsStore();
         this.achievementsStore = achievementsStore();
         this.ecosystemStore = ecosystemStore();
+        this.themeStore = themeStore();
     }
 
     install(app: App, symbol: symbol) {
         app.provide(symbol, this);
         this.subscribeToEcosystemEvents();
+        this.subscribeToBridgeEvents();
     }
 
     private subscribeToEcosystemEvents = () => {
@@ -191,4 +203,22 @@ export class EcosystemProvider implements IEcosystemProvider{
 
     }
 
+    private subscribeToBridgeEvents = () => {
+        this._bridgeObserver$.pipe(
+            filter((message):message is VKBridgeEvent<'VKWebAppUpdateConfig'> => message.detail?.type === 'VKWebAppUpdateConfig'),
+        ).subscribe(message => {
+            /*@ts-ignore*/
+            if(['space_gray', 'vkcom_dark'].indexOf(message.detail.data?.scheme) > -1){
+                this.themeStore.$patch({
+                    theme: 'dark'
+                });
+            }
+            /*@ts-ignore*/
+            if(['bright_light', 'vkcom_light'].indexOf(message.detail.data?.scheme) > -1){
+                this.themeStore.$patch({
+                    theme: 'light'
+                })
+            }
+        })
+    }
 }

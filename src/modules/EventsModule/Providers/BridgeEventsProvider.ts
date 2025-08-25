@@ -14,11 +14,14 @@ import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
 import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
 import type {TShopSubscription} from "@/modules/ApiModule/Types/TShopSubscription.ts";
 import type {TShopCoin} from "@/modules/ApiModule/Types/TShopCoin.ts";
+import {themeStore} from "@/stores/Theme/themeStore.ts";
+import type {IThemeStore} from "@/stores/Theme/IThemeStore.ts";
 
 @injectable()
 export class BridgeEventsProvider implements IPlatformEvents {
     private _bridgeEvent$ = new Subject<VKBridgeEvent<keyof ReceiveDataMap>>();
     private ecosystemStore: Store<'ecosystem', IEcosystemStore>
+    private themeStore: Store<'theme', IThemeStore>
     private arLaunchParams: any = undefined;
     constructor(
         @inject(NotificationsSymbol)
@@ -85,7 +88,7 @@ export class BridgeEventsProvider implements IPlatformEvents {
                     await bridge.send('VKWebAppSetSwipeSettings', {
                         history: true
                     });
-                    this.ecosystemStore.$patch({
+                    this.themeStore.$patch({
                         customSwipeSettings: true
                     })
                 }

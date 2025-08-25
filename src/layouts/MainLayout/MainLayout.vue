@@ -11,10 +11,10 @@
 <script setup lang="ts">
 import CLayout from "@/layouts/MainLayout/CLayout.vue";
 import {storeToRefs} from "pinia";
-import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
 import {computed} from "vue";
 import {useRoute} from "vue-router";
-const { animateRoute, customSwipeSettings } = storeToRefs(ecosystemStore());
+import {themeStore} from "@/stores/Theme/themeStore.ts";
+const { animateRoute, customSwipeSettings } = storeToRefs(themeStore());
 
 const route = useRoute();
 const isAnimated = computed(() => {

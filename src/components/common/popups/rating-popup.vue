@@ -23,13 +23,13 @@ import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.t
 import type {TUser} from "@/stores/Ecosystem/Types/TUser.ts";
 import TopUserItem from "@/components/common/popups/Popularity/TopUserItem.vue";
 import {useAnimatedRouter} from "@/classes/utils/useAnimatedRouter.ts";
-import {useThemeStore} from "@/stores/theme.ts";
 import {storeToRefs} from "pinia";
+import {themeStore} from "@/stores/Theme/themeStore.ts";
 
 const userProvider: IUserProvider | undefined = inject(UserProviderSymbol);
 const isLoading = ref<boolean>(false);
 
-const {isDark} = storeToRefs(useThemeStore());
+const {isDark} = storeToRefs(themeStore());
 const router = useAnimatedRouter();
 const stub = ref<boolean>(true);
 const popularityRatingPersons = ref<TUser[]>(

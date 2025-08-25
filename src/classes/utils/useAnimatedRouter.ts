@@ -1,11 +1,11 @@
 import type { Router } from 'vue-router'
 import {nextTick, ref} from 'vue'
 import { useRouter } from 'vue-router'
-import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
+import {themeStore} from "@/stores/Theme/themeStore.ts";
 
 export function useAnimatedRouter(): Router {
     const router = useRouter()
-    const store = ecosystemStore()
+    const store = themeStore()
     const timeout = ref(0);
 
     const wrapWithAnimation = async (navigateFn: () => Promise<void>) => {
