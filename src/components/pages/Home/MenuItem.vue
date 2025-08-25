@@ -38,7 +38,28 @@ const props = defineProps<{icon: string}>();
   &__icon{
     width: 44px;
     height: 44px;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
+  }
+}
+[theme=dark] {
+  .menu-item{
+    &:hover{
+      :deep(svg){
+        .dark-bg-2{
+          fill: #ababab;
+        }
+      }
+    }
+    :deep(svg){
+      .dark-bg-1{
+        fill: #141414;
+      }
+      .dark-bg-2{
+        fill: #939393;
+        transition: fill .3s ease-out;
+      }
+
+    }
   }
 }
 </style>

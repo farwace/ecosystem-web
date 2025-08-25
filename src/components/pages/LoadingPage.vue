@@ -123,4 +123,14 @@ onUnmounted(() => {
     transform: translate(-100px, 200px);
   }
 }
+[theme="dark"] {
+  .loading-page{
+    background-color: #222222;
+  }
+  .background-dots{
+    .dot{
+      opacity: .08;
+    }
+  }
+}
 </style>

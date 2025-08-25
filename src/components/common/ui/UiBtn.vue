@@ -16,9 +16,23 @@ const props = defineProps<{class?: string}>();
     background-color: #FFF6EC;
     padding: 12px 16px;
     color: #BC7D4D;
-
+    transition: background-color .3s ease-out, box-shadow .3s ease-out;
     &:hover{
+      background-color: #fff9f1;
       box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.05);
+    }
+  }
+
+  [theme=dark]{
+    .btn{
+      border-color: #363738;
+      background-color: #222222;
+      color: #939393;
+
+      &:hover{
+        background-color: #2d2c2c;
+        box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
+      }
     }
   }
 </style>

@@ -102,6 +102,8 @@ const addToFavorite = () => {
   border-radius: 100px;
   padding: 6px 12px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: background-color .3s ease-out;
 }
 .favorite-icon{
   width: 45px;
@@ -114,4 +116,22 @@ const addToFavorite = () => {
   }
 }
 
+
+[theme=dark]{
+  .add-to-favorite{
+    background-color: #222222;
+    &:hover{
+      background-color: #2d2c2c;
+    }
+
+    :deep(svg){
+      .dark-bg-1{
+        fill: #FF944C;
+      }
+      .dark-bg-2{
+        fill: #E97B40;
+      }
+    }
+  }
+}
 </style>

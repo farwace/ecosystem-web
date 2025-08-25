@@ -39,4 +39,27 @@ import UiIcon from "@/components/common/icons/UiIcon.vue";
       transform: translateX(-50%);
     }
   }
+
+  [theme="dark"]{
+    .bonus{
+      &__title{
+        background-color: #222222;
+        border-color: #363738;
+        color: #939393;
+      }
+
+      :deep(svg){
+        .dark-color-1{
+          fill: #141414;
+        }
+        .dark-color-2{
+          fill: #252526;
+        }
+        .dark-color-3{
+          fill: #424242;
+        }
+
+      }
+    }
+  }
 </style>

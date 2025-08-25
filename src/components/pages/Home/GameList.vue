@@ -1,7 +1,7 @@
 <template>
   <div class="rounded-box">
     <div class="game-name">
-      Силы знаний
+      Бункер
     </div>
 
     <div class="start-game" @click="startGame">
@@ -79,10 +79,15 @@ const getSpinHasBeenClicked = () => {
   border-radius: 100px;
   cursor: pointer;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.05);
-
+  transition: background-color .3s ease-out, box-shadow .3s ease-out;
   font-size: 28px;
   font-weight: bold;
   padding: 12px 16px;
+
+  &:hover{
+    background-color: #f39673;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.1);
+  }
 
 }
 
@@ -91,4 +96,21 @@ const getSpinHasBeenClicked = () => {
   right: -15px;
   top: -52px;
 }
+
+[theme="dark"]{
+  .rounded-box{
+    background-color: #222222;
+    border-color: #363738;
+  }
+
+  .start-game{
+    background-color: #DE6431;
+    border-color: #363738;
+
+    &:hover{
+      background-color: #f47743;
+    }
+  }
+}
+
 </style>

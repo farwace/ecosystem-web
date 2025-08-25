@@ -16,5 +16,10 @@
   height: 100%;
   background-color: #FFF2E2;
   color: #BC7D4D;
+  transition: color .3s ease-out, background-color .3s ease-out;
+}
+[theme=dark] .c-layout{
+  background-color: #141414;
+  color: #939393;
 }
 </style>

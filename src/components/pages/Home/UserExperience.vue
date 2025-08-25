@@ -95,6 +95,10 @@
 
     &__desc{
       margin-top: -8px;
+      user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      -webkit-user-select: none;
     }
     &__progress{
       position: relative;
@@ -151,6 +155,19 @@
       &__text{
         font-size: 12px;
         line-height: 12px;
+      }
+    }
+  }
+}
+
+[theme="dark"]{
+  .exp{
+    .progressbar{
+      border-color: #939393;
+      background-color: #222222;
+
+      &__fill{
+        border-color: #939393;
       }
     }
   }
