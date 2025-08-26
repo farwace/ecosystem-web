@@ -98,4 +98,19 @@ defineProps<{
   width: 40px;
   height: 40px;
 }
+
+[theme=dark]{
+  .reward{
+    &__title{
+      color: #939393;
+      background-color: #222222;
+      border-color: #363738;
+    }
+  }
+
+  .btn-close{
+    background-color: #e8703e;
+    border-color: #DE6431;
+  }
+}
 </style>

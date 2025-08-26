@@ -1,7 +1,7 @@
 <template>
   <div class="rounded-box">
     <div class="game-name">
-      Бункер
+      Убежище
     </div>
 
     <div class="start-game" @click="startGame">
