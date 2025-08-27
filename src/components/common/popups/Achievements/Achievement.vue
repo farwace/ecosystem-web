@@ -7,7 +7,19 @@
       }"
       @click="tryReceive"
   >
+    <div
+      v-if="!achievement.received && achievement.completed"
+    >
+      <img class="achievement__picture" :src="`/assets/img/achievements/${achievement.code}.svg`" :alt="achievement.code">
+      <div class="achievement__title">
+        {{ achievement.name }}
+      </div>
+      <div class="achievement__description">
+        {{ achievement.description }}
+      </div>
+    </div>
     <VDropdown
+        v-else
         :distance="6"
         :placement="'top'"
         :container="outerContainer"
