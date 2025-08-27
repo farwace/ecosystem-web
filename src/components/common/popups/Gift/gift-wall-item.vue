@@ -26,7 +26,7 @@ const props = defineProps<{
 .item{
   flex-shrink: 0;
   width: 75px;
-  max-width: calc(25% - 5px);
+  max-width: calc(100% - 5px);
   margin-bottom: 5px;
   &__body{
     max-width: 100%;
@@ -139,5 +139,20 @@ const props = defineProps<{
     }
   }
 }
-
+[theme=dark]{
+  .item{
+    &__body{
+      &__picture{
+        background-color: #222222;
+        border-color: #939393;
+      }
+      &__title{
+        background-color: #2e2e2e;
+        border-color: #939393;
+        color: #939393;
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+      }
+    }
+  }
+}
 </style>

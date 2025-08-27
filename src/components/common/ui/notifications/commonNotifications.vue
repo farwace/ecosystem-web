@@ -225,6 +225,10 @@ onBeforeUnmount(() => {
           color: #939393;
         }
       }
+
+      &.bg-pink{
+        background-color: #222222;
+      }
     }
   }
 }

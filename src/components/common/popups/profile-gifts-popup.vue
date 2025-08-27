@@ -194,6 +194,19 @@ onMounted(() => {
         padding: 5px;
         color: #124887;
         font-weight: 600;
+        position: relative;
+
+        &:after{
+          position: absolute;
+          content: '';
+          width: calc(100% + 12px);
+          height: calc(100% + 12px);
+          left: -6px;
+          top: -6px;
+          background-color: rgba(0, 0, 0, 0);
+          border: 4px dotted rgba(255, 255, 255, 1);
+          border-radius: 12px;
+        }
 
       }
       &__title{
@@ -233,10 +246,10 @@ onMounted(() => {
     margin-bottom: 10px;
   }
   &__inner{
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
     gap: 5px;
-    justify-content: space-between;
+    justify-content: center;
 
     &.applied{
       .item{
@@ -257,6 +270,48 @@ onMounted(() => {
         background-color: rgba(255, 255, 255, 0.1);
       }
     }
+
+    &__inner{
+      background-color: #222222;
+      border-color: #363738;
+    }
+  }
+  .gifts-header{
+    background-color: #222222;
+
+    &__info{
+      .data{
+        &__body{
+          background-color: #141414;
+          border-color: #363738;
+          box-shadow: 0 4px 4px rgba(54, 55, 56, 0.4);
+          color: #939393;
+          position: relative;
+          &:after{
+            border-color: rgba(255, 255, 255, 0.8);
+          }
+        }
+      }
+
+      :deep(.avatar){
+        .avatar{
+          &__name{
+            &__value{
+              color: #939393;
+            }
+          }
+          &__img{
+            border-color: #939393;
+          }
+        }
+      }
+    }
+  }
+
+  .title{
+    background-color: #222222;
+    border-color: #363738;
+    color: #939393;
   }
 }
 </style>
