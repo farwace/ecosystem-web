@@ -1,4 +1,5 @@
 export type TUserAchievement = {
+    achievementId: number,
     code: string,
     coins: number,
     completed: boolean,

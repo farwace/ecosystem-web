@@ -95,7 +95,7 @@ const receiveAchievement = async (achievement: TUserAchievement) => {
   if(isLoading.value) return;
   isLoading.value = true;
   try {
-    await userProvider?.receiveAchievement(achievement.id);
+    await userProvider?.receiveAchievement(achievement.achievementId);
   }
   catch (e:any){}
   finally {
