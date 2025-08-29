@@ -189,7 +189,11 @@ export class BridgeEventsProvider implements IPlatformEvents {
 
     getAuthToken = async (data: RequestPropsMap["VKWebAppGetAuthToken"]) => {
         try {
-            const res: any = await bridge.send('VKWebAppGetAuthToken', data);
+            const res: any = await bridge.send('VKWebAppGetAuthToken', {
+                scope: data.scope,
+                /** @ts-ignore */
+                app_id: parseInt(data.app_id.toString()),
+            });
             if(res.access_token){
                 return {
                     accessToken: res.access_token,
