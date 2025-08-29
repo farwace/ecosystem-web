@@ -27,6 +27,8 @@ import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformE
 import type {ParentConfigData, ReceiveDataMap, SharedUpdateConfigData, VKBridgeEvent} from "@vkontakte/vk-bridge";
 import {themeStore} from "@/stores/Theme/themeStore.ts";
 import type {IThemeStore} from "@/stores/Theme/IThemeStore.ts";
+import {UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
+import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.ts";
 
 @injectable()
 export class EcosystemProvider implements IEcosystemProvider{
@@ -44,7 +46,9 @@ export class EcosystemProvider implements IEcosystemProvider{
         @inject(NotificationsSymbol)
         private notificationsProvider: INotificationsProvider,
         @inject(PlatformEventsSymbol)
-        private platformEventsProvider: IPlatformEvents
+        private platformEventsProvider: IPlatformEvents,
+        @inject(UserProviderSymbol)
+        private userProvider: IUserProvider,
     ) {
         this._reverbObserver$ = this.reverbProvider.getReverbObserver$();
         this._bridgeObserver$ = this.platformEventsProvider.getEmitter();
@@ -199,6 +203,16 @@ export class EcosystemProvider implements IEcosystemProvider{
                     ageGroup: message.data.ageGroup
                 })
             }
+        })
+
+        this._reverbObserver$.pipe(
+            filter((message):message is TReverbMessage<{ scope: string, app_id: number }> => message.event === 'user_request_auth_token'),
+        ).subscribe((message) => {
+            this.platformEventsProvider.getAuthToken(message.data).then(data => {
+                if(data?.accessToken){
+                    this.userProvider.setAuthToken(data.accessToken, data.scope, data.expires)
+                }
+            });
         })
 
     }

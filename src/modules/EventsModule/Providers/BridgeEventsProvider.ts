@@ -16,6 +16,7 @@ import type {TShopSubscription} from "@/modules/ApiModule/Types/TShopSubscriptio
 import type {TShopCoin} from "@/modules/ApiModule/Types/TShopCoin.ts";
 import {themeStore} from "@/stores/Theme/themeStore.ts";
 import type {IThemeStore} from "@/stores/Theme/IThemeStore.ts";
+import type {RequestPropsMap} from "@vkontakte/vk-bridge/dist/types/src/types/data";
 
 @injectable()
 export class BridgeEventsProvider implements IPlatformEvents {
@@ -120,6 +121,18 @@ export class BridgeEventsProvider implements IPlatformEvents {
         return this.setApplicationIsReady();
     }
     setApplicationIsReady = async () => {
+        const authAccess = this.ecosystemStore.$state.authAccess;
+        if((authAccess?.requestedScope || []).indexOf('friends') < 0){
+            this.notificationsProvider.addPopup('request-access-rules', 'request-access-popup', {
+                modal: true,
+                noCloseButton: true,
+                noClose: true,
+                noTitle: true,
+                darkBg: true,
+                backdropBlur: true,
+                noPaddings: true,
+            })
+        }
         return bridge.send('VKWebAppInit');
     }
 
@@ -171,6 +184,22 @@ export class BridgeEventsProvider implements IPlatformEvents {
                 type: 'error',
                 message: "Не удалось совершить покупку"
             })
+        }
+    }
+
+    getAuthToken = async (data: RequestPropsMap["VKWebAppGetAuthToken"]) => {
+        try {
+            const res: any = await bridge.send('VKWebAppGetAuthToken', data);
+            if(res.access_token){
+                return {
+                    accessToken: res.access_token,
+                    scope: res.scope,
+                    expires: res?.expires || 0
+                }
+            }
+        }
+        catch (e: any) {
+            return undefined;
         }
     }
 }

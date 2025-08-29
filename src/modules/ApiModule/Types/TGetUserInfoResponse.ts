@@ -56,4 +56,9 @@ export type TGetUserInfoResponse = {
 
     animal: TAnimal['animal'],
     animals: TAnimal[],
+
+    authAccess: null | {
+        scope: string[],
+        requestedScope: string[],
+    }
 }

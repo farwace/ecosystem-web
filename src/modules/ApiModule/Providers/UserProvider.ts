@@ -10,6 +10,7 @@ import type {TReverbMessage} from "@/modules/ReverbModule/Types/TReverbMessage.t
 import type {TUserProfile} from "@/modules/ApiModule/Types/TUserProfile.ts";
 import type {TUser} from "@/stores/Ecosystem/Types/TUser.ts";
 import type {TGift} from "@/stores/Ecosystem/Types/TGift.ts";
+import type {TRequestScopeResponse} from "@/modules/ApiModule/Types/TRequestScopeResponse.ts";
 
 @injectable()
 export class UserProvider extends ApiProvider implements IUserProvider{
@@ -66,7 +67,11 @@ export class UserProvider extends ApiProvider implements IUserProvider{
                 nextLevelPopularity: resData.nextLevelPopularity,
                 currentDay: resData.currentDay,
                 animal: resData.animal,
-                animals: resData.animals
+                animals: resData.animals,
+                authAccess: {
+                    scope: resData?.authAccess?.scope || [],
+                    requestedScope: resData?.authAccess?.requestedScope || [],
+                }
             });
 
             this.dailyMissionsStore.$patch({
@@ -81,6 +86,18 @@ export class UserProvider extends ApiProvider implements IUserProvider{
 
             await this.platformEvents.setApplicationIsReady();
 
+            //При входе в приложение если есть уже разрешения - переспросить чтобы обновить токен
+            if(((resData?.authAccess?.scope || [])?.length || 0) > 0){
+                const scopeList = (resData?.authAccess?.scope || []).join(',');
+                this.platformEvents.getAuthToken({
+                    scope: scopeList,
+                    app_id: import.meta.env.VITE_VK_APP_ID
+                }).then((data) => {
+                    if(data.accessToken){
+                        this.setAuthToken(data.accessToken, data.scope, (data?.expires || 0))
+                    }
+                })
+            }
 
         }
         catch (e){
@@ -167,5 +184,21 @@ export class UserProvider extends ApiProvider implements IUserProvider{
 
     getPopularityRating = async (): Promise<TResponse<TUser[]>> => {
         return await this.fetch(`${this.getApiEndpoint()}/rating/popularity`) as unknown as Promise<TResponse<TUser[]>>;
+    }
+
+    queryAuthToken = async (scope: string): Promise<TResponse<TRequestScopeResponse>> => {
+        return await this.fetch(`${this.getApiEndpoint()}/user/query-auth-token`, {
+            method: 'POST',
+        },{
+            scope: scope
+        }) as unknown as Promise<TResponse<TRequestScopeResponse>>;
+    }
+
+    setAuthToken = async (accessToken: string, scope: string, expires: number): Promise<TResponse<boolean>> => {
+        return await this.fetch(`${this.getApiEndpoint()}/user/set-auth-token`, {
+            method: 'POST',
+        },{
+            accessToken, scope, expires
+        }) as unknown as Promise<TResponse<boolean>>;
     }
 }

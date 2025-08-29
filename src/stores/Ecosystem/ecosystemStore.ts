@@ -52,5 +52,9 @@ export const ecosystemStore = defineStore('ecosystem', {
 
         animal: 'tiger',
         animals: [],
+        authAccess: {
+            scope: [],
+            requestedScope: [],
+        }
     })
 })

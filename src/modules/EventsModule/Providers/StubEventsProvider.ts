@@ -128,4 +128,8 @@ export class StubEventsProvider implements IPlatformEvents{
         //todo: вызвать метод на покупку монет!
         alert('Вызывать метод на покупку монет!')
     }
+
+    getAuthToken = async () => {
+        return;
+    }
 }

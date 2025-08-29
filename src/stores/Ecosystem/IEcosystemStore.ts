@@ -5,6 +5,7 @@ import type {GetLaunchParamsResponse} from "@vkontakte/vk-bridge";
 import type {TDailyEnter} from "@/stores/Ecosystem/Types/TDailyEnter.ts";
 import type {TSubscription} from "@/stores/Ecosystem/Types/TSubscription.ts";
 import type {TAnimal} from "@/stores/Ecosystem/Types/TAnimal.ts";
+import type {TUserAuthTokenScope} from "@/modules/ApiModule/Types/TUserAuthTokenScope.ts";
 
 export interface IEcosystemStore {
     authString: string;
@@ -58,6 +59,8 @@ export interface IEcosystemStore {
 
     giftList: TGift[];
     achievementsList: TAchievement[];
+
+    authAccess: TUserAuthTokenScope
 }
 
 export enum AgeGroup {

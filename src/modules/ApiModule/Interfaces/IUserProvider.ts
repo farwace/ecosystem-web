@@ -4,6 +4,7 @@ import type {TReverbMessage} from "@/modules/ReverbModule/Types/TReverbMessage.t
 import type {TUserProfile} from "@/modules/ApiModule/Types/TUserProfile.ts";
 import type {TUser} from "@/stores/Ecosystem/Types/TUser.ts";
 import type {TGift} from "@/stores/Ecosystem/Types/TGift.ts";
+import type {TRequestScopeResponse} from "@/modules/ApiModule/Types/TRequestScopeResponse.ts";
 
 export interface IUserProvider  extends IModule{
     getUserInfo: () => Promise<void>;
@@ -17,5 +18,8 @@ export interface IUserProvider  extends IModule{
     getTopFans: (id: number) => Promise<TResponse<TUser[]>>
     getTopGifts: (id: number) => Promise<TResponse<TGift[]>>
     updateProfile: (body: {[key:string]:string}) => Promise<TResponse<any>>;
-    getPopularityRating: () => Promise<TResponse<TUser[]>>
+    getPopularityRating: () => Promise<TResponse<TUser[]>>;
+    queryAuthToken: (scope: string) => Promise<TResponse<TRequestScopeResponse>>;
+    setAuthToken: (accessToken: string, scope: string, expires: number) => Promise<TResponse<boolean>>;
+
 }

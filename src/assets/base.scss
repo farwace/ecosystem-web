@@ -101,6 +101,10 @@ $themes: (
 .cursor-pointer{
   cursor: pointer;
 }
+.text-center{
+  text-align: center;
+}
+
 @media(max-width: 768px){
   .iziToast-wrapper{
     &.iziToast-wrapper-topCenter{
