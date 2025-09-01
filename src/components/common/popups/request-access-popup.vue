@@ -35,7 +35,7 @@ const userProvider: IUserProvider | undefined = inject(UserProviderSymbol);
 const emit = defineEmits(['close']);
 
 const onRequestAccess = () => {
-  userProvider?.queryAuthToken?.('friends,group_messages');
+  userProvider?.queryAuthToken?.('friends');
   emit('close');
 }
 </script>
