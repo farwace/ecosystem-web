@@ -12,4 +12,5 @@ interface ImportMetaEnv {
     readonly VITE_REVERB_PORT:number
     readonly VITE_REVERB_TLS:string
     readonly VITE_REVERB_APP_AUTH_ENDPOINT:string
+    readonly VITE_GAME_ENDPOINT:string
 }

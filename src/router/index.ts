@@ -9,7 +9,9 @@ const router = createRouter({
         component: () => import('../layouts/MainLayout/MainLayout.vue'),
         children: [
             {name: 'home', path: '', component: () => import('../pages/Home/HomePage.vue') },
-            {name: 'profile', path: 'profile/:id', component: () => import('../pages/Profile/ProfilePage.vue') }
+            {name: 'profile', path: 'profile/:id', component: () => import('../pages/Profile/ProfilePage.vue') },
+            {name: 'bunkerGame', path: 'games/bunker', component: () => import('../pages/Games/Bunker/BunkerGame.vue') },
+
         ],
       },
       {

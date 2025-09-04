@@ -9,6 +9,7 @@ export type TPopupData = {
     fullHeight?:boolean,
     pink?:boolean,
     small?:boolean,
+    middle?:boolean,
     class?:string,
     backgroundBlur?: boolean,
     backdropBlur?:boolean,

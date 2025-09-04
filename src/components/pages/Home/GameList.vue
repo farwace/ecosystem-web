@@ -27,15 +27,17 @@ import GetSpin from "@/components/pages/Home/GetSpin.vue";
 import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
 import {inject} from "vue";
 import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
+import {useAnimatedRouter} from "@/classes/utils/useAnimatedRouter.ts";
 
 const notificationsProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
 const {videoAdvAccepted} = storeToRefs(bridgeStore());
+const router = useAnimatedRouter();
 
 const createRoom = () => {
-  alert('Создать комнату');
+  router.push({name: 'bunkerGame', query: {neo: 1}})
 }
 const startGame = () => {
-  alert('Играть');
+  router.push({name: 'bunkerGame'})
 }
 
 const getSpinHasBeenClicked = () => {

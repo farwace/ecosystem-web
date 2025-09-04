@@ -38,11 +38,17 @@ import {bridgeStore} from "@/stores/Bridge/bridgeStore.ts";
 import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
 import {achievementsStore} from "@/stores/Achievements/achievementsStore.ts";
 import {useAnimatedRouter} from "@/classes/utils/useAnimatedRouter.ts";
+import {inject} from "vue";
+import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
+import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
+import type {TDailyReward} from "@/modules/EventsModule/Types/TDailyRevard.ts";
 
 const {id, firstName, avatar} = storeToRefs(ecosystemStore());
 const {inFavorites, inHomeScreen} = storeToRefs(bridgeStore());
 const {hasUnclaimedCompletedAchievement} = storeToRefs(achievementsStore());
 const router = useAnimatedRouter();
+
+const notificationsProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
 
 const openSettings = () => {
 

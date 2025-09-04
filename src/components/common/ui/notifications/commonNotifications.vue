@@ -26,6 +26,7 @@
           'h-100': popup.data?.fullHeight,
           'bg-pink': popup.data?.pink,
           'small-popup': popup.data?.small,
+          'middle-popup': popup.data?.middle,
         }"
       >
         <div
@@ -132,11 +133,11 @@ let iziToast:{
 
 const commonParams = {
   progressBar: false,
-  close: true,
+  close: false,
   displayMode: 0,
   messageColor: '#fff',
   animateInside: false,
-  class: 'notification-item'
+  class: 'notification-item',
 }
 
 watch(notifications, async (neoVal:{[key:string]:TNotification}) => {
@@ -314,6 +315,12 @@ onBeforeUnmount(() => {
 
     &.small-popup{
       width: 50%;
+      max-width: 250px;
+      //left: 25%;
+      padding-bottom: 20px;
+    }
+    &.middle-popup{
+      width: 75%;
       max-width: 250px;
       //left: 25%;
       padding-bottom: 20px;
