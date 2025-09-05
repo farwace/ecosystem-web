@@ -23,7 +23,8 @@ import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
 const {id, popularityLevel, lvl} = storeToRefs(ecosystemStore());
 
 const props = defineProps<{
-  profile?:TUserProfile
+  profile?:TUserProfile,
+  small?: boolean,
 }>();
 
 const cPopularityLevel = computed(() => {

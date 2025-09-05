@@ -15,6 +15,7 @@
             :eliminated="false"
             :is-speaker="false"
             @touch-place="onTouchPlace(place)"
+            @touch-player="onTouchPlayer(playerId.toString())"
         />
       </template>
     </div>
@@ -32,6 +33,7 @@ import {storeToRefs} from "pinia";
 import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
 import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
 import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
+import {useAnimatedRouter} from "@/classes/utils/useAnimatedRouter.ts";
 
 const props = defineProps<{
   room: Room
@@ -61,6 +63,7 @@ const places = ref<{[key:string]: number}>();
 const players = ref<BunkerGameRoomState['players']>();
 const scenario = ref();
 const votingResults = ref();
+const router = useAnimatedRouter();
 
 const unbindCallbacks: any[] = [];
 
@@ -144,7 +147,39 @@ const initializeGame = () => {
       type: "warning",
       message: message,
     });
-  })
+  });
+
+  props.room?.onMessage?.('playerConnected', (message: any) => {
+    console.log('>>> PLAYER CONNECTED', message); //todo: отображать игрокам сообщение о том, что игрок присоединился
+  });
+  props.room?.onMessage?.('playerJoined', (message: any) => {
+    console.log('>>> PLAYER JOINED', message); //todo: отображать игрокам сообщение о том, что игрок присоединился
+  });
+  props.room?.onMessage?.('__playground_message_types', (message: any) => {
+    console.log('>>> __playground_message_types', message); //todo: убрать обработчик
+  });
+  props.room?.onMessage?.('playerKicked', (message: any) => {
+    console.log('>>> playerKicked', message);
+  });
+  props.room?.onMessage?.('kickSuccess', (message: any) => {
+    console.log('>>> kickSuccess', message);
+  });
+  props.room?.onMessage?.('kicked', (message: any) => {
+    notificationsProvider?.addPopup('you-are-kocked', 'simple-popup', {
+      message: message,
+      modal: true,
+      middle: true,
+      noTitle: true,
+      darkBg: true,
+    })
+    router.replace('/');
+  });
+  props.room?.onMessage?.('leaderChanged', (message: any) => {
+    console.log('>>> leaderChanged', message);
+  });
+  props.room?.onMessage?.('setLeaderSuccess', (message: any) => {
+    console.log('>>> setLeaderSuccess', message);
+  });
 
 }
 
@@ -152,6 +187,15 @@ const initializeGame = () => {
 const requestChangePlace = (place: number | string) => {
   props.room?.send('changePlace', +place.toString());
 }
+
+const requestKickPlayer = (playerId: string) => {
+  props.room?.send('kickPlayer', playerId);
+}
+
+const requestSetLeader = (playerId: string) => {
+  props.room?.send('setLeaderPlayer', playerId);
+}
+
 
 const onTouchPlace = (place: string | number) => {
   if(status.value == 'waiting'){
@@ -162,12 +206,34 @@ const onTouchPlace = (place: string | number) => {
       noPaddings: true,
       darkBg: true,
       placeNumber: (+place+1),
-      inviteFriendCallback: () => {},
+      inviteFriendCallback: () => {}, //todo: пригласить друзей в игровую комнату
       changePlaceCallback: () => {requestChangePlace(place)}
     });
   }
 }
 
+const onTouchPlayer = (playerId: string) => {
+  const player = players.value?.get(playerId);
+  if(!player){
+    return;
+  }
+
+  notificationsProvider?.addPopup('game-bunker-touch-player-'+playerId+'-popup', 'game-bunker-touch-player-popup', {
+    modal: true,
+    middle: true,
+    noTitle: true,
+    noPaddings: true,
+    noBackground: true,
+    darkBg: true,
+    noCloseButton: true,
+    backdropBlur: true,
+    player: player,
+    isHost: hostId.value == id.value && status.value === 'waiting',
+    kickCallback: () => {requestKickPlayer(playerId)},
+    setLeaderCallback: () => {requestSetLeader(playerId)},
+  });
+
+}
 
 onMounted(() => {
   places.value = {
@@ -215,8 +281,9 @@ onBeforeUnmount(() => {
     display: grid;
     position: relative;
     width: 100%;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px 50%;
+    grid-template-columns: auto auto;
+    gap: 20px 10px;
+    justify-content: space-between;
     top: calc(50% - 40px);
     transform: translateY(-50%);
   }
