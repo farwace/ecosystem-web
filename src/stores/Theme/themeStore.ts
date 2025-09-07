@@ -6,6 +6,9 @@ export const themeStore = defineStore('theme', {
         theme: 'light',
         animateRoute: false,
         customSwipeSettings: false,
+        musicVolume: '50',
+        soundVolume: '50',
+        voiceVolume: '50',
     }),
     getters: {
         isDark(state): boolean {

@@ -1,5 +1,9 @@
 <template>
   <div class="bunker">
+    <div class="bunker__settings">
+      <BunkerSettingsBurger @leave="onLeaveClick" @rules="onRulesClick" @settings="onSettingsClick"/>
+    </div>
+
     <div class="bunker__places">
       <template
           v-for="(playerId, place) in places"
@@ -19,6 +23,11 @@
         />
       </template>
     </div>
+
+    <div class="bunker__private">
+      <BunkerTogglePrivate :host="hostId == id" :value="isPrivateRoom" @toggle="togglePrivateRoom"/>
+    </div>
+
   </div>
 </template>
 <script lang="ts" setup>
@@ -28,12 +37,15 @@ import type {TGameStage, TRoomStatus} from "@/components/games/bunker/types.ts";
 import type {BunkerGameRoomState} from "@/components/games/bunker/schemas/schemas/BunkerGameRoomState.ts";
 import {MapSchema} from "@colyseus/schema";
 import {Player} from "@/components/games/bunker/schemas/schemas/Player.ts";
-import BunkerPlayerPlace from "@/components/games/bunker/BunkerPlayerPlace.vue";
+import BunkerPlayerPlace from "@/components/games/bunker/components/BunkerPlayerPlace.vue";
 import {storeToRefs} from "pinia";
 import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
 import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
 import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
 import {useAnimatedRouter} from "@/classes/utils/useAnimatedRouter.ts";
+import UiIcon from "@/components/common/icons/UiIcon.vue";
+import BunkerSettingsBurger from "@/components/games/bunker/components/BunkerSettingsBurger.vue";
+import BunkerTogglePrivate from "@/components/games/bunker/components/BunkerTogglePrivate.vue";
 
 const props = defineProps<{
   room: Room
@@ -149,24 +161,40 @@ const initializeGame = () => {
     });
   });
 
-  props.room?.onMessage?.('playerConnected', (message: any) => {
-    console.log('>>> PLAYER CONNECTED', message); //todo: отображать игрокам сообщение о том, что игрок присоединился
+  props.room?.onMessage?.('playerConnected', (player: Player) => {
+    notificationsProvider?.addNotification({
+      type: 'game-info',
+      message: 'Игрок ' + (player?.name ? (player.name + ' ') : '') + ' присоединился к комнате'
+    })
   });
-  props.room?.onMessage?.('playerJoined', (message: any) => {
-    console.log('>>> PLAYER JOINED', message); //todo: отображать игрокам сообщение о том, что игрок присоединился
+  props.room?.onMessage?.('playerReconnected', (player: Player) => {
+    notificationsProvider?.addNotification({
+      type: 'game-info',
+      message: 'Игрок ' + (player?.name ? (player.name + ' ') : '') + ' вернулся'
+    })
   });
+  props.room?.onMessage?.('playerLeft', (player: Player) => {
+    notificationsProvider?.addNotification({
+      type: 'game-info',
+      message: 'Игрок ' + (player?.name ? (player.name + ' ') : '') + ' вышел из комнаты'
+    })
+  });
+
+
   props.room?.onMessage?.('__playground_message_types', (message: any) => {
     console.log('>>> __playground_message_types', message); //todo: убрать обработчик
   });
-  props.room?.onMessage?.('playerKicked', (message: any) => {
-    console.log('>>> playerKicked', message);
+
+  props.room?.onMessage?.('playerKicked', (player: Player) => {
+    notificationsProvider?.addNotification({
+      type: 'game-info',
+      message: 'Игрок ' + (player?.name ? (player.name + ' ') : '') + ' исключен из комнаты'
+    })
   });
-  props.room?.onMessage?.('kickSuccess', (message: any) => {
-    console.log('>>> kickSuccess', message);
-  });
+
   props.room?.onMessage?.('kicked', (message: any) => {
-    notificationsProvider?.addPopup('you-are-kocked', 'simple-popup', {
-      message: message,
+    notificationsProvider?.addPopup('you-are-kicked', 'simple-popup', {
+      message: '<div style="margin-top: 35px; text-align: center">' + message + '</div>',
       modal: true,
       middle: true,
       noTitle: true,
@@ -175,10 +203,11 @@ const initializeGame = () => {
     router.replace('/');
   });
   props.room?.onMessage?.('leaderChanged', (message: any) => {
-    console.log('>>> leaderChanged', message);
-  });
-  props.room?.onMessage?.('setLeaderSuccess', (message: any) => {
-    console.log('>>> setLeaderSuccess', message);
+    notificationsProvider?.addNotification({
+      type: 'game-info',
+      message: 'Назначен новый лидер комнаты',
+      timeout: 50000,
+    })
   });
 
 }
@@ -235,6 +264,46 @@ const onTouchPlayer = (playerId: string) => {
 
 }
 
+
+const onSettingsClick = () => {
+  notificationsProvider?.addPopup('game-bunker-settings-popup', 'game-bunker-settings-popup', {
+    modal: true,
+    noTitle: true,
+    darkBg: true,
+    noBackground: true,
+    noPaddings: true,
+  });
+}
+const onLeave = () => {
+  router.replace('/');
+}
+const onLeaveClick = () => {
+  if(status.value == 'playing'){
+    notificationsProvider?.addPopup('game-bunker-leave-popup', 'game-bunker-leave-popup', {
+      modal: true,
+      noTitle: true,
+      middle: true,
+      darkBg: true,
+      noBackground: true,
+      noPaddings: true,
+      leaveCallback: () => {onLeave()},
+    });
+  }
+  else{
+    onLeave();
+  }
+}
+const onRulesClick = () => {
+  //todo: открывать попап с правилами игры
+}
+
+
+const togglePrivateRoom = () => {
+  if(hostId.value == id.value){
+    props.room?.send('togglePrivateRoom');
+  }
+}
+
 onMounted(() => {
   places.value = {
     "0": 0,
@@ -282,11 +351,24 @@ onBeforeUnmount(() => {
     position: relative;
     width: 100%;
     grid-template-columns: auto auto;
-    gap: 20px 10px;
+    gap: 15px 10px;
     justify-content: space-between;
-    top: calc(50% - 40px);
+    //top: calc(50% - 40px);
+    top: 50%;
     transform: translateY(-50%);
   }
 
+  &__settings {
+    position: absolute;
+    top: 15px;
+    top: calc(env(safe-area-inset-top,0) + 15px);
+    left: 15px;
+  }
+
+  &__private{
+    position: absolute;
+    bottom: 20px;
+    left: 15px;
+  }
 }
 </style>

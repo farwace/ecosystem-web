@@ -109,7 +109,7 @@ const handleClick = () => {
     font-size: 14px;
     line-height: 14px;
     text-align: center;
-    padding: 2px 12px;
+    padding: 2px;
     position: relative;
   }
 

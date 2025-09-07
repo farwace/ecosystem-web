@@ -109,6 +109,7 @@ $themes: (
   .iziToast-wrapper{
     &.iziToast-wrapper-topCenter{
       padding-top: 20px;
+      padding-top: calc(env(safe-area-inset-top,0) + 20px);
     }
     .iziToast{
       padding: 0 35px 0 0;

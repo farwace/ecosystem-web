@@ -7,8 +7,8 @@
             <img :src="player.avatar" :alt="player.name">
           </div>
           <div class="player__name">
-            <div class="mb-2">
-              {{ player.name }} <UiIcon class="player-sex" :name="player.isMale ? 'male' : 'female'" />
+            <div class="player__name__text">
+              <span class="player-name">{{ player.name }}</span> <UiIcon class="player-sex" :name="player.isMale ? 'male' : 'female'" />
             </div>
             <div>
               <ProfileTitles small :profile="profile" />
@@ -122,9 +122,6 @@ const setLeader = () => {
 }
 
 .bunker-popup{
-  .mb-2{
-    margin-bottom: 4px;
-  }
   &__player{
     background-color: var(--bg-color-component);
     border-radius: 12px;
@@ -149,8 +146,21 @@ const setLeader = () => {
       }
       &__name{
         flex-grow: 1;
+        position: relative;
         overflow: hidden;
-        text-wrap: nowrap;
+
+        &__text{
+          margin-bottom: 4px;
+          display: flex;
+          align-items: center;
+        }
+
+        .player-name{
+          overflow: hidden;
+          flex-grow: 1;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
 
         .player-sex{
           width: 1rem;
@@ -158,6 +168,7 @@ const setLeader = () => {
           display: inline;
           vertical-align: middle;
           margin-top: -2px;
+          flex-shrink: 0;
         }
       }
     }
