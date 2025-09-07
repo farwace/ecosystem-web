@@ -206,7 +206,6 @@ const initializeGame = () => {
     notificationsProvider?.addNotification({
       type: 'game-info',
       message: 'Назначен новый лидер комнаты',
-      timeout: 50000,
     })
   });
 
@@ -367,8 +366,16 @@ onBeforeUnmount(() => {
 
   &__private{
     position: absolute;
-    bottom: 20px;
+    bottom: 40px;
     left: 15px;
+  }
+}
+
+@media(min-height: 600px){
+  .bunker{
+    &__places{
+      gap: 20px 10px;
+    }
   }
 }
 </style>
