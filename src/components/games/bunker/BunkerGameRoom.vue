@@ -1,7 +1,15 @@
 <template>
   <div class="bunker">
     <div class="bunker__settings">
-      <BunkerSettingsBurger @leave="onLeaveClick" @rules="onRulesClick" @settings="onSettingsClick"/>
+      <BunkerSettingsBurger
+          :host="hostId == id"
+          :players-count="playersCount"
+          @leave="onLeaveClick"
+          @rules="onRulesClick"
+          @settings="onSettingsClick"
+          @minus="onPlayersMinusClick"
+          @plus="onPlayersPlusClick"
+      />
     </div>
 
     <div class="bunker__places">
@@ -15,6 +23,7 @@
             :player="players?.get?.(playerId.toString())"
             :is-host="hostId == playerId"
             :is-self="playerId == id"
+            :disabled="(+place) > ((playersCount || 8)-1)"
             :disconnected="false"
             :eliminated="false"
             :is-speaker="false"
@@ -302,6 +311,19 @@ const togglePrivateRoom = () => {
     props.room?.send('togglePrivateRoom');
   }
 }
+
+const onPlayersMinusClick = () => {
+  if(hostId.value == id.value){
+    props.room?.send('changePlayersCount', 'sub');
+  }
+}
+const onPlayersPlusClick = () => {
+  if(hostId.value == id.value){
+    props.room?.send('changePlayersCount', 'add');
+  }
+}
+
+
 
 onMounted(() => {
   places.value = {

@@ -4,13 +4,14 @@
       Это Вы
     </div>
     <UiIcon v-if="isHost" name="sunglasses" class="place__circle__host" />
-    <div class="place__circle" :style="{'--avatar': player?.avatar}">
-      <UiIcon v-if="!player" name="icon-plus" class="place__circle__plus" />
+    <div class="place__circle" :style="{'--avatar': (!disabled && player?.avatar) ? player?.avatar : undefined}">
+      <UiIcon class="place__circle__plus" name="lock" v-if="disabled" />
+      <UiIcon v-if="!disabled && !player" name="icon-plus" class="place__circle__plus" />
       <div class="place__position">{{ +place+1 }}</div>
     </div>
     <div class="place__plate">
       <div class="player-name">
-        <div class="absolute-marquee-text" v-if="player" v-marquee="'scroll'">
+        <div class="absolute-marquee-text" v-if="player && !disabled" v-marquee="'scroll'">
           {{ player?.name }}
         </div>
       </div>
@@ -32,6 +33,7 @@ const props = defineProps<{
   isHost?: boolean,
   isSpeaker?: boolean,
   isSelf?: boolean,
+  disabled?: boolean,
 }>();
 
 const emit = defineEmits(['touch-player', 'touch-place']);
@@ -44,6 +46,9 @@ const avatarUrl = computed(() => {
 });
 
 const handleClick = () => {
+  if(props.disabled){
+    return;
+  }
   if(!props.player?.id){
     emit("touch-place");
     return;
