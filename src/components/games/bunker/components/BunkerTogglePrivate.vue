@@ -1,6 +1,6 @@
 <template>
   <div class="toggle-private">
-    <div class="switch" v-if="host" @click="$emit('toggle')" :class="{active: !props.value}">
+    <div class="switch" v-if="host" :class="{active: !props.value}">
       <div class="toggle"></div>
       <div class="lock">
         <UiIcon name="lock" v-if="props.value"/>
@@ -18,8 +18,6 @@ const props = defineProps<{
   value?:boolean,
   host?:boolean,
 }>();
-
-defineEmits(['toggle']);
 
 
 </script>

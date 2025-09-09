@@ -1,5 +1,5 @@
 <template>
-  <div class="bunker">
+  <div class="bunker" ref="bunkerContainer">
     <div class="bunker__settings">
       <BunkerSettingsBurger
           :host="hostId == id"
@@ -12,49 +12,57 @@
       />
     </div>
 
-    <div class="bunker__places">
-      <template
-          v-for="(playerId, place) in places"
-          :key="`place-${place}-player-${playerId}`"
-      >
-        <BunkerPlayerPlace
-            :place="place"
-            :player-id="playerId"
-            :player="players?.get?.(playerId.toString())"
-            :is-host="hostId == playerId"
-            :is-self="playerId == id"
-            :disabled="(+place) > ((playersCount || 8)-1)"
-            :disconnected="false"
-            :eliminated="false"
-            :is-speaker="false"
-            @touch-place="onTouchPlace(place)"
-            @touch-player="onTouchPlayer(playerId.toString())"
-        />
-      </template>
+    <div class="bunker__screen">
+      <bunker-game-screen
+          :max-height="freeAreaHeight"
+          :text="topText"
+      />
+    </div>
+
+    <div class="bunker__places" ref="placesDiv">
+      <bunker-game-places
+          :places="places"
+          :players-count="playersCount"
+          :host-id="hostId"
+          :players="players"
+          :status="status"
+          @touch-player="onTouchPlayer($event)"
+          @touch-place="onTouchPlace($event)"
+      />
+    </div>
+
+    <div class="bunker__controls"> <!-- todo: передавать вкл/выкл микрофон -->
+      <bunker-lobby-buttons
+          v-if="status == 'waiting' || status == 'starting'"
+          :max-height="freeAreaHeight"
+          :player="currentPlayer"
+          @ready="requestReady($event)"
+      />
+
     </div>
 
     <div class="bunker__private">
-      <BunkerTogglePrivate :host="hostId == id" :value="isPrivateRoom" @toggle="togglePrivateRoom"/>
+      <BunkerTogglePrivate :host="hostId == id" :value="isPrivateRoom" @click="togglePrivateRoom"/>
     </div>
 
   </div>
 </template>
 <script lang="ts" setup>
 import {getStateCallbacks, type Room} from "colyseus.js";
-import {inject, onBeforeUnmount, onMounted, ref, shallowRef} from "vue";
-import type {TGameStage, TRoomStatus} from "@/components/games/bunker/types.ts";
+import {computed, inject, nextTick, onBeforeUnmount, onMounted, reactive, ref, shallowRef} from "vue";
+import type {TGameStage, TPlayer, TRoomStatus} from "@/components/games/bunker/types.ts";
 import type {BunkerGameRoomState} from "@/components/games/bunker/schemas/schemas/BunkerGameRoomState.ts";
-import {MapSchema} from "@colyseus/schema";
 import {Player} from "@/components/games/bunker/schemas/schemas/Player.ts";
-import BunkerPlayerPlace from "@/components/games/bunker/components/BunkerPlayerPlace.vue";
 import {storeToRefs} from "pinia";
 import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
 import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
 import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
 import {useAnimatedRouter} from "@/classes/utils/useAnimatedRouter.ts";
-import UiIcon from "@/components/common/icons/UiIcon.vue";
 import BunkerSettingsBurger from "@/components/games/bunker/components/BunkerSettingsBurger.vue";
 import BunkerTogglePrivate from "@/components/games/bunker/components/BunkerTogglePrivate.vue";
+import BunkerGameScreen from "@/components/games/bunker/components/BunkerGameScreen.vue";
+import BunkerGamePlaces from "@/components/games/bunker/components/BunkerGamePlaces.vue";
+import BunkerLobbyButtons from "@/components/games/bunker/components/BunkerLobbyButtons.vue";
 
 const props = defineProps<{
   room: Room
@@ -63,6 +71,9 @@ const props = defineProps<{
 const notificationsProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
 const {id} = storeToRefs(ecosystemStore());
 
+const placesDiv = ref<HTMLDivElement>();
+const bunkerContainer = ref<HTMLDivElement>();
+const freeAreaHeight = ref<number>(0);
 
 const currentRound = ref<number>();
 const currentSpeakerId = ref<number | string>();
@@ -81,7 +92,7 @@ const turnTimeLimit = ref<number>();
 const turnTimeRemaining = ref<number>();
 
 const places = ref<{[key:string]: number}>();
-const players = ref<BunkerGameRoomState['players']>();
+const players = ref<Record<string, TPlayer>>({});
 const scenario = ref();
 const votingResults = ref();
 const router = useAnimatedRouter();
@@ -145,12 +156,18 @@ const initializeGame = () => {
 
   unbindCallbacks.push($(props.room.state).players.onAdd((playerData, playerId) => {
     console.log('>>> PLAYERS ON ADD', playerId, playerData);
-    players.value?.set(playerId, playerData);
+    players.value![playerId] = createPlayerObject(playerData);
+
+    unbindCallbacks.push($(playerData).onChange(() => {
+      console.log('>>> PLAYER DATA ON CHANGE', playerId, playerData);
+      players.value![playerId] = createPlayerObject(playerData);
+    }))
+
   }))
   unbindCallbacks.push($(props.room.state).players.onRemove((playerData, playerId) => {
     console.log('>>> PLAYERS ON REMOVE', playerId, playerData);
-    if(players.value?.has(playerId)){
-      players.value?.delete(playerId);
+    if(players.value![playerId]){
+      delete players.value[playerId];
     }
   }))
 
@@ -220,6 +237,55 @@ const initializeGame = () => {
 
 }
 
+const createPlayerObject = (playerData: Player): TPlayer => {
+  return  {
+    isReady: playerData.isReady,
+    id: playerData.id,
+    sessionId: playerData.sessionId,
+    avatar: playerData.avatar,
+    isVip: playerData.isVip,
+    isMale: playerData.isMale,
+    popularityLevel: playerData.popularityLevel,
+    popularity: playerData.popularity,
+    level: playerData.level,
+    experience: playerData.experience,
+    isPremium: playerData.isPremium,
+    age: playerData.age,
+    isConnected: playerData.isConnected,
+    canSpeak: playerData.canSpeak,
+    name: playerData.name,
+    isEliminated: playerData.isEliminated,
+    votesAgainst: playerData.votesAgainst,
+    revealedCards: playerData.revealedCards,
+    cards: playerData.cards,
+  }
+}
+
+const currentPlayer = computed(() => {
+  return players.value?.[id.value.toString()];
+})
+
+const topText = computed(() => {
+  if(status.value == 'waiting'){
+    let freePlaces = 0;
+    Object.keys(places.value || {}).forEach((place) => {
+      if(!places.value?.[place]){
+        freePlaces++;
+      }
+    })
+
+    const shouldFreePlaces = Object.keys(places.value || {}).length - (playersCount.value || 8)
+
+    if(freePlaces > shouldFreePlaces){
+      return 'Ожидание игроков'
+    }
+    if(!currentPlayer.value?.isReady){
+      return 'Нажмите готов'
+    }
+    return 'Ожидание, пока игроки нажмут готов'
+  }
+  return undefined;
+});
 
 const requestChangePlace = (place: number | string) => {
   props.room?.send('changePlace', +place.toString());
@@ -233,6 +299,9 @@ const requestSetLeader = (playerId: string) => {
   props.room?.send('setLeaderPlayer', playerId);
 }
 
+const requestReady = (val: boolean) => {
+  props.room?.send('ready', val);
+}
 
 const onTouchPlace = (place: string | number) => {
   if(status.value == 'waiting'){
@@ -250,7 +319,7 @@ const onTouchPlace = (place: string | number) => {
 }
 
 const onTouchPlayer = (playerId: string) => {
-  const player = players.value?.get(playerId);
+  const player = players.value[playerId];
   if(!player){
     return;
   }
@@ -336,9 +405,21 @@ onMounted(() => {
     "6": 0,
     "7": 0,
   };
-
-  players.value = new MapSchema<Player>();
+  players.value = {};
   initializeGame();
+
+
+  nextTick(() => {
+    if(placesDiv.value && bunkerContainer.value){
+      const placesDivHeight = placesDiv.value.clientHeight;
+      const parentStyles = getComputedStyle(bunkerContainer.value);
+      const paddingTop = parseFloat((parentStyles.paddingTop || '0').replace('px', ''));
+      const paddingBottom = parseFloat((parentStyles.paddingBottom || '0').replace('px', ''));
+      const containerHeight = bunkerContainer.value.clientHeight - paddingTop - paddingBottom;
+      freeAreaHeight.value = Math.max((containerHeight - placesDivHeight) / 2, 0);
+    }
+  })
+
 });
 
 onBeforeUnmount(() => {
@@ -367,13 +448,26 @@ onBeforeUnmount(() => {
   padding-right: 15px;
   padding-bottom: 40px;
 
+  &__screen{
+    position: absolute;
+    width: 100%;
+    left: 0;
+    display: flex;
+    flex-direction: row;
+  }
+
+  &__controls{
+    position: absolute;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: row;
+  }
+
   &__places{
-    display: grid;
     position: relative;
     width: 100%;
-    grid-template-columns: auto auto;
-    gap: 15px 10px;
-    justify-content: space-between;
     //top: calc(50% - 40px);
     top: 50%;
     transform: translateY(-50%);
@@ -393,11 +487,4 @@ onBeforeUnmount(() => {
   }
 }
 
-@media(min-height: 600px){
-  .bunker{
-    &__places{
-      gap: 20px 10px;
-    }
-  }
-}
 </style>

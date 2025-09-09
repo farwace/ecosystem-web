@@ -16,24 +16,26 @@
         </div>
       </div>
     </div>
+    <div class="place__action" v-if="roomStatus == 'waiting' || roomStatus == 'starting'" :class="{ready: player?.isReady}"></div>
   </div>
 </template>
 <script lang="ts" setup>
-import type {Player} from "@/components/games/bunker/schemas/schemas/Player.ts";
 import {computed} from "vue";
 import UiIcon from "@/components/common/icons/UiIcon.vue";
 import {vMarquee} from "@/classes/directives/marquee.ts";
+import type {TPlayer, TRoomStatus} from "@/components/games/bunker/types.ts";
 
 const props = defineProps<{
   place: number | string,
   playerId: number,
-  player?: Player,
+  player?: TPlayer,
   disconnected?: boolean,
   eliminated?: boolean,
   isHost?: boolean,
   isSpeaker?: boolean,
   isSelf?: boolean,
   disabled?: boolean,
+  roomStatus: TRoomStatus,
 }>();
 
 const emit = defineEmits(['touch-player', 'touch-place']);
