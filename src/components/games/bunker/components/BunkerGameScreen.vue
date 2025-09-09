@@ -1,7 +1,7 @@
 <template>
   <div class="screen">
     <div class="screen__inner">
-      <div v-if="text">
+      <div v-if="text" :class="size">
         {{ text }}
       </div>
     </div>
@@ -13,6 +13,7 @@ import {computed} from "vue";
 const props = defineProps<{
   maxHeight: number,
   text?: string,
+  size?: string,
 }>();
 
 const maxHeight = computed(() => {
@@ -50,6 +51,24 @@ const maxHeight = computed(() => {
     aspect-ratio: 17/10;
     text-wrap: wrap;
     word-wrap: break-word;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    .small{
+      font-size: 12px;
+    }
+  }
+}
+
+@media(min-height: 630px){
+  .screen{
+    &__inner{
+      .small{
+        font-size: 16px;
+      }
+    }
   }
 }
 </style>

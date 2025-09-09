@@ -15,7 +15,8 @@
     <div class="bunker__screen">
       <bunker-game-screen
           :max-height="freeAreaHeight"
-          :text="topText"
+          :text="topText.text"
+          :size="topText.size"
       />
     </div>
 
@@ -266,6 +267,11 @@ const currentPlayer = computed(() => {
 })
 
 const topText = computed(() => {
+  let data: {text?:string, size?:string} = {
+    text: undefined,
+    size: 'normal',
+  }
+
   if(status.value == 'waiting'){
     let freePlaces = 0;
     Object.keys(places.value || {}).forEach((place) => {
@@ -277,14 +283,19 @@ const topText = computed(() => {
     const shouldFreePlaces = Object.keys(places.value || {}).length - (playersCount.value || 8)
 
     if(freePlaces > shouldFreePlaces){
-      return 'Ожидание игроков'
+      data.text = 'Ожидание игроков';
+      return data;
     }
     if(!currentPlayer.value?.isReady){
-      return 'Нажмите готов'
+      data.text = 'Нажмите готов';
+      return data;
     }
-    return 'Ожидание, пока игроки нажмут готов'
+    data.text = 'Ожидание, пока игроки нажмут готов';
+    data.size = 'small';
+    return data;
   }
-  return undefined;
+  data.text = undefined;
+  return data;
 });
 
 const requestChangePlace = (place: number | string) => {
