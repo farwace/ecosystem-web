@@ -32,7 +32,7 @@ const props = defineProps<{
   players?: Record<string, TPlayer>,
   hostId?: number,
   playersCount?: number,
-  status: TRoomStatus,
+  status?: TRoomStatus,
 }>();
 
 const {id} = storeToRefs(ecosystemStore());

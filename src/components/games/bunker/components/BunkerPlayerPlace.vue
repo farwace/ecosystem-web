@@ -35,7 +35,7 @@ const props = defineProps<{
   isSpeaker?: boolean,
   isSelf?: boolean,
   disabled?: boolean,
-  roomStatus: TRoomStatus,
+  roomStatus?: TRoomStatus,
 }>();
 
 const emit = defineEmits(['touch-player', 'touch-place']);
