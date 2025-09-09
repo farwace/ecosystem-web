@@ -23,7 +23,9 @@ const notificationsProvider: INotificationsProvider | undefined = inject(Notific
 
 const props = defineProps<{
   neoRoom?: boolean,
-  roomId?: string
+  roomId?: string,
+  playersCount?: string,
+  isPrivateRoom?: string,
 }>();
 
 const client: {instance?: Client | null} = {
@@ -58,7 +60,7 @@ async function findOrCreateBunkerRoom(forceCreate = false): Promise<Room> {
   const joinOptions = {authString: (authString.value || '').replace('Bearer ', '')};
 
   if(forceCreate){
-    return await client.instance!.create("bunker_game", joinOptions);
+    return await client.instance!.create("bunker_game", Object.assign({}, joinOptions, {isPrivate: !(props.isPrivateRoom == '0'), playersCount: (props.playersCount || 8)}));
   }
 
   const availableRooms = allRooms?.filter?.(r => r.metadata?.canJoin === true && r.name === "bunker_game");

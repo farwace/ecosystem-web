@@ -34,7 +34,11 @@ const {videoAdvAccepted} = storeToRefs(bridgeStore());
 const router = useAnimatedRouter();
 
 const createRoom = () => {
-  router.push({name: 'bunkerGame', query: {neo: 1}})
+  notificationsProvider?.addPopup('create-bunker-room', 'game-bunker-create-room-popup', {
+    darkBg: true,
+    title: 'Убежище: параметры комнаты',
+
+  })
 }
 const startGame = () => {
   router.push({name: 'bunkerGame'})
