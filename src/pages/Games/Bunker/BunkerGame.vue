@@ -25,3 +25,12 @@ const isPrivateRoom = route.query?.private as string;
   height: 100%;
 }
 </style>
+
+<style lang="scss">
+.game-bunker {
+  .btn-pp-close-background {fill: #884614}
+  .btn-pp-close-border {fill: #502B04}
+  .btn-pp-close-cross {fill:#FFEFCC}
+  .btn-pp-close-cross-border {fill: #502B04}
+}
+</style>

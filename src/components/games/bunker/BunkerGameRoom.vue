@@ -269,6 +269,7 @@ const showScenarioModal = () => {
         noTitle: true,
         darkBg: true,
         backdropBlur: true,
+        class: 'game-bunker',
         scenario: scenario.value,
       });
     }
@@ -359,6 +360,7 @@ const onTouchPlace = (place: string | number) => {
       noTitle: true,
       noPaddings: true,
       darkBg: true,
+      class: 'game-bunker',
       placeNumber: (+place+1),
       inviteFriendCallback: () => {}, //todo: пригласить друзей в игровую комнату
       changePlaceCallback: () => {requestChangePlace(place)}
@@ -381,6 +383,7 @@ const onTouchPlayer = (playerId: string) => {
     darkBg: true,
     noCloseButton: true,
     backdropBlur: true,
+    class: 'game-bunker',
     player: player,
     isHost: hostId.value == id.value && status.value === 'waiting',
     kickCallback: () => {requestKickPlayer(playerId)},
@@ -397,6 +400,7 @@ const onSettingsClick = () => {
     darkBg: true,
     noBackground: true,
     noPaddings: true,
+    class: 'game-bunker',
   });
 }
 const onLeave = () => {
@@ -411,6 +415,7 @@ const onLeaveClick = () => {
       darkBg: true,
       noBackground: true,
       noPaddings: true,
+      class: 'game-bunker',
       leaveCallback: () => {onLeave()},
     });
   }

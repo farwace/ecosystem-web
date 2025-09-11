@@ -28,4 +28,9 @@
       padding-bottom: 20px;
     }
   }
+  @media(min-height: 651px){
+    .scenario{
+      padding-top: 30px;
+    }
+  }
 </style>
