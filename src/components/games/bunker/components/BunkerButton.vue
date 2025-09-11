@@ -11,6 +11,10 @@
   cursor: pointer;
   border-radius: 5px;
   padding: 2px;
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -moz-user-select: none;
 
   &__content{
     padding: 5px 15px;

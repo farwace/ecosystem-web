@@ -17,6 +17,12 @@
           :max-height="freeAreaHeight"
           :text="topText.text"
           :size="topText.size"
+          :scenario="scenario"
+          :timer="turnTimeRemaining"
+          :stage="gameStage"
+          :room-status="status"
+          :round="currentRound"
+          @show-scenario="showScenarioModal()"
       />
     </div>
 
@@ -39,10 +45,16 @@
           :player="currentPlayer"
           @ready="requestReady($event)"
       />
-
+      <bunker-user-cards
+          v-if="status == 'playing'"
+          :max-height="freeAreaHeight"
+          :cards="currentPlayer.cards"
+          :revealed-cards="currentPlayer.revealedCards"
+          :is-speaker="currentSpeakerId == currentPlayer?.id"
+      />
     </div>
 
-    <div class="bunker__private">
+    <div class="bunker__private" v-if="status == 'waiting'">
       <BunkerTogglePrivate :host="hostId == id" :value="isPrivateRoom" @click="togglePrivateRoom"/>
     </div>
 
@@ -65,6 +77,7 @@ import BunkerGameScreen from "@/components/games/bunker/components/BunkerGameScr
 import BunkerGamePlaces from "@/components/games/bunker/components/BunkerGamePlaces.vue";
 import BunkerLobbyButtons from "@/components/games/bunker/components/BunkerLobbyButtons.vue";
 import {Console} from "@/classes/utils/Console.ts";
+import BunkerUserCards from "@/components/games/bunker/components/BunkerUserCards.vue";
 
 const props = defineProps<{
   room: Room
@@ -137,6 +150,7 @@ const initializeGame = () => {
     turnTimeLimit.value = currentValue;
   }));
   unbindCallbacks.push($(props.room.state).listen("turnTimeRemaining", (currentValue, previousValue) => {
+    console.log('>>> currentTimeRemaining', currentValue, previousValue);
     turnTimeRemaining.value = currentValue;
   }));
   unbindCallbacks.push($(props.room.state).listen("scenario", (currentValue, previousValue) => {
@@ -209,6 +223,11 @@ const initializeGame = () => {
       message: 'Игрок ' + (player?.name ? (player.name + ' ') : '') + ' вышел из комнаты'
     })
   });
+  props.room?.onMessage?.('gameInit', () => {
+    if(scenario.value){
+      showScenarioModal();
+    }
+  });
 
 
   props.room?.onMessage?.('__playground_message_types', (message: any) => {
@@ -239,6 +258,22 @@ const initializeGame = () => {
     })
   });
 
+}
+
+const showScenarioModal = () => {
+  setTimeout(() => {
+    if(scenario.value?.id){
+      notificationsProvider?.addPopup('game-scenario', 'game-bunker-scenario-popup', {
+        noPaddings: true,
+        noBackground: true,
+        noTitle: true,
+        modal: true,
+        darkBg: true,
+        backdropBlur: true,
+        scenario: scenario.value,
+      });
+    }
+  }, 50)
 }
 
 const createPlayerObject = (playerData: Player): TPlayer => {

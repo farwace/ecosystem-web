@@ -1,0 +1,27 @@
+<template>
+  <div class="scenario">
+    <img :src="scenario.imageUrl" :alt="scenario.name" />
+  </div>
+</template>
+<script lang="ts" setup>
+  import type {TScenario} from "@/components/games/bunker/types.ts";
+
+  const props = defineProps<{
+    scenario: TScenario,
+  }>();
+
+</script>
+
+<style lang="scss" scoped>
+  .scenario {
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+
+    img{
+      width: 100%;
+      max-width: 280px;
+      object-fit: contain;
+    }
+  }
+</style>
