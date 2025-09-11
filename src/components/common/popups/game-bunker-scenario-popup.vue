@@ -23,4 +23,9 @@
       object-fit: contain;
     }
   }
+  @media (min-width: 500px) {
+    .scenario {
+      padding-bottom: 20px;
+    }
+  }
 </style>
