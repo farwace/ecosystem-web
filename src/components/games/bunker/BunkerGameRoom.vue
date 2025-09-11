@@ -267,7 +267,6 @@ const showScenarioModal = () => {
         noPaddings: true,
         noBackground: true,
         noTitle: true,
-        modal: true,
         darkBg: true,
         backdropBlur: true,
         scenario: scenario.value,

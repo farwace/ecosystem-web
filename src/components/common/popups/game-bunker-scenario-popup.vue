@@ -14,13 +14,12 @@
 
 <style lang="scss" scoped>
   .scenario {
-    padding: 20px;
     display: flex;
     justify-content: center;
 
     img{
-      width: 100%;
-      max-width: 280px;
+      //width: 100%;
+      //max-width: 400px;
       object-fit: contain;
     }
   }
