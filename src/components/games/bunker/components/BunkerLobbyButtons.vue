@@ -8,6 +8,7 @@
 <script lang="ts" setup>
 import BunkerButton from "@/components/games/bunker/components/BunkerButton.vue";
 import type {TPlayer} from "@/components/games/bunker/types.ts";
+import {computed} from "vue";
 
 const props = defineProps<{
   maxHeight?: number,
@@ -15,6 +16,13 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits(['ready', 'toggle-microphone', 'invite']);
+
+const cHeight = computed(() => {
+  if(!props.maxHeight) {
+    return 'unset';
+  }
+  return `${props.maxHeight}px`;
+})
 
 </script>
 <style lang="scss" scoped>
@@ -25,7 +33,8 @@ const emits = defineEmits(['ready', 'toggle-microphone', 'invite']);
     gap: 10px;
     align-items: center;
     justify-content: center;
-    padding-bottom: 70px;
+    padding-bottom: 25px;
+    height: v-bind(cHeight);
 
     .ready{
       background-color: #95501B;

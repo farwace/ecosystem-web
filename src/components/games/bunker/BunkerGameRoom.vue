@@ -51,7 +51,7 @@
 <script lang="ts" setup>
 import {getStateCallbacks, type Room} from "colyseus.js";
 import {computed, inject, nextTick, onBeforeUnmount, onMounted, reactive, ref, shallowRef} from "vue";
-import type {TGameStage, TPlayer, TRoomStatus} from "@/components/games/bunker/types.ts";
+import type {TGameStage, TPlayer, TRoomStatus, TScenario} from "@/components/games/bunker/types.ts";
 import type {BunkerGameRoomState} from "@/components/games/bunker/schemas/schemas/BunkerGameRoomState.ts";
 import {Player} from "@/components/games/bunker/schemas/schemas/Player.ts";
 import {storeToRefs} from "pinia";
@@ -64,6 +64,7 @@ import BunkerTogglePrivate from "@/components/games/bunker/components/BunkerTogg
 import BunkerGameScreen from "@/components/games/bunker/components/BunkerGameScreen.vue";
 import BunkerGamePlaces from "@/components/games/bunker/components/BunkerGamePlaces.vue";
 import BunkerLobbyButtons from "@/components/games/bunker/components/BunkerLobbyButtons.vue";
+import {Console} from "@/classes/utils/Console.ts";
 
 const props = defineProps<{
   room: Room
@@ -78,24 +79,25 @@ const freeAreaHeight = ref<number>(0);
 
 const currentRound = ref<number>();
 const currentSpeakerId = ref<number | string>();
-const activeCardTypes = ref<string[]>();
-const disconnectedPlayers = ref<string[] | number[]>();
-const eliminatedPlayers = ref<string[] | number[]>();
 const gameStage = ref<TGameStage>();
 const hostId = ref<number>();
 const isPrivateRoom = ref<boolean>();
 const minPlayers = ref<number>();
 const maxPlayers = ref<number>();
 const playersCount = ref<number>();
-const maxRounds = ref<number>();
 const status = ref<TRoomStatus>();
 const turnTimeLimit = ref<number>();
 const turnTimeRemaining = ref<number>();
 
 const places = ref<{[key:string]: number}>();
 const players = ref<Record<string, TPlayer>>({});
-const scenario = ref();
+const scenario = ref<TScenario>();
+const activeCardTypes = ref<string[]>();
+const disconnectedPlayers = ref<string[] | number[]>();
+const eliminatedPlayers = ref<string[] | number[]>();
 const votingResults = ref();
+
+
 const router = useAnimatedRouter();
 
 const unbindCallbacks: any[] = [];
@@ -128,9 +130,6 @@ const initializeGame = () => {
   unbindCallbacks.push($(props.room.state).listen("playersCount", (currentValue, previousValue) => {
     playersCount.value = currentValue;
   }));
-  unbindCallbacks.push($(props.room.state).listen("maxRounds", (currentValue, previousValue) => {
-    maxRounds.value = currentValue;
-  }));
   unbindCallbacks.push($(props.room.state).listen("status", (currentValue, previousValue) => {
     status.value = currentValue;
   }));
@@ -140,33 +139,37 @@ const initializeGame = () => {
   unbindCallbacks.push($(props.room.state).listen("turnTimeRemaining", (currentValue, previousValue) => {
     turnTimeRemaining.value = currentValue;
   }));
+  unbindCallbacks.push($(props.room.state).listen("scenario", (currentValue, previousValue) => {
+    scenario.value = currentValue;
+  }));
+
 
   unbindCallbacks.push($(props.room.state).places.onAdd((playerId, placeIndex) => {
     places.value![placeIndex] = playerId;
-    console.log('>>> PLACES ON ADD: placeIndex:', placeIndex, 'id: ', playerId);
+    Console.log('>>> PLACES ON ADD: placeIndex:', placeIndex, 'id: ', playerId);
   }));
   unbindCallbacks.push($(props.room.state).places.onChange((playerId:any, placeIndex:any) => {
     places.value![placeIndex] = playerId;
   }));
   unbindCallbacks.push($(props.room.state).places.onRemove((playerId, placeIndex) => {
     if(placeIndex in (places.value || {})){
-      console.log('>>> PLACES ON REMOVE: placeIndex:', placeIndex, 'id: ', playerId);
+      Console.log('>>> PLACES ON REMOVE: placeIndex:', placeIndex, 'id: ', playerId);
       delete places.value?.[placeIndex];
     }
   }));
 
   unbindCallbacks.push($(props.room.state).players.onAdd((playerData, playerId) => {
-    console.log('>>> PLAYERS ON ADD', playerId, playerData);
+    Console.log('>>> PLAYERS ON ADD', playerId, playerData);
     players.value![playerId] = createPlayerObject(playerData);
 
     unbindCallbacks.push($(playerData).onChange(() => {
-      console.log('>>> PLAYER DATA ON CHANGE', playerId, playerData);
+      Console.log('>>> PLAYER DATA ON CHANGE', playerId, playerData);
       players.value![playerId] = createPlayerObject(playerData);
     }))
 
   }))
   unbindCallbacks.push($(props.room.state).players.onRemove((playerData, playerId) => {
-    console.log('>>> PLAYERS ON REMOVE', playerId, playerData);
+    Console.log('>>> PLAYERS ON REMOVE', playerId, playerData);
     if(players.value![playerId]){
       delete players.value[playerId];
     }
@@ -209,7 +212,7 @@ const initializeGame = () => {
 
 
   props.room?.onMessage?.('__playground_message_types', (message: any) => {
-    console.log('>>> __playground_message_types', message); //todo: убрать обработчик
+    Console.log('>>> __playground_message_types', message); //todo: убрать обработчик
   });
 
   props.room?.onMessage?.('playerKicked', (player: Player) => {
@@ -471,7 +474,7 @@ onBeforeUnmount(() => {
     position: absolute;
     width: 100%;
     left: 0;
-    bottom: 0;
+    bottom: 40px;
     display: flex;
     flex-direction: row;
   }
