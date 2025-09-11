@@ -1,6 +1,10 @@
 <template>
   <div class="cards">
-    <div class="cards-stack" ref="cardsStack">
+    <div
+        class="cards-stack"
+        ref="cardsStack"
+        v-click-outside="() => {hoveredIndex = null}"
+    >
       <div
           v-for="(card, index) in availableCards"
           :key="`card-${card.id}`"
@@ -25,6 +29,20 @@ import type {ArraySchema} from "@colyseus/schema";
 import type {Card} from "@/components/games/bunker/schemas/schemas/Card.ts";
 import {computed, onMounted, onUnmounted, ref, watch} from "vue";
 import BunkerCard from "@/components/games/bunker/components/BunkerCard.vue";
+import {ClickOutside} from "@/classes/directives/clickOutside.ts";
+
+const vClickOutside = ClickOutside;
+
+const props = defineProps<{
+  maxHeight?: number,
+  cards?: ArraySchema<Card>,
+  revealedCards?: ArraySchema<Card>,
+  isSpeaker?: boolean,
+  isMale?: boolean,
+}>();
+
+
+const skipCardId = ref<number | string>();
 
 const hoveredIndex = ref<number | null>(null);
 const cardsStack = ref<HTMLElement | null>(null);
@@ -37,6 +55,9 @@ const availableCards = computed(() => {
   }
   return props.cards?.filter(c => {
     let showCard = true;
+    if(c.id == skipCardId.value){
+      showCard = false;
+    }
     props.revealedCards?.forEach((card) => {
       if(c.id == card.id){
         showCard = false;
@@ -61,13 +82,6 @@ const updateStep = () => {
   dynamicStep.value = Math.max(30, Math.min(idealStep, 100));
 };
 
-const props = defineProps<{
-  maxHeight?: number,
-  cards?: ArraySchema<Card>,
-  revealedCards?: ArraySchema<Card>,
-  isSpeaker?: boolean,
-  isMale?: boolean,
-}>();
 
 
 
@@ -97,6 +111,10 @@ const handleTouchMove = (event: TouchEvent) => {
   hoveredIndex.value = Math.round(clampedIndex);
 };
 
+watch(availableCards, () => {
+  updateStep();
+});
+
 onMounted(() => {
   updateStep();
   window.addEventListener('resize', updateStep);
@@ -105,10 +123,6 @@ onMounted(() => {
     cardsStack.value.addEventListener('touchmove', handleTouchMove, { passive: true });
     cardsStack.value.addEventListener('touchstart', handleTouchStart, { passive: true });
   }
-});
-
-watch(availableCards, () => {
-  updateStep();
 });
 
 onUnmounted(() => {
