@@ -48,8 +48,9 @@
       <bunker-user-cards
           v-if="status == 'playing'"
           :max-height="freeAreaHeight"
-          :cards="currentPlayer.cards"
+          :cards="currentPlayer?.cards"
           :revealed-cards="currentPlayer.revealedCards"
+          :is-male="currentPlayer?.isMale"
           :is-speaker="currentSpeakerId == currentPlayer?.id"
       />
     </div>
@@ -290,6 +291,7 @@ const createPlayerObject = (playerData: Player): TPlayer => {
     experience: playerData.experience,
     isPremium: playerData.isPremium,
     age: playerData.age,
+    playerAge: playerData.playerAge,
     isConnected: playerData.isConnected,
     canSpeak: playerData.canSpeak,
     name: playerData.name,
