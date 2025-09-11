@@ -16,7 +16,8 @@
           }"
           @mouseenter="hoveredIndex = index"
           @mouseleave="hoveredIndex = null"
-          @touchstart="hoveredIndex = index"
+          @touchstart.stop.prevent="handleTouch(index, card.id, $event)"
+          @click="handleClick(index, card.id, $event)"
       >
         <BunkerCard :card="card" :max-height="maxHeight" :is-male="!!isMale" />
       </div>
@@ -111,6 +112,60 @@ const handleTouchMove = (event: TouchEvent) => {
   hoveredIndex.value = Math.round(clampedIndex);
 };
 
+const handleTouch = (index: number, cardId: number | string, event: MouseEvent | TouchEvent): void => {
+  if (hoveredIndex.value !== index) {
+    hoveredIndex.value = index;
+  }
+  else{
+    dismissCard(cardId, event);
+  }
+};
+
+const handleClick = (index: number, cardId: number | string, event: MouseEvent | TouchEvent) => {
+  if (hoveredIndex.value === index) {
+    dismissCard(cardId, event);
+  } else {
+    hoveredIndex.value = index;
+  }
+};
+
+const dismissCard = (cardId: number | string, event: MouseEvent | TouchEvent) => {
+  const cardEl = (event.currentTarget as HTMLElement);
+  if (!cardEl) return;
+
+  const rect = cardEl.getBoundingClientRect();
+  const screenCenterX = window.innerWidth / 2;
+  const screenCenterY = window.innerHeight / 2;
+
+  const cardCenterX = rect.left + rect.width / 2;
+  const cardCenterY = rect.top + rect.height / 2;
+
+  const deltaX = screenCenterX - cardCenterX;
+  const deltaY = screenCenterY - cardCenterY;
+
+  // Применяем кастомные стили прямо в элемент
+  cardEl.style.transition = 'transform 0.5s ease, opacity 0.5s ease';
+  cardEl.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.5)`;
+  cardEl.style.opacity = '0';
+
+  setTimeout(() => {
+    skipCardId.value = cardId;
+    hoveredIndex.value = null;
+
+    // сбросим inline стили
+    cardEl.style.transform = '';
+    cardEl.style.opacity = '';
+    cardEl.style.transition = '';
+  }, 500);
+
+  // Возвращаем карточку через 3 секунды, если нужно
+  setTimeout(() => {
+    if (skipCardId.value === cardId) {
+      skipCardId.value = undefined;
+    }
+  }, 3000);
+};
+
 watch(availableCards, () => {
   updateStep();
 });
@@ -165,7 +220,7 @@ onUnmounted(() => {
   will-change: transform;
   &.active {
     transform: scale(1.5) translateY(-20px);
-    z-index: 999;
+    z-index: 11;
   }
 }
 </style>
