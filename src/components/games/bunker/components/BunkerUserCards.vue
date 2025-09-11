@@ -7,9 +7,9 @@
           class="card-wrapper"
           :class="{ active: hoveredIndex === index }"
           :style="{
-        left: `${index * dynamicStep}px`,
-        zIndex: hoveredIndex === index ? 10 : index
-      }"
+            left: `${index * dynamicStep}px`,
+            zIndex: hoveredIndex === index ? 10 : index
+          }"
           @mouseenter="hoveredIndex = index"
           @mouseleave="hoveredIndex = null"
           @touchstart="hoveredIndex = index"
@@ -23,12 +23,13 @@
 
 import type {ArraySchema} from "@colyseus/schema";
 import type {Card} from "@/components/games/bunker/schemas/schemas/Card.ts";
-import {computed, onMounted, ref, watch} from "vue";
+import {computed, onMounted, onUnmounted, ref, watch} from "vue";
 import BunkerCard from "@/components/games/bunker/components/BunkerCard.vue";
 
 const hoveredIndex = ref<number | null>(null);
 const cardsStack = ref<HTMLElement | null>(null);
 const dynamicStep = ref(0);
+let initialIndex = 0;
 
 const availableCards = computed(() => {
   if((props.cards?.length || 0)< 1){
@@ -77,13 +78,45 @@ const cMaxHeight = computed(() => {
   return 'unset';
 });
 
+let startX = 0;
+
+const handleTouchStart = (event: TouchEvent) => {
+  startX = event.touches[0].clientX;
+  initialIndex = hoveredIndex.value ?? 0;
+};
+
+const handleTouchMove = (event: TouchEvent) => {
+  const currentX = event.touches[0].clientX;
+  const deltaX = currentX - startX;
+
+  const stepSize = dynamicStep.value;
+  if (!stepSize || (availableCards.value?.length || 0) === 0) return;
+
+  const floatIndex = initialIndex + deltaX / stepSize;
+  const clampedIndex = Math.max(0, Math.min((availableCards.value?.length || 0) - 1, floatIndex));
+  hoveredIndex.value = Math.round(clampedIndex);
+};
+
 onMounted(() => {
   updateStep();
   window.addEventListener('resize', updateStep);
+
+  if (cardsStack.value) {
+    cardsStack.value.addEventListener('touchmove', handleTouchMove, { passive: true });
+    cardsStack.value.addEventListener('touchstart', handleTouchStart, { passive: true });
+  }
 });
 
 watch(availableCards, () => {
   updateStep();
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateStep);
+  if (cardsStack.value) {
+    cardsStack.value.removeEventListener('touchstart', handleTouchStart);
+    cardsStack.value.removeEventListener('touchmove', handleTouchMove);
+  }
 });
 
 </script>
@@ -107,6 +140,7 @@ watch(availableCards, () => {
   justify-content: center;
   align-items: center;
   height: 100%;
+  touch-action: pan-y;
 }
 
 .card-wrapper {
@@ -114,7 +148,7 @@ watch(availableCards, () => {
   transition: transform 0.3s ease, z-index 0.3s ease, left .3s ease;
   cursor: pointer;
   transform: scale(1);
-
+  will-change: transform;
   &.active {
     transform: scale(1.5) translateY(-20px);
     z-index: 999;
