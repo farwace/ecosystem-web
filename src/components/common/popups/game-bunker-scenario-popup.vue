@@ -18,8 +18,8 @@
     justify-content: center;
     padding-bottom: 50px;
     img{
-      //width: 100%;
-      //max-width: 400px;
+      width: 100%;
+      max-width: 400px;
       object-fit: contain;
     }
   }
