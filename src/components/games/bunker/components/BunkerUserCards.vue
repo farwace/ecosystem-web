@@ -36,6 +36,7 @@ import type { Card } from "@/components/games/bunker/schemas/schemas/Card.ts";
 import BunkerCard from "@/components/games/bunker/components/BunkerCard.vue";
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { ClickOutside } from "@/classes/directives/clickOutside.ts";
+import {Console} from "@/classes/utils/Console.ts";
 
 const vClickOutside               =   ClickOutside;
 
@@ -143,13 +144,15 @@ const fDismissCard                =   (index: number, event: MouseEvent | TouchE
                                       };
 
 const fOnTouchEndCardWrapper      =   (index: number, $event: TouchEvent) => {
-                                        if(index == rHoveredIndex.value && !rStartTouchIndex.value){
+                                        Console.log('>>> TOUCH END >>>', index, rHoveredIndex.value, rStartTouchIndex.value);
+                                        if(index == rHoveredIndex.value && rStartTouchIndex.value === null){
                                           //fDismissCard
                                           fDismissCard(index, $event);
                                         }
                                       }
 
 const fOnTouchStartCardWrapper    =   (index: number, $event: TouchEvent) => {
+                                        Console.log('>>> TOUCH START >>>', index, rHoveredIndex.value);
                                         rStartTouchIndex.value = (rHoveredIndex.value != index) ? index : null;
                                         rHoveredIndex.value = index;
                                       }
