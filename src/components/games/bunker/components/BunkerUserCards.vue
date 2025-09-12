@@ -86,12 +86,12 @@ const fUpdateCardsDistance  =   () => {
                                   rDynamicStep.value = Math.max(30, Math.min(idealStep, 100));
                                 };
 
-const handleTouchStart      =   (event: TouchEvent) =>  {
+const fHandleTouchStart      =   (event: TouchEvent) =>  {
                                   lStartX = event.touches[0].clientX;
                                   lInitialIndex = rHoveredIndex.value ?? 0;
                                 };
 
-const handleTouchMove       =   (event: TouchEvent) => {
+const fHandleTouchMove       =   (event: TouchEvent) => {
                                   const currentX = event.touches[0].clientX;
                                   const deltaX = currentX - lStartX;
 
@@ -112,16 +112,16 @@ onMounted(() => {
                 window.addEventListener('resize', fUpdateCardsDistance);
 
                 if (rCardsListRef.value) {
-                  rCardsListRef.value.addEventListener('touchmove', handleTouchMove, { passive: true });
-                  rCardsListRef.value.addEventListener('touchstart', handleTouchStart, { passive: true });
+                  rCardsListRef.value.addEventListener('touchmove', fHandleTouchMove, { passive: true });
+                  rCardsListRef.value.addEventListener('touchstart', fHandleTouchStart, { passive: true });
                 }
               });
 
 onUnmounted(() => {
                     window.removeEventListener('resize', fUpdateCardsDistance);
                     if (rCardsListRef.value) {
-                      rCardsListRef.value.removeEventListener('touchstart', handleTouchStart);
-                      rCardsListRef.value.removeEventListener('touchmove', handleTouchMove);
+                      rCardsListRef.value.removeEventListener('touchstart', fHandleTouchStart);
+                      rCardsListRef.value.removeEventListener('touchmove', fHandleTouchMove);
                     }
                   });
 
