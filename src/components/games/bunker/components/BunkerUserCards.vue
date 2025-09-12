@@ -1,8 +1,8 @@
 <template>
   <div class="cards">
     <div
-        class             =   "cards-stack"
-        ref               =   "rCardsStackRef"
+        class             =   "cards-list"
+        ref               =   "rCardsListRef"
         v-click-outside   =   "fOnClickOutside"
     >
       <div
@@ -49,7 +49,7 @@ const props                 =   defineProps<{
 const rSkipCardId           =   ref<number | string>();
 
 const rHoveredIndex         =   ref<number | null>(null);
-const rCardsStackRef        =   ref<HTMLElement | null>(null);
+const rCardsListRef        =   ref<HTMLElement | null>(null);
 const rDynamicStep          =   ref(0);
 let   lInitialIndex         =   0;
 let   lStartX               =   0;
@@ -74,11 +74,11 @@ const fOnClickOutside       =   () => {
                                 }
 
 const fUpdateCardsDistance  =   () => {
-                                  if (!rCardsStackRef.value || (cAvailableCards.value?.length || 0) < 2) {
+                                  if (!rCardsListRef.value || (cAvailableCards.value?.length || 0) < 2) {
                                     rDynamicStep.value = 0;
                                     return;
                                   }
-                                  const containerWidth = rCardsStackRef.value.offsetWidth;
+                                  const containerWidth = rCardsListRef.value.offsetWidth;
                                   const totalCards = cAvailableCards.value?.length || 0;
                                   const cardWidth = 100; // Примерная ширина карточки
                                   const idealStep = (containerWidth - cardWidth) / (totalCards - 1);
@@ -111,17 +111,17 @@ onMounted(() => {
                 fUpdateCardsDistance();
                 window.addEventListener('resize', fUpdateCardsDistance);
 
-                if (rCardsStackRef.value) {
-                  rCardsStackRef.value.addEventListener('touchmove', handleTouchMove, { passive: true });
-                  rCardsStackRef.value.addEventListener('touchstart', handleTouchStart, { passive: true });
+                if (rCardsListRef.value) {
+                  rCardsListRef.value.addEventListener('touchmove', handleTouchMove, { passive: true });
+                  rCardsListRef.value.addEventListener('touchstart', handleTouchStart, { passive: true });
                 }
               });
 
 onUnmounted(() => {
                     window.removeEventListener('resize', fUpdateCardsDistance);
-                    if (rCardsStackRef.value) {
-                      rCardsStackRef.value.removeEventListener('touchstart', handleTouchStart);
-                      rCardsStackRef.value.removeEventListener('touchmove', handleTouchMove);
+                    if (rCardsListRef.value) {
+                      rCardsListRef.value.removeEventListener('touchstart', handleTouchStart);
+                      rCardsListRef.value.removeEventListener('touchmove', handleTouchMove);
                     }
                   });
 
@@ -140,7 +140,7 @@ onUnmounted(() => {
   overflow: visible;
 }
 
-.cards-stack {
+.cards-list {
   position: relative;
   display: flex;
   justify-content: center;
