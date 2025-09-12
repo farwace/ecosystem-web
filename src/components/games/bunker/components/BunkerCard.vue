@@ -5,7 +5,7 @@
         {{ card.customData.value }} {{ PluralForm(card.customData.value, 'год', 'года', 'лет')  }}
       </div>
     </template>
-    <img :src="cardSrc" :alt="card.name">
+    <img ref="imageRef" :src="cardSrc" :alt="card.name">
   </div>
 </template>
 <script lang="ts" setup>
@@ -22,6 +22,7 @@ const props = defineProps<{
 const calculatedTextSize = ref<boolean>(false);
 const textFontSize = ref<string>();
 const textBottomStyle = ref<string>();
+const imageRef = ref<HTMLImageElement | null>(null);
 
 const cardSrc = computed(() => {
   if(props.isMale && props.card.maleImageUrl) {
@@ -42,9 +43,10 @@ const cMaxHeight = computed(() => {
 
 onMounted(() => {
   nextTick(() => {
-    if(props.maxHeight) {
-      textFontSize.value = Math.floor(props.maxHeight / 100 * 9.7) + 'px';
-      textBottomStyle.value = Math.floor(props.maxHeight / 100 * 6.8) + 'px';
+    if(imageRef.value){
+      const height = imageRef.value.getBoundingClientRect().height;
+      textFontSize.value = Math.floor(height / 100 * 9.7) + 'px';
+      textBottomStyle.value = Math.floor(height / 100 * 6.8) + 'px';
       calculatedTextSize.value = true;
     }
   });
