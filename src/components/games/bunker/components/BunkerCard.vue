@@ -5,7 +5,12 @@
         {{ card.customData.value }} {{ PluralForm(card.customData.value, 'год', 'года', 'лет')  }}
       </div>
     </template>
-    <img ref="imageRef" :src="cardSrc" :alt="card.name">
+    <img
+        ref="imageRef"
+        :src="cardSrc"
+        :alt="card.name"
+        @load="onImageLoad"
+    >
   </div>
 </template>
 <script lang="ts" setup>
@@ -41,7 +46,7 @@ const cMaxHeight = computed(() => {
   return 'unset';
 });
 
-onMounted(() => {
+const onImageLoad = () => {
   nextTick(() => {
     if(imageRef.value){
       const rect = imageRef.value.getBoundingClientRect();
@@ -49,11 +54,11 @@ onMounted(() => {
       const width = rect.width;
       const height = Math.floor(width * 100 / 80.5);
       textFontSize.value = Math.floor(height / 100 * 9.7) + 'px';
-      textBottomStyle.value = (originalHeight - height)/2 -1 + Math.floor(height / 100 * 6.8) + 'px';
+      textBottomStyle.value = Math.abs(originalHeight - height)/2 -1 + Math.floor(height / 100 * 6.8) + 'px';
       calculatedTextSize.value = true;
     }
   });
-})
+}
 
 </script>
 <style lang="scss" scoped>
