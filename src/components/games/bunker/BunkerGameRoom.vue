@@ -311,6 +311,34 @@ const initializeGame = () => {
 
 }
 
+const testAction = () => {
+  const userCard = currentPlayer.value?.cards[1];
+  if(userCard){
+    const testCard: {id: Card['id'], name: Card['name'], type: Card['type'], imageUrl: string, customData: CardCustomData} = {
+      id: userCard.id,
+      name: userCard.name,
+      type: userCard.type,
+      imageUrl: userCard.maleImageUrl,
+      customData: userCard.customData,
+    }
+    const customData = new CardCustomData();
+    customData.from = userCard.customData?.from;
+    customData.to = userCard.customData?.to;
+    customData.value = userCard.customData?.value;
+
+    const sendTestCard: Card = new Card();
+    sendTestCard.id = testCard.id;
+    sendTestCard.name = testCard.name;
+    sendTestCard.type = testCard.type;
+    sendTestCard.maleImageUrl = testCard.imageUrl;
+    sendTestCard.femaleImageUrl = testCard.imageUrl;
+    sendTestCard.customData = customData;
+    const playerId = 2;
+
+    showRevealedCardPopup(playerId, sendTestCard);
+  }
+}
+
 const showRevealedCardPopup = (playerId: number, card: Card) => {
   const player = players.value?.[playerId.toString()];
   if(player?.id){
@@ -324,7 +352,7 @@ const showRevealedCardPopup = (playerId: number, card: Card) => {
       class: 'game-bunker',
       player: player,
       card: card,
-      maxHeight: (freeAreaHeight.value || 150) * 2
+      maxHeight: 200
     })
   }
 }
