@@ -15,4 +15,5 @@ export type TPopupData = {
     backdropBlur?:boolean,
     darkBg?:boolean,
     modal?:boolean,
+    noScroll?:boolean,
 } | {[key:string]:any}

@@ -22,6 +22,7 @@
           'no-paddings': popup.data?.noPaddings,
           'bg-blur': popup.data?.backgroundBlur,
           'no-title': popup.data?.noTitle,
+          'no-scroll': popup.data?.noScroll,
           'no-bg': popup.data?.noBackground,
           'h-100': popup.data?.fullHeight,
           'bg-pink': popup.data?.pink,
@@ -259,6 +260,17 @@ onBeforeUnmount(() => {
   }
   .popup{
     box-shadow: 0 0 15px rgba(0,0,0,.15);
+
+    &.no-scroll{
+      &.no-title{
+        .popup__content{
+          overflow: hidden;
+        }
+      }
+      .popup__content{
+        overflow: hidden;
+      }
+    }
 
     &.no-title{
       display: flex;

@@ -33,6 +33,7 @@
           :host-id="hostId"
           :players="players"
           :status="status"
+          :speaker-id="currentSpeakerId"
           @touch-player="onTouchPlayer($event)"
           @touch-place="onTouchPlace($event)"
       />
@@ -105,6 +106,7 @@ const playersCount = ref<number>();
 const status = ref<TRoomStatus>();
 const turnTimeLimit = ref<number>();
 const turnTimeRemaining = ref<number>();
+const cardRevealTimeRemaining = ref<number>();
 
 const places = ref<{[key:string]: number}>();
 const players = ref<Record<string, TPlayer>>({});
@@ -157,6 +159,11 @@ const initializeGame = () => {
     console.log('>>> currentTimeRemaining', currentValue, previousValue);
     turnTimeRemaining.value = currentValue;
   }));
+  unbindCallbacks.push($(props.room.state).listen("cardRevealTimeRemaining", (currentValue, previousValue) => {
+    console.log('>>> cardRevealTimeRemaining', currentValue, previousValue);
+    cardRevealTimeRemaining.value = currentValue;
+  }));
+
   unbindCallbacks.push($(props.room.state).listen("scenario", (currentValue, previousValue) => {
     scenario.value = currentValue;
   }));
@@ -262,6 +269,64 @@ const initializeGame = () => {
     })
   });
 
+  props.room?.onMessage?.('playerTurnStarted', ( message: { playerId: string, timeRemaining: number, cardRevealTime: number } ) => {
+    //todo: обработка события когда ход перешел к другому игроку
+    Console.log('>>> PLAYER TURN STARTED', message);
+    notificationsProvider?.removePopup?.('game-bunker-revealed-card-popup');
+  })
+
+  props.room?.onMessage?.('cardRevealed', (message: { playerId: number,  card: {id: Card['id'], name: Card['name'], type: Card['type'], imageUrl: string, customData: CardCustomData}}) => {
+    const playerCard = new Card();
+    playerCard.id = message.card.id;
+    playerCard.name = message.card.name;
+    playerCard.type = message.card.type;
+    playerCard.maleImageUrl = message.card.imageUrl;
+    playerCard.femaleImageUrl = message.card.imageUrl;
+    playerCard.active = true;
+    playerCard.isRevealed = true;
+    const customData = new CardCustomData();
+    customData.from = message.card.customData?.from;
+    customData.to = message.card.customData?.to;
+    customData.value = message.card.customData?.value;
+    playerCard.customData = customData;
+    showRevealedCardPopup(message.playerId, playerCard);
+    Console.log('>>> CARD REVEALED', message);
+  });
+
+  props.room?.onMessage?.('votingStarted', (message: any) => {
+    //todo: начало голосования
+    Console.log('>>> VOTING STARTED', message);
+    notificationsProvider?.removePopup?.('game-bunker-revealed-card-popup');
+  });
+
+  props.room?.onMessage?.('votingResults', (message: {votes: any, eliminatedPlayerId: any, round: any}) => {
+    //todo: отображение, что игрок не попал в бункер если действительно есть тот, кого выкинули
+    Console.log('>>> VOTING RESULTS', message);
+  });
+
+  props.room?.onMessage?.('gameFinished', (message: any) => {
+    //todo: отображение модального окна с результатами и предложением выложить историю или просмотреть рекламу за двойную награду
+    Console.log('>>> GAME FINISHED', message);
+  });
+
+}
+
+const showRevealedCardPopup = (playerId: number, card: Card) => {
+  const player = players.value?.[playerId.toString()];
+  if(player?.id){
+    notificationsProvider?.addPopup('game-bunker-revealed-card-popup', 'game-bunker-revealed-card-popup', {
+      modal: true,
+      small: true,
+      noTitle: true,
+      noBackground: true,
+      noPaddings: true,
+      noScroll: true,
+      class: 'game-bunker',
+      player: player,
+      card: card,
+      maxHeight: (freeAreaHeight.value || 150) * 2
+    })
+  }
 }
 
 const showScenarioModal = () => {
@@ -449,6 +514,7 @@ const onPlayersPlusClick = () => {
 }
 
 const setGameStubs = () => {
+  currentSpeakerId.value = 0;
   currentRound.value = 0;
   gameStage.value = 'introduction';
   hostId.value = 1;

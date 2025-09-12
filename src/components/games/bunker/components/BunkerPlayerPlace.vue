@@ -1,10 +1,13 @@
 <template>
-  <div class="place" @click.prevent="handleClick">
+  <div class="place" @click.prevent="handleClick" :class="{'speaker': isSpeaker}">
     <div class="place__self" v-if="isSelf">
       Это Вы
     </div>
     <UiIcon v-if="isHost" name="sunglasses" class="place__circle__host" />
-    <div class="place__circle" :style="{'--avatar': (!disabled && player?.avatar) ? player?.avatar : undefined}">
+    <div
+        class="place__circle"
+        :style="{'--avatar': (!disabled && player?.avatar) ? player?.avatar : undefined}"
+    >
       <UiIcon class="place__circle__plus" name="lock" v-if="disabled" />
       <UiIcon v-if="!disabled && !player" name="icon-plus" class="place__circle__plus" />
       <div class="place__position">{{ +place+1 }}</div>
@@ -17,6 +20,9 @@
       </div>
     </div>
     <div class="place__action" v-if="roomStatus == 'waiting' || roomStatus == 'starting'" :class="{ready: player?.isReady}"></div>
+    <div class="place__microphone" v-if="isSpeaker">
+      <UiIcon name="microphone-on" />
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
@@ -30,7 +36,6 @@ const props = defineProps<{
   playerId: number,
   player?: TPlayer,
   disconnected?: boolean,
-  eliminated?: boolean,
   isHost?: boolean,
   isSpeaker?: boolean,
   isSelf?: boolean,
@@ -69,6 +74,7 @@ const handleClick = () => {
   display: flex;
   flex-direction: column;
   cursor: pointer;
+  transition: left .3s ease-out, right .3s ease-out;
 
   &__circle{
     background-color: #9F885C;

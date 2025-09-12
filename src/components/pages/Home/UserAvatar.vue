@@ -1,9 +1,9 @@
 <template>
-  <div class="avatar" :class="{alarm: alarm}">
+  <div class="avatar" :class="{alarm: alarm, 'no-padding': onlyPhoto}">
     <div class="avatar__img" :class="{small: avatarSmall}">
       <img :src="photo" alt="">
     </div>
-    <div class="avatar__name" :class="{small: small}">
+    <div v-if="!onlyPhoto" class="avatar__name" :class="{small: small}">
       <div ref="avatarName" class="avatar__name__value">
         {{ firstName }}
       </div>
@@ -18,7 +18,8 @@
     avatar?: string,
     small?: boolean,
     avatarSmall?:boolean,
-    alarm?:boolean
+    alarm?:boolean,
+    onlyPhoto?: boolean,
   }>();
 
   const photo = computed(() => {
@@ -46,7 +47,9 @@
   width: 68px;
   padding-bottom: 27px;
   cursor: pointer;
-
+  &.no-padding{
+    padding-bottom: 0;
+  }
   &.alarm{
     &:after{
       position: absolute;

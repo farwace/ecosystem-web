@@ -13,8 +13,7 @@
           :is-self="playerId == id"
           :disabled="(+place) > ((playersCount || 8)-1)"
           :disconnected="false"
-          :eliminated="false"
-          :is-speaker="false"
+          :is-speaker="speakerId == playerId && playerId != 0"
           :room-status="status"
           @touch-place="onTouchPlace(place)"
           @touch-player="onTouchPlayer(playerId.toString())"
@@ -33,6 +32,7 @@ const props = defineProps<{
   hostId?: number,
   playersCount?: number,
   status?: TRoomStatus,
+  speakerId?: number | string,
 }>();
 
 const {id} = storeToRefs(ecosystemStore());
@@ -57,6 +57,16 @@ const onTouchPlayer = (playerId: string) => {
 }
 
 :deep(.place){
+  .place__microphone{
+    position: absolute;
+    top: 20px;
+
+    svg{
+      width: 20px;
+      height: 20px;
+    }
+  }
+
   .place__action{
     position: absolute;
     top: 20px;
@@ -73,13 +83,28 @@ const onTouchPlayer = (playerId: string) => {
     }
   }
   &:nth-child(odd){
+    left: 0;
+    &.speaker{
+      left: 15px;
+    }
     .place__action{
       right: -10px;
     }
+    .place__microphone{
+      left: -5px;
+    }
   }
   &:nth-child(even){
+    margin-left: auto;
+    right: 0;
+    &.speaker{
+      right: 15px;
+    }
     .place__action{
       left: -10px;
+    }
+    .place__microphone{
+      right: -5px;
     }
   }
 

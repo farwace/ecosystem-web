@@ -22,12 +22,15 @@ const props = defineProps<{
   card: Card;
   isMale: boolean;
   maxHeight?: number;
+  fullWidth?: boolean;
+  maxWidth?:string;
 }>();
 
 const calculatedTextSize = ref<boolean>(false);
 const textFontSize = ref<string>();
 const textBottomStyle = ref<string>();
 const imageRef = ref<HTMLImageElement | null>(null);
+const emits = defineEmits(['picture-load']);
 
 const cardSrc = computed(() => {
   if(props.isMale && props.card.maleImageUrl) {
@@ -46,6 +49,14 @@ const cMaxHeight = computed(() => {
   return 'unset';
 });
 
+const cMaxWidth = computed(() => {
+  if(props.maxWidth){
+    return `${props.maxWidth}`;
+  }
+  return props.fullWidth ? 'unset' : '100px';
+});
+
+
 const onImageLoad = () => {
   nextTick(() => {
     if(imageRef.value){
@@ -57,6 +68,7 @@ const onImageLoad = () => {
       textBottomStyle.value = Math.abs(originalHeight - height)/2 -1 + Math.floor(height / 100 * 6.8) + 'px';
       calculatedTextSize.value = true;
     }
+    emits('picture-load');
   });
 }
 
@@ -80,7 +92,7 @@ const onImageLoad = () => {
     object-fit: contain;
     max-height: 200px;
     height: v-bind(cMaxHeight);
-    max-width: 100px;
+    max-width: v-bind(cMaxWidth);
   }
 }
 </style>

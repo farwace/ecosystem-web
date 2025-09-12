@@ -1,6 +1,6 @@
 <template>
   <div class="bunker-popup">
-    <div class="bunker-popup__player">
+    <div class="bunker-popup__player" ref="playerRef">
       <div>
         <div class="player">
           <div class="player__avatar">
@@ -35,21 +35,28 @@
       </div>
     </div>
 
-    <div class="bunker-popup__cards" v-if="player.cards">
-      <!-- todo: display !Player Cards! -->
+    <div class="bunker-popup__cards" v-if="(player.revealedCards?.length || 0) > 0 && widthIsCalculated">
+      <div @click="showCardPopup(card)" class="item" v-for="card in player.revealedCards" :key="`player-${player.id}-revealed-card-${card.id}`">
+        <BunkerCard :max-width="maxCardWidth" :card="card" :is-male="player.isMale" />
+      </div>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
 import type {Player} from "@/components/games/bunker/schemas/schemas/Player.ts";
 import UiIcon from "@/components/common/icons/UiIcon.vue";
-import {computed, inject} from "vue";
+import {computed, inject, nextTick, onMounted, ref} from "vue";
 import type {TUserProfile} from "@/modules/ApiModule/Types/TUserProfile.ts";
 import ProfileTitles from "@/components/pages/Profile/ProfileTitles.vue";
 import type {IGiftsProvider} from "@/modules/ApiModule/Interfaces/IGiftsProvider.ts";
 import {GiftsProviderSymbol} from "@/modules/ApiModule/symbols.ts";
 import {storeToRefs} from "pinia";
 import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
+import BunkerCard from "@/components/games/bunker/components/BunkerCard.vue";
+import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
+import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
+
+const notificationsProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
 
 const props = defineProps<{
   kickCallback?: () => void,
@@ -57,6 +64,10 @@ const props = defineProps<{
   isHost?: boolean,
   player: Player
 }>();
+
+const playerRef = ref<HTMLDivElement | null>(null);
+const widthIsCalculated = ref<boolean>(false);
+const maxCardWidth = ref<string>();
 
 const {id} = storeToRefs(ecosystemStore());
 
@@ -107,6 +118,29 @@ const setLeader = () => {
   emit("close");
 }
 
+const showCardPopup = (card: any) => {
+  notificationsProvider?.addPopup('game-bunker-player-card-popup', 'game-bunker-revealed-card-popup', {
+    modal: true,
+    small: true,
+    noTitle: true,
+    noBackground: true,
+    noPaddings: true,
+    noScroll: true,
+    class: 'game-bunker',
+    card: card,
+    maxHeight: 200
+  })
+}
+
+onMounted(() => {
+  nextTick(() => {
+    if(playerRef.value){
+      const blockWidth = playerRef.value.getBoundingClientRect().width;
+      maxCardWidth.value = (Math.floor(blockWidth / 4) - 6)+'px';
+      widthIsCalculated.value = true;
+    }
+  })
+})
 
 </script>
 <style lang="scss" scoped>
@@ -235,6 +269,33 @@ const setLeader = () => {
         background-color: #7fcee4;
         box-shadow: 0 4px 0 #59bbdb;
       }
+    }
+  }
+
+
+  &__cards{
+    display: grid;
+    justify-content: space-around;
+    gap: 2px;
+    margin-top: 10px;
+
+    grid-template-areas:
+    "A B C D"
+    "E F G H";
+
+    .item{
+      &:nth-child(1) { grid-area: A; }
+      &:nth-child(2) { grid-area: B; }
+      &:nth-child(3) { grid-area: C; }
+      &:nth-child(4) { grid-area: D; }
+      &:nth-child(5) { grid-area: E; }
+      &:nth-child(6) { grid-area: F; }
+      &:nth-child(7) { grid-area: G; }
+      &:nth-child(8) { grid-area: H; }
+    }
+
+    ::v-deep(.card){
+
     }
   }
 }
