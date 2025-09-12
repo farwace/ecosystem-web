@@ -26,7 +26,5 @@ export class Player extends Schema {
     @type("boolean") public isVip!: boolean;
     @type("boolean") public isPremium!: boolean;
     @type("string") public avatar!: string;
-    @type("number") public age!: number;
-    @type("number") public playerAge!: number;
     @type("number") public votesAgainst!: number;
 }

@@ -1,17 +1,27 @@
 <template>
   <div class="card">
+    <template v-if="card.type == 'age' && card.customData.value && calculatedTextSize">
+      <div class="card-text" :style="{bottom: textBottomStyle, fontSize: textFontSize}">
+        {{ card.customData.value }} {{ PluralForm(card.customData.value, 'год', 'года', 'лет')  }}
+      </div>
+    </template>
     <img :src="cardSrc" :alt="card.name">
   </div>
 </template>
 <script lang="ts" setup>
 import type {Card} from "@/components/games/bunker/schemas/schemas/Card.ts";
-import {computed} from "vue";
+import {computed, nextTick, onMounted, ref} from "vue";
+import {PluralForm} from "@/classes/utils/PluralForm.ts";
 
 const props = defineProps<{
   card: Card;
   isMale: boolean;
   maxHeight?: number;
 }>();
+
+const calculatedTextSize = ref<boolean>(false);
+const textFontSize = ref<string>();
+const textBottomStyle = ref<string>();
 
 const cardSrc = computed(() => {
   if(props.isMale && props.card.maleImageUrl) {
@@ -28,6 +38,16 @@ const cMaxHeight = computed(() => {
     return `${props.maxHeight}px`;
   }
   return 'unset';
+});
+
+onMounted(() => {
+  nextTick(() => {
+    if(props.maxHeight) {
+      textFontSize.value = Math.floor(props.maxHeight / 100 * 9.7) + 'px';
+      textBottomStyle.value = Math.floor(props.maxHeight / 100 * 6.8) + 'px';
+      calculatedTextSize.value = true;
+    }
+  });
 })
 
 </script>
@@ -35,6 +55,15 @@ const cMaxHeight = computed(() => {
 .card{
   max-height: v-bind(cMaxHeight);
   width: fit-content;
+  position: relative;
+
+  .card-text{
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    left: 0;
+    color: #DDCDA3;
+  }
 
   img{
     object-fit: contain;

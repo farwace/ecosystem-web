@@ -290,8 +290,6 @@ const createPlayerObject = (playerData: Player): TPlayer => {
     level: playerData.level,
     experience: playerData.experience,
     isPremium: playerData.isPremium,
-    age: playerData.age,
-    playerAge: playerData.playerAge,
     isConnected: playerData.isConnected,
     canSpeak: playerData.canSpeak,
     name: playerData.name,

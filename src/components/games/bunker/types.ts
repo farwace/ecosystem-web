@@ -28,8 +28,6 @@ export type TPlayer = {
     isVip: boolean;
     isPremium: boolean;
     avatar: string;
-    age?: number;
-    playerAge?: number;
     votesAgainst: number;
 
     cards: ArraySchema<Card>;//todo: упростить тип
