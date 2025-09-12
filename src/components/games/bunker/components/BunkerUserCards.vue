@@ -104,9 +104,48 @@ const fDropCard                   = (index: number) => {
                                       }
                                     }
 
+const fDismissCard                =   (index: number, event: MouseEvent | TouchEvent) => {
+                                        const cardId = cAvailableCards?.value?.[index]?.id;
+                                        const cardEl = (event.currentTarget as HTMLElement);
+                                        if (!cardEl) return;
+
+                                        const rect = cardEl.getBoundingClientRect();
+                                        const screenCenterX = window.innerWidth / 2;
+                                        const screenCenterY = window.innerHeight / 2;
+
+                                        const cardCenterX = rect.left + rect.width / 2;
+                                        const cardCenterY = rect.top + rect.height / 2;
+
+                                        const deltaX = screenCenterX - cardCenterX;
+                                        const deltaY = screenCenterY - cardCenterY;
+
+                                        // Применяем кастомные стили прямо в элемент
+                                        cardEl.style.transition = 'transform 0.5s ease, opacity 0.5s ease';
+                                        cardEl.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.5)`;
+                                        cardEl.style.opacity = '0';
+
+                                        setTimeout(() => {
+                                          rSkipCardId.value = cardId;
+                                          rHoveredIndex.value = null;
+
+                                          // сбросим inline стили
+                                          cardEl.style.transform = '';
+                                          cardEl.style.opacity = '';
+                                          cardEl.style.transition = '';
+                                        }, 500);
+
+
+                                        setTimeout(() => {
+                                          if (rSkipCardId.value === cardId) {
+                                            rSkipCardId.value = undefined;
+                                          }
+                                        }, 2000);
+                                      };
+
 const fOnTouchEndCardWrapper      =   (index: number, $event: TouchEvent) => {
                                         if(index == rHoveredIndex.value && !rStartTouchIndex.value){
-                                          fDropCard(index);
+                                          //fDismissCard
+                                          fDismissCard(index, $event);
                                         }
                                       }
 
@@ -115,7 +154,7 @@ const fOnTouchStartCardWrapper    =   (index: number, $event: TouchEvent) => {
                                         rHoveredIndex.value = index;
                                       }
 const fOnClickCardWrapper         =   (index: number, $event: MouseEvent | TouchEvent) => {
-                                        fDropCard(index);
+                                        fDismissCard(index, $event);
                                       }
 
 const fUpdateCardsDistance        =   () => {
