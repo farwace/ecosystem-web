@@ -1,137 +1,129 @@
 <template>
   <div class="cards">
     <div
-        class="cards-stack"
-        ref="cardsStack"
-        v-click-outside="() => {hoveredIndex = null}"
+        class             =   "cards-stack"
+        ref               =   "rCardsStackRef"
+        v-click-outside   =   "fOnClickOutside"
     >
       <div
-          v-for="(card, index) in availableCards"
-          :key="`card-${card.id}`"
-          class="card-wrapper"
-          :class="{ active: hoveredIndex === index }"
-          :style="{
-            left: `${index * dynamicStep}px`,
-            zIndex: hoveredIndex === index ? 10 : index
-          }"
-          @mouseenter="hoveredIndex = index"
-          @mouseleave="hoveredIndex = null"
-          @touchstart="hoveredIndex = index"
+          v-for         =   "(card, index) in cAvailableCards"
+          :key          =   "`card-${card.id}`"
+          class         =   "card-wrapper"
+          :class        =   "{ active: rHoveredIndex === index }"
+          :style        =   "{
+                              left: `${index * rDynamicStep}px`,
+                              zIndex: rHoveredIndex === index ? 10 : index
+                            }"
+          @mouseenter   =   "rHoveredIndex = index"
+          @mouseleave   =   "rHoveredIndex = null"
+          @touchstart   =   "rHoveredIndex = index"
       >
-        <BunkerCard :card="card" :max-height="maxHeight" :is-male="!!isMale" />
+        <BunkerCard
+            :card         =   "card"
+            :max-height   =   "maxHeight"
+            :is-male      =   "!!isMale"
+        />
       </div>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
 
-import type {ArraySchema} from "@colyseus/schema";
-import type {Card} from "@/components/games/bunker/schemas/schemas/Card.ts";
-import {computed, onMounted, onUnmounted, ref, watch} from "vue";
+import type { ArraySchema } from "@colyseus/schema";
+import type { Card } from "@/components/games/bunker/schemas/schemas/Card.ts";
 import BunkerCard from "@/components/games/bunker/components/BunkerCard.vue";
-import {ClickOutside} from "@/classes/directives/clickOutside.ts";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import { ClickOutside } from "@/classes/directives/clickOutside.ts";
 
-const vClickOutside = ClickOutside;
+const vClickOutside         =   ClickOutside;
 
-const props = defineProps<{
-  maxHeight?: number,
-  cards?: ArraySchema<Card>,
-  revealedCards?: ArraySchema<Card>,
-  isSpeaker?: boolean,
-  isMale?: boolean,
-}>();
-
-
-const skipCardId = ref<number | string>();
-
-const hoveredIndex = ref<number | null>(null);
-const cardsStack = ref<HTMLElement | null>(null);
-const dynamicStep = ref(0);
-let initialIndex = 0;
-
-const availableCards = computed(() => {
-  if((props.cards?.length || 0)< 1){
-    return [];
-  }
-  return props.cards?.filter(c => {
-    let showCard = true;
-    if(c.id == skipCardId.value){
-      showCard = false;
-    }
-    props.revealedCards?.forEach((card) => {
-      if(c.id == card.id){
-        showCard = false;
-      }
-    });
-    return showCard;
-  });
-});
-
-const updateStep = () => {
-  if (!cardsStack.value || (availableCards.value?.length || 0) < 2) {
-    dynamicStep.value = 0;
-    return;
-  }
-  const containerWidth = cardsStack.value.offsetWidth;
-  const totalCards = availableCards.value?.length || 0;
-  const cardWidth = 100; // Примерная ширина карточки, можешь заменить на реальную
-  const maxTotalWidth = cardWidth + (totalCards - 1) * 40; // если просто кучкой
-  const idealStep = (containerWidth - cardWidth) / (totalCards - 1);
-
-  // Минимальный отступ: 30, максимальный: 100 (на всякий случай)
-  dynamicStep.value = Math.max(30, Math.min(idealStep, 100));
-};
+const props                 =   defineProps<{
+                                            maxHeight       ?: number,
+                                            cards           ?: ArraySchema<Card>,
+                                            revealedCards   ?: ArraySchema<Card>,
+                                            isSpeaker       ?: boolean,
+                                            isMale          ?: boolean,
+                                          }>();
 
 
+const rSkipCardId           =   ref<number | string>();
 
+const rHoveredIndex         =   ref<number | null>(null);
+const rCardsStackRef        =   ref<HTMLElement | null>(null);
+const rDynamicStep          =   ref(0);
+let   lInitialIndex         =   0;
+let   lStartX               =   0;
 
-const cMaxHeight = computed(() => {
-  if(props.maxHeight){
-    return `${props.maxHeight}px`;
-  }
-  return 'unset';
-});
+const cMaxHeight            =   computed(() => props?.maxHeight ? `${props.maxHeight}px` : 'unset');
 
-let startX = 0;
+const cAvailableCards       =   computed(() =>
+                                  props.cards?.filter?.(c => {
+                                    let showCard = true;
+                                    if(c.id == rSkipCardId.value){
+                                      showCard = false;
+                                    }
+                                    props.revealedCards?.forEach((card) => {
+                                      if(c.id == card.id){ showCard = false; }
+                                    });
+                                    return showCard;
+                                  }
+                                ));
 
-const handleTouchStart = (event: TouchEvent) => {
-  startX = event.touches[0].clientX;
-  initialIndex = hoveredIndex.value ?? 0;
-};
+const fOnClickOutside       =   () => {
+                                  rHoveredIndex.value = null;
+                                }
 
-const handleTouchMove = (event: TouchEvent) => {
-  const currentX = event.touches[0].clientX;
-  const deltaX = currentX - startX;
+const fUpdateCardsDistance  =   () => {
+                                  if (!rCardsStackRef.value || (cAvailableCards.value?.length || 0) < 2) {
+                                    rDynamicStep.value = 0;
+                                    return;
+                                  }
+                                  const containerWidth = rCardsStackRef.value.offsetWidth;
+                                  const totalCards = cAvailableCards.value?.length || 0;
+                                  const cardWidth = 100; // Примерная ширина карточки
+                                  const idealStep = (containerWidth - cardWidth) / (totalCards - 1);
+                                  // Минимальный отступ: 30, максимальный: 100
+                                  rDynamicStep.value = Math.max(30, Math.min(idealStep, 100));
+                                };
 
-  const stepSize = dynamicStep.value;
-  if (!stepSize || (availableCards.value?.length || 0) === 0) return;
+const handleTouchStart      =   (event: TouchEvent) =>  {
+                                  lStartX = event.touches[0].clientX;
+                                  lInitialIndex = rHoveredIndex.value ?? 0;
+                                };
 
-  const floatIndex = initialIndex + deltaX / stepSize;
-  const clampedIndex = Math.max(0, Math.min((availableCards.value?.length || 0) - 1, floatIndex));
-  hoveredIndex.value = Math.round(clampedIndex);
-};
+const handleTouchMove       =   (event: TouchEvent) => {
+                                  const currentX = event.touches[0].clientX;
+                                  const deltaX = currentX - lStartX;
 
-watch(availableCards, () => {
-  updateStep();
-});
+                                  const stepSize = rDynamicStep.value;
+                                  if (!stepSize || (cAvailableCards.value?.length || 0) === 0) return;
+
+                                  const floatIndex = lInitialIndex + deltaX / stepSize;
+                                  const clampedIndex = Math.max(0, Math.min((cAvailableCards.value?.length || 0) - 1, floatIndex));
+                                  rHoveredIndex.value = Math.round(clampedIndex);
+                                };
+
+watch(cAvailableCards, () => {
+                                  fUpdateCardsDistance();
+                                });
 
 onMounted(() => {
-  updateStep();
-  window.addEventListener('resize', updateStep);
+                fUpdateCardsDistance();
+                window.addEventListener('resize', fUpdateCardsDistance);
 
-  if (cardsStack.value) {
-    cardsStack.value.addEventListener('touchmove', handleTouchMove, { passive: true });
-    cardsStack.value.addEventListener('touchstart', handleTouchStart, { passive: true });
-  }
-});
+                if (rCardsStackRef.value) {
+                  rCardsStackRef.value.addEventListener('touchmove', handleTouchMove, { passive: true });
+                  rCardsStackRef.value.addEventListener('touchstart', handleTouchStart, { passive: true });
+                }
+              });
 
 onUnmounted(() => {
-  window.removeEventListener('resize', updateStep);
-  if (cardsStack.value) {
-    cardsStack.value.removeEventListener('touchstart', handleTouchStart);
-    cardsStack.value.removeEventListener('touchmove', handleTouchMove);
-  }
-});
+                    window.removeEventListener('resize', fUpdateCardsDistance);
+                    if (rCardsStackRef.value) {
+                      rCardsStackRef.value.removeEventListener('touchstart', handleTouchStart);
+                      rCardsStackRef.value.removeEventListener('touchmove', handleTouchMove);
+                    }
+                  });
 
 </script>
 <style lang="scss" scoped>
@@ -144,7 +136,7 @@ onUnmounted(() => {
 .cards {
   position: relative;
   width: 100%;
-  height: v-bind(cMaxHeight); // если хочешь использовать ограничение по высоте
+  height: v-bind(cMaxHeight);
   overflow: visible;
 }
 
