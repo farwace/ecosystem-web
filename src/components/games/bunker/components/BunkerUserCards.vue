@@ -6,17 +6,19 @@
         v-click-outside   =   "fOnClickOutside"
     >
       <div
-          v-for         =   "(card, index) in cAvailableCards"
-          :key          =   "`card-${card.id}`"
-          class         =   "card-wrapper"
-          :class        =   "{ active: rHoveredIndex === index }"
-          :style        =   "{
-                              left: `${index * rDynamicStep}px`,
-                              zIndex: rHoveredIndex === index ? 10 : index
-                            }"
-          @mouseenter   =   "rHoveredIndex = index"
-          @mouseleave   =   "rHoveredIndex = null"
-          @touchstart   =   "rHoveredIndex = index"
+          v-for                           =   "(card, index) in cAvailableCards"
+          :key                            =   "`card-${card.id}`"
+          class                           =   "card-wrapper"
+          :class                          =   "{ active: rHoveredIndex === index }"
+          :style                          =     "{
+                                                  left: `${index * rDynamicStep}px`,
+                                                  zIndex: rHoveredIndex === index ? 10 : index
+                                                }"
+          @mouseenter                     =   "rHoveredIndex = index"
+          @mouseleave                     =   "rHoveredIndex = null"
+          @touchstart.prevent.stop        =   "fOnTouchStartCardWrapper(index, $event)"
+          @touchend.prevent.stop          =   "fOnTouchEndCardWrapper(index, $event)"
+          @click.prevent                  =   "fOnClickCardWrapper(index, $event)"
       >
         <BunkerCard
             :card         =   "card"
@@ -35,77 +37,104 @@ import BunkerCard from "@/components/games/bunker/components/BunkerCard.vue";
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { ClickOutside } from "@/classes/directives/clickOutside.ts";
 
-const vClickOutside         =   ClickOutside;
+const vClickOutside               =   ClickOutside;
 
-const props                 =   defineProps<{
-                                            maxHeight       ?: number,
-                                            cards           ?: ArraySchema<Card>,
-                                            revealedCards   ?: ArraySchema<Card>,
-                                            isSpeaker       ?: boolean,
-                                            isMale          ?: boolean,
-                                          }>();
+const props                       =   defineProps<{
+                                                  maxHeight       ?: number,
+                                                  cards           ?: ArraySchema<Card>,
+                                                  revealedCards   ?: ArraySchema<Card>,
+                                                  isSpeaker       ?: boolean,
+                                                  isMale          ?: boolean,
+                                                }>();
 
 
-const rSkipCardId           =   ref<number | string>();
+const rSkipCardId                 =   ref<number | string>();
 
-const rHoveredIndex         =   ref<number | null>(null);
-const rCardsListRef        =   ref<HTMLElement | null>(null);
-const rDynamicStep          =   ref(0);
-let   lInitialIndex         =   0;
-let   lStartX               =   0;
+const rStartTouchIndex            =   ref<number | null>(null);
+const rHoveredIndex               =   ref<number | null>(null);
+const rCardsListRef               =   ref<HTMLElement | null>(null);
+const rDynamicStep                =   ref(0);
+let   lInitialIndex               =   0;
+let   lStartX                     =   0;
 
-const cMaxHeight            =   computed(() => props?.maxHeight ? `${props.maxHeight}px` : 'unset');
+const cMaxHeight                  =   computed(() => props?.maxHeight ? `${props.maxHeight}px` : 'unset');
 
-const cAvailableCards       =   computed(() =>
-                                  props.cards?.filter?.(c => {
-                                    let showCard = true;
-                                    if(c.id == rSkipCardId.value){
-                                      showCard = false;
+const cAvailableCards             =   computed(() =>
+                                        props.cards?.filter?.(c => {
+                                          let showCard = true;
+                                          if(c.id == rSkipCardId.value){
+                                            showCard = false;
+                                          }
+                                          props.revealedCards?.forEach((card) => {
+                                            if(c.id == card.id){ showCard = false; }
+                                          });
+                                          return showCard;
+                                        }
+                                      ));
+
+const fOnClickOutside             =   () => {
+                                        rHoveredIndex.value = null;
+                                      }
+
+const fHandleTouchStart           =   (event: TouchEvent) =>  {
+                                        lStartX = event.touches[0].clientX;
+                                        lInitialIndex = rHoveredIndex.value ?? 0;
+                                      };
+
+const fHandleTouchMove            =   (event: TouchEvent) => {
+                                        const currentX = event.touches[0].clientX;
+                                        const deltaX = currentX - lStartX;
+
+                                        const stepSize = rDynamicStep.value;
+                                        if (!stepSize || (cAvailableCards.value?.length || 0) === 0) return;
+
+                                        const floatIndex = lInitialIndex + deltaX / stepSize;
+                                        const clampedIndex = Math.max(0, Math.min((cAvailableCards.value?.length || 0) - 1, floatIndex));
+                                        rHoveredIndex.value = Math.round(clampedIndex);
+                                      };
+
+const fDropCard                   = (index: number) => {
+                                      const cardId = cAvailableCards?.value?.[index]?.id;
+                                      if(cardId){
+                                        rHoveredIndex.value = null;
+                                        rSkipCardId.value = cardId;
+                                        setTimeout(() => {
+                                          rSkipCardId.value = undefined;
+                                        }, 3000)
+                                      }
                                     }
-                                    props.revealedCards?.forEach((card) => {
-                                      if(c.id == card.id){ showCard = false; }
-                                    });
-                                    return showCard;
-                                  }
-                                ));
 
-const fOnClickOutside       =   () => {
-                                  rHoveredIndex.value = null;
-                                }
+const fOnTouchEndCardWrapper      =   (index: number, $event: TouchEvent) => {
+                                        if(index == rHoveredIndex.value && !rStartTouchIndex.value){
+                                          fDropCard(index);
+                                        }
+                                      }
 
-const fUpdateCardsDistance  =   () => {
-                                  if (!rCardsListRef.value || (cAvailableCards.value?.length || 0) < 2) {
-                                    rDynamicStep.value = 0;
-                                    return;
-                                  }
-                                  const containerWidth = rCardsListRef.value.offsetWidth;
-                                  const totalCards = cAvailableCards.value?.length || 0;
-                                  const cardWidth = 100; // Примерная ширина карточки
-                                  const idealStep = (containerWidth - cardWidth) / (totalCards - 1);
-                                  // Минимальный отступ: 30, максимальный: 100
-                                  rDynamicStep.value = Math.max(30, Math.min(idealStep, 100));
-                                };
+const fOnTouchStartCardWrapper    =   (index: number, $event: TouchEvent) => {
+                                        rStartTouchIndex.value = (rHoveredIndex.value != index) ? index : null;
+                                        rHoveredIndex.value = index;
+                                      }
+const fOnClickCardWrapper         =   (index: number, $event: MouseEvent | TouchEvent) => {
+                                        fDropCard(index);
+                                      }
 
-const fHandleTouchStart      =   (event: TouchEvent) =>  {
-                                  lStartX = event.touches[0].clientX;
-                                  lInitialIndex = rHoveredIndex.value ?? 0;
-                                };
+const fUpdateCardsDistance        =   () => {
+                                        if (!rCardsListRef.value || (cAvailableCards.value?.length || 0) < 2) {
+                                          rDynamicStep.value = 0;
+                                          return;
+                                        }
+                                        const containerWidth = rCardsListRef.value.offsetWidth;
+                                        const totalCards = cAvailableCards.value?.length || 0;
+                                        const cardWidth = 100; // Примерная ширина карточки
+                                        const idealStep = (containerWidth - cardWidth) / (totalCards - 1);
+                                        // Минимальный отступ: 30, максимальный: 100
+                                        rDynamicStep.value = Math.max(30, Math.min(idealStep, 100));
+                                      };
 
-const fHandleTouchMove       =   (event: TouchEvent) => {
-                                  const currentX = event.touches[0].clientX;
-                                  const deltaX = currentX - lStartX;
 
-                                  const stepSize = rDynamicStep.value;
-                                  if (!stepSize || (cAvailableCards.value?.length || 0) === 0) return;
 
-                                  const floatIndex = lInitialIndex + deltaX / stepSize;
-                                  const clampedIndex = Math.max(0, Math.min((cAvailableCards.value?.length || 0) - 1, floatIndex));
-                                  rHoveredIndex.value = Math.round(clampedIndex);
-                                };
+watch(cAvailableCards, ()     =>  { fUpdateCardsDistance(); });
 
-watch(cAvailableCards, () => {
-                                  fUpdateCardsDistance();
-                                });
 
 onMounted(() => {
                 fUpdateCardsDistance();
