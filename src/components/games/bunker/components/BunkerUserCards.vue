@@ -48,6 +48,7 @@ const props                       =   defineProps<{
                                                   isMale          ?: boolean,
                                                 }>();
 
+const emits                       =  defineEmits(['sendCard']);
 
 const rSkipCardId                 =   ref<number | string>();
 
@@ -126,6 +127,7 @@ const fDismissCard                =   (index: number, event: MouseEvent | TouchE
                                         cardEl.style.opacity = '0';
 
                                         setTimeout(() => {
+                                          emits('sendCard', cardId);
                                           rSkipCardId.value = cardId;
                                           rHoveredIndex.value = null;
 

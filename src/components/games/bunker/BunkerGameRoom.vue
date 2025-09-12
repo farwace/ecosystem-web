@@ -53,6 +53,8 @@
           :revealed-cards="currentPlayer.revealedCards"
           :is-male="currentPlayer?.isMale"
           :is-speaker="currentSpeakerId == currentPlayer?.id"
+          :candSehd="canSendCard"
+          @sendCard="onSendCard"
       />
     </div>
 
@@ -64,7 +66,7 @@
 </template>
 <script lang="ts" setup>
 import {getStateCallbacks, type Room} from "colyseus.js";
-import {computed, inject, nextTick, onBeforeUnmount, onMounted, reactive, ref, shallowRef} from "vue";
+import {computed, inject, nextTick, onBeforeUnmount, onMounted, reactive, ref, shallowRef, watch} from "vue";
 import type {TGameStage, TPlayer, TRoomStatus, TScenario} from "@/components/games/bunker/types.ts";
 import type {BunkerGameRoomState} from "@/components/games/bunker/schemas/schemas/BunkerGameRoomState.ts";
 import {Player} from "@/components/games/bunker/schemas/schemas/Player.ts";
@@ -115,7 +117,7 @@ const activeCardTypes = ref<string[]>();
 const disconnectedPlayers = ref<string[] | number[]>();
 const eliminatedPlayers = ref<string[] | number[]>();
 const votingResults = ref();
-
+const canSendCard = ref<boolean>(false);
 
 const router = useAnimatedRouter();
 
@@ -276,6 +278,9 @@ const initializeGame = () => {
   })
 
   props.room?.onMessage?.('cardRevealed', (message: { playerId: number,  card: {id: Card['id'], name: Card['name'], type: Card['type'], imageUrl: string, customData: CardCustomData}}) => {
+    if(message.playerId == currentPlayer.value?.id){
+      canSendCard.value = false;
+    }
     const playerCard = new Card();
     playerCard.id = message.card.id;
     playerCard.name = message.card.name;
@@ -432,6 +437,10 @@ const topText = computed(() => {
   return data;
 });
 
+const onSendCard = (cardId: number | string) => {
+  props.room?.send('revealCard', +cardId.toString());
+}
+
 const requestChangePlace = (place: number | string) => {
   props.room?.send('changePlace', +place.toString());
 }
@@ -582,6 +591,12 @@ const setGameStubs = () => {
   scenario.value = {"id":"9","name":"Извержение супервулкана","description":"Йеллоустонский супервулкан извергся, выбросив в атмосферу 2 000 кубических километров пепла. Солнце скрыто, температура упала на десятки градусов, небо постоянно тёмное. Пепел забивает лёгкие, фильтры и технику. В нашем убежище всего 2 места.  Решите, кто достоин остаться.","imageUrl":"https://s3.lapa-play.ru/assets/bunker/scripts/izverzenie-supervulkana-2-1-xhnQ.png","smallImageUrl":"https://s3.lapa-play.ru/assets/bunker/scripts/izverzenie-supervulkana-1-rOco.png"};
 
 }
+
+watch(currentSpeakerId, (neoVal) => {
+  if(currentPlayer.value?.id == currentSpeakerId.value){
+    canSendCard.value = true;
+  }
+});
 
 onMounted(() => {
   places.value = {
