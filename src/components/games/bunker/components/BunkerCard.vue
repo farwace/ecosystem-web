@@ -44,9 +44,12 @@ const cMaxHeight = computed(() => {
 onMounted(() => {
   nextTick(() => {
     if(imageRef.value){
-      const height = imageRef.value.getBoundingClientRect().height;
+      const rect = imageRef.value.getBoundingClientRect();
+      const originalHeight = rect.height;
+      const width = rect.width;
+      const height = Math.floor(width * 100 / 80.5);
       textFontSize.value = Math.floor(height / 100 * 9.7) + 'px';
-      textBottomStyle.value = Math.floor(height / 100 * 6.8) + 'px';
+      textBottomStyle.value = (originalHeight - height)/2 -1 + Math.floor(height / 100 * 6.8) + 'px';
       calculatedTextSize.value = true;
     }
   });
@@ -65,6 +68,7 @@ onMounted(() => {
     text-align: center;
     left: 0;
     color: #DDCDA3;
+    font-weight: bold;
   }
 
   img{

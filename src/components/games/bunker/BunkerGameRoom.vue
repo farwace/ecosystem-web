@@ -79,6 +79,9 @@ import BunkerGamePlaces from "@/components/games/bunker/components/BunkerGamePla
 import BunkerLobbyButtons from "@/components/games/bunker/components/BunkerLobbyButtons.vue";
 import {Console} from "@/classes/utils/Console.ts";
 import BunkerUserCards from "@/components/games/bunker/components/BunkerUserCards.vue";
+import {Card} from "@/components/games/bunker/schemas/schemas/Card.ts";
+import {ArraySchema} from "@colyseus/schema";
+import {CardCustomData} from "@/components/games/bunker/schemas/schemas/CardCustomData.ts";
 
 const props = defineProps<{
   room: Room
@@ -445,7 +448,46 @@ const onPlayersPlusClick = () => {
   }
 }
 
+const setGameStubs = () => {
+  currentRound.value = 0;
+  gameStage.value = 'introduction';
+  hostId.value = 1;
+  isPrivateRoom.value = false;
+  maxPlayers.value = 8;
+  minPlayers.value = 4;
+  /*@ts-ignore*/
+  players.value = {"1":{"isReady":true,"id":1,"sessionId":"7OYvmCP7E","avatar":"https://sun70-1.userapi.com/s/v1/ig2/Mnbl4RlowjH_RK3F4WtScE7ZDNV1bEffN0zmkmJMPRlcSU1aSqCExpd3DgQ8pKFC1Lat8JMNx74crBuhsdZiCV7A.jpg?quality=95&crop=67,1,760,760&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720&ava=1&u=xcC0HAjSZgUX3g2E42IUjU3tG-JqrJWCoUrkvX060A8&cs=100x100","isVip":false,"isMale":true,"popularityLevel":0,"popularity":41,"level":3,"experience":50,"isPremium":false,"isConnected":true,"canSpeak":true,"name":"ВиталийСонДайсон","isEliminated":false,"votesAgainst":0,"revealedCards":{"items":[],"tmpItems":[],"deletedIndexes":{},"isMovingItems":false},"cards":{"items":[{"id":"63","name":"Видеоблогер","type":"profession","active":true,"maleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/videobloger-malcik-1-1-zuDq.png","femaleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/videobloger-OofZ.png","customData":{"from":undefined,"to":undefined,"value":undefined},"isRevealed":false},{"id":"3","name":"Взрослый","type":"age","active":true,"maleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/muzcina-2-Dmzb.png","femaleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/zenshhina-2-1-wmJA.png","customData":{"from":31,"to":59,"value":37},"isRevealed":false},{"id":"149","name":"Хронический гастрит","type":"health","active":true,"maleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/xroniceskii-gastrit-uC2w.png","femaleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/xroniceskii-gastrit-tH5O.png","customData":{"from":undefined,"to":undefined,"value":undefined},"isRevealed":false},{"id":"187","name":"Эгоист","type":"characteristic","active":true,"maleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/egoist-LxMu.png","femaleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/egoistka-1-OI46.png","customData":{"from":undefined,"to":undefined,"value":undefined},"isRevealed":false},{"id":"225","name":"Бывший военный разведчик","type":"additional_information","active":true,"maleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/byvsii-voennyi-razvedcik-2-qdcZ.png","femaleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/byvsaia-voennaia-razvedcica-8zdf.png","customData":{"from":undefined,"to":undefined,"value":undefined},"isRevealed":false},{"id":"259","name":"Страх пыли","type":"phobias","active":true,"maleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/strax-pyli-2-l0zY.png","femaleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/strax-pyli-2-LcN8.png","customData":{"from":undefined,"to":undefined,"value":undefined},"isRevealed":false},{"id":"361","name":"Организация пространства в помещении","type":"skills","active":true,"maleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/organizaciia-prostranstva-v-pomeshhenii-2-mQLi.png","femaleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/organizaciia-prostranstva-v-pomeshhenii-2-xN8l.png","customData":{"from":undefined,"to":undefined,"value":undefined},"isRevealed":false},{"id":"462","name":"Кувалда","type":"luggage","active":true,"maleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/kuvalda-2-Ybh1.png","femaleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/kuvalda-2-6FRX.png","customData":{"from":undefined,"to":undefined,"value":undefined},"isRevealed":false}],"tmpItems":[{"id":"63","name":"Видеоблогер","type":"profession","active":true,"maleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/videobloger-malcik-1-1-zuDq.png","femaleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/videobloger-OofZ.png","customData":{"from":undefined,"to":undefined,"value":undefined},"isRevealed":false},{"id":"3","name":"Взрослый","type":"age","active":true,"maleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/muzcina-2-Dmzb.png","femaleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/zenshhina-2-1-wmJA.png","customData":{"from":31,"to":59,"value":37},"isRevealed":false},{"id":"149","name":"Хронический гастрит","type":"health","active":true,"maleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/xroniceskii-gastrit-uC2w.png","femaleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/xroniceskii-gastrit-tH5O.png","customData":{"from":undefined,"to":undefined,"value":undefined},"isRevealed":false},{"id":"187","name":"Эгоист","type":"characteristic","active":true,"maleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/egoist-LxMu.png","femaleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/egoistka-1-OI46.png","customData":{"from":undefined,"to":undefined,"value":undefined},"isRevealed":false},{"id":"225","name":"Бывший военный разведчик","type":"additional_information","active":true,"maleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/byvsii-voennyi-razvedcik-2-qdcZ.png","femaleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/byvsaia-voennaia-razvedcica-8zdf.png","customData":{"from":undefined,"to":undefined,"value":undefined},"isRevealed":false},{"id":"259","name":"Страх пыли","type":"phobias","active":true,"maleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/strax-pyli-2-l0zY.png","femaleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/strax-pyli-2-LcN8.png","customData":{"from":undefined,"to":undefined,"value":undefined},"isRevealed":false},{"id":"361","name":"Организация пространства в помещении","type":"skills","active":true,"maleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/organizaciia-prostranstva-v-pomeshhenii-2-mQLi.png","femaleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/organizaciia-prostranstva-v-pomeshhenii-2-xN8l.png","customData":{"from":undefined,"to":undefined,"value":undefined},"isRevealed":false},{"id":"462","name":"Кувалда","type":"luggage","active":true,"maleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/kuvalda-2-Ybh1.png","femaleImageUrl":"https://s3.lapa-play.ru/assets/bunker/cards/kuvalda-2-6FRX.png","customData":{"from":undefined,"to":undefined,"value":undefined},"isRevealed":false}],"deletedIndexes":{},"isMovingItems":false}},"2":{"isReady":true,"id":2,"sessionId":"_dfJ_L5_F","avatar":"https://sun9-76.userapi.com/s/v1/ig2/uaez4Wl7IsieDL0YOgsR3sALJJXY589fk_EyaCR1Yphsbi6S6VwAZgOzO4w9wwYafR2NWYz9dNu5ZNeoDcyjJE-b.jpg?quality=95&crop=103,240,1288,1288&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720,1080x1080,1280x1280&ava=1&u=Oqrwxr9EayaiT2Bj4BgeWy5EN1di3tqHiokPkkttDs0&cs=108x108","isVip":false,"isMale":false,"popularityLevel":0,"popularity":285,"level":3,"experience":5,"isPremium":false,"isConnected":true,"canSpeak":true,"name":"Маргарита","isEliminated":false,"votesAgainst":0,"revealedCards":{"items":[],"tmpItems":[],"deletedIndexes":{},"isMovingItems":false},"cards":undefined},"9":{"isReady":true,"id":9,"sessionId":"WpQLnTcKh","avatar":"https://sun70-2.userapi.com/impg/DW4IDqvukChyc-WPXmzIot46En40R00idiUAXw/l5w5aIHioYc.jpg?quality=96&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360&sign=10ad7d7953daabb7b0e707fdfb7ebefd&u=I6EtahnrCRLlyd0MhT2raQt6ydhuyxX4s72EHGuUSoM&cs=100x100","isVip":false,"isMale":true,"popularityLevel":0,"popularity":0,"level":1,"experience":5,"isPremium":false,"isConnected":true,"canSpeak":true,"name":"Stepa","isEliminated":false,"votesAgainst":0,"revealedCards":{"items":[],"tmpItems":[],"deletedIndexes":{},"isMovingItems":false},"cards":undefined},"10":{"isReady":true,"id":10,"sessionId":"G2RnEvTH8","avatar":"https://sun70-2.userapi.com/impg/DW4IDqvukChyc-WPXmzIot46En40R00idiUAXw/l5w5aIHioYc.jpg?quality=96&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360&sign=10ad7d7953daabb7b0e707fdfb7ebefd&u=I6EtahnrCRLlyd0MhT2raQt6ydhuyxX4s72EHGuUSoM&cs=100x100","isVip":false,"isMale":true,"popularityLevel":0,"popularity":0,"level":1,"experience":0,"isPremium":false,"isConnected":true,"canSpeak":true,"name":"Kachan","isEliminated":false,"votesAgainst":0,"revealedCards":{"items":[],"tmpItems":[],"deletedIndexes":{},"isMovingItems":false},"cards":undefined}};
 
+
+  const arCards = new ArraySchema<Card>();
+  /* @ts-ignore */
+  players.value["1"].cards.items.forEach(card => {
+    const cards = new Card();
+    cards.id = card.id;
+    cards.active = card.active;
+    cards.type = card.type;
+    cards.name = card.name;
+    cards.maleImageUrl = card.maleImageUrl;
+    cards.femaleImageUrl = card.femaleImageUrl;
+    const customData = new CardCustomData();
+    customData.from = cards.customData?.from;
+    customData.to = cards.customData?.to;
+    customData.value = cards.customData?.value;
+    cards.customData = customData;
+    arCards.push(card);
+  });
+  players.value["1"].cards = arCards;
+  players.value["1"].revealedCards = new ArraySchema<Card>();
+
+  places.value = {"0":1,"1":9,"2":10,"3":2,"4":0,"5":0,"6":0,"7":0};
+  playersCount.value = 4;
+  status.value = 'playing';
+  turnTimeLimit.value = 30;
+  turnTimeRemaining.value = 0;
+  votingResults.value = undefined;
+  scenario.value = {"id":"9","name":"Извержение супервулкана","description":"Йеллоустонский супервулкан извергся, выбросив в атмосферу 2 000 кубических километров пепла. Солнце скрыто, температура упала на десятки градусов, небо постоянно тёмное. Пепел забивает лёгкие, фильтры и технику. В нашем убежище всего 2 места.  Решите, кто достоин остаться.","imageUrl":"https://s3.lapa-play.ru/assets/bunker/scripts/izverzenie-supervulkana-2-1-xhnQ.png","smallImageUrl":"https://s3.lapa-play.ru/assets/bunker/scripts/izverzenie-supervulkana-1-rOco.png"};
+
+}
 
 onMounted(() => {
   places.value = {
@@ -459,6 +501,7 @@ onMounted(() => {
     "7": 0,
   };
   players.value = {};
+  //setGameStubs();
   initializeGame();
 
 
