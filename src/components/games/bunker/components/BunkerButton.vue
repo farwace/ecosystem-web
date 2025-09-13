@@ -23,5 +23,15 @@
     color: #E5CC9F;
     border-radius: 4px;
   }
+
+  &.small{
+    font-size: 10px;
+    padding: 1px;
+    .game-btn{
+      &__content{
+        padding: 2px 4px;
+      }
+    }
+  }
 }
 </style>

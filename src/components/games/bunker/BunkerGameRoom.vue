@@ -33,9 +33,12 @@
           :host-id="hostId"
           :players="players"
           :status="status"
+          :stage="gameStage"
+          :can-abstain-this-round="canAbstainThisRound"
           :speaker-id="currentSpeakerId"
           @touch-player="onTouchPlayer($event)"
           @touch-place="onTouchPlace($event)"
+          @vote="sendVote"
       />
       <div class="bunker__places__finish-speak" @click="sendFinishSpeak" v-if="currentSpeakerId == id">
         <BunkerButton class="finish" @click="$emit('invite')">
@@ -122,10 +125,8 @@ const cardRevealTimeRemaining = ref<number>();
 const places = ref<{[key:string]: number}>();
 const players = ref<Record<string, TPlayer>>({});
 const scenario = ref<TScenario>();
-const activeCardTypes = ref<string[]>();
-const disconnectedPlayers = ref<string[] | number[]>();
-const eliminatedPlayers = ref<string[] | number[]>();
 const votingResults = ref();
+const canAbstainThisRound = ref<boolean>(false);
 const canSendCard = ref<boolean>(false);
 
 const router = useAnimatedRouter();
@@ -151,6 +152,9 @@ const initializeGame = () => {
   }));
   unbindCallbacks.push($(props.room.state).listen("isPrivateRoom", (currentValue, previousValue) => {
     isPrivateRoom.value = currentValue;
+  }));
+  unbindCallbacks.push($(props.room.state).listen("canAbstainThisRound", (currentValue, previousValue) => {
+    canAbstainThisRound.value = currentValue;
   }));
   unbindCallbacks.push($(props.room.state).listen("minPlayers", (currentValue, previousValue) => {
     minPlayers.value = currentValue;
@@ -452,9 +456,12 @@ const topText = computed(() => {
 });
 
 const onSendCard = (cardId: number | string) => {
-  props.room?.send('revealCard', +cardId.toString());
+  props.room?.send('revealCard', (+cardId).toString());
 }
 
+const sendVote = (playerId: number | string) => {
+  props.room?.send('vote', (+playerId).toString());
+}
 const sendFinishSpeak = () => {
   props.room?.send('finishSpeaking');
 }

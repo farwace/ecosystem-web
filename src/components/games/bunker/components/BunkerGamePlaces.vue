@@ -12,11 +12,13 @@
           :is-host="hostId == playerId"
           :is-self="playerId == id"
           :disabled="(+place) > ((playersCount || 8)-1)"
-          :disconnected="false"
           :is-speaker="speakerId == playerId && playerId != 0"
           :room-status="status"
+          :game-stage="stage"
+          :can-abstain-this-round="canAbstainThisRound"
           @touch-place="onTouchPlace(place)"
           @touch-player="onTouchPlayer(playerId.toString())"
+          @vote="$emit('vote', playerId == id ? 0 : playerId)"
       />
     </template>
   </div>
@@ -25,7 +27,7 @@
 import BunkerPlayerPlace from "@/components/games/bunker/components/BunkerPlayerPlace.vue";
 import {storeToRefs} from "pinia";
 import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
-import type {TPlayer, TRoomStatus} from "@/components/games/bunker/types.ts";
+import type {TGameStage, TPlayer, TRoomStatus} from "@/components/games/bunker/types.ts";
 const props = defineProps<{
   places?: {[key:string]: number},
   players?: Record<string, TPlayer>,
@@ -33,11 +35,13 @@ const props = defineProps<{
   playersCount?: number,
   status?: TRoomStatus,
   speakerId?: number | string,
+  stage?: TGameStage,
+  canAbstainThisRound?: boolean,
 }>();
 
 const {id} = storeToRefs(ecosystemStore());
 
-const emits = defineEmits(['touchPlace', 'touchPlayer']);
+const emits = defineEmits(['touchPlace', 'touchPlayer', 'vote']);
 
 const onTouchPlace = (place: number | string) => {
   emits('touchPlace', place);
@@ -82,6 +86,15 @@ const onTouchPlayer = (playerId: string) => {
       background-color: #7eba70;
     }
   }
+
+  .place__vote{
+    position: absolute;
+    top: 20px;
+    .game-btn{
+      background-color: #95501B;
+    }
+  }
+
   &:nth-child(odd){
     left: 0;
     &.speaker{
@@ -92,6 +105,12 @@ const onTouchPlayer = (playerId: string) => {
     }
     .place__microphone{
       left: -5px;
+    }
+    .place__circle__disconnected{
+      left: -25px;
+    }
+    .place__vote{
+      right: -50px;
     }
   }
   &:nth-child(even){
@@ -105,6 +124,12 @@ const onTouchPlayer = (playerId: string) => {
     }
     .place__microphone{
       right: -5px;
+    }
+    .place__circle__disconnected{
+      right: -25px;
+    }
+    .place__vote{
+      left: -50px;
     }
   }
 

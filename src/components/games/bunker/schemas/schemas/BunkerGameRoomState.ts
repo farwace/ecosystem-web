@@ -27,6 +27,7 @@ export class BunkerGameRoomState extends Schema {
     @type("number") public maxRounds!: number;
     @type("number") public turnTimeLimit!: number;
     @type("number") public turnTimeRemaining!: number;
+    @type("boolean") public canAbstainThisRound!: boolean;
     @type([ "string" ]) public votingResults: ArraySchema<string> = new ArraySchema<string>();
     @type([ "string" ]) public activeCardTypes: ArraySchema<string> = new ArraySchema<string>();
 }

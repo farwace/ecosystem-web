@@ -7,9 +7,14 @@
     <div
         class="place__circle"
         :style="{'--avatar': (!disabled && player?.avatar) ? player?.avatar : undefined}"
+        :class="{
+          'no-active': player?.isEliminated || (player?.id && !player?.isConnected),
+        }"
     >
       <UiIcon class="place__circle__plus" name="lock" v-if="disabled" />
       <UiIcon v-if="!disabled && !player" name="icon-plus" class="place__circle__plus" />
+      <UiIcon v-if="!player?.isConnected && !!player?.id" name="wifi-off" class="place__circle__plus place__circle__disconnected" />
+      <UiIcon v-if="player?.isEliminated" name="eliminated" class="place__circle__plus place__circle__eliminated" />
       <div class="place__position">{{ +place+1 }}</div>
     </div>
     <div class="place__plate">
@@ -23,27 +28,32 @@
     <div class="place__microphone" v-if="isSpeaker">
       <UiIcon name="microphone-on" />
     </div>
+    <div class="place__vote" v-if="gameStage == 'voting' && !player?.isEliminated && !!player?.id && !isSelf">
+      <BunkerButton class="small" @click="$emit('vote')">Голосовать</BunkerButton>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
 import {computed} from "vue";
 import UiIcon from "@/components/common/icons/UiIcon.vue";
 import {vMarquee} from "@/classes/directives/marquee.ts";
-import type {TPlayer, TRoomStatus} from "@/components/games/bunker/types.ts";
+import type {TGameStage, TPlayer, TRoomStatus} from "@/components/games/bunker/types.ts";
+import BunkerButton from "@/components/games/bunker/components/BunkerButton.vue";
 
 const props = defineProps<{
   place: number | string,
   playerId: number,
   player?: TPlayer,
-  disconnected?: boolean,
   isHost?: boolean,
   isSpeaker?: boolean,
   isSelf?: boolean,
   disabled?: boolean,
   roomStatus?: TRoomStatus,
+  gameStage?: TGameStage,
+  canAbstainThisRound?: boolean,
 }>();
 
-const emit = defineEmits(['touch-player', 'touch-place']);
+const emit = defineEmits(['touch-player', 'touch-place', 'vote']);
 
 const avatarUrl = computed(() => {
   if(props.player?.avatar){
@@ -92,11 +102,37 @@ const handleClick = () => {
     background-position: center;
     background-size: cover;
 
+    &.no-active{
+      &:after{
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, .3);
+        border-radius: 50%;
+      }
+    }
+
     &__plus{
       width: 20px;
       height: 20px;
       color: #2E1E0E;
       margin: auto;
+    }
+
+    &__eliminated{
+      width: 35px;
+      height: 35px;
+      position: absolute;
+      left: 7px;
+      top: 7px;
+    }
+
+    &__disconnected{
+      position: absolute;
+      z-index: 2;
+      color: #E5CC9F;
+      top: 15px;
     }
 
     &__host{
