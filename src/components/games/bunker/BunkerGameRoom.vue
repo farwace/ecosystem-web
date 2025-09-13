@@ -217,7 +217,7 @@ const initializeGame = () => {
       let placeNumber = 0;
       Object.keys(places.value).forEach((place) => {
         if(places.value?.[place] == playerId){
-          placeNumber = +place;
+          placeNumber = +place+1;
         }
       })
       voteResults.value![votesId].push(placeNumber.toString());
