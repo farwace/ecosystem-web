@@ -9,13 +9,16 @@
           v-for                           =   "(card, index) in cAvailableCards"
           :key                            =   "`card-${card.id}`"
           class                           =   "card-wrapper"
-          :class                          =   "{ active: rHoveredIndex === index }"
+          :class                          =   "{
+                                                active: (rLockedHoveredIndex !== null ? rLockedHoveredIndex === index : rHoveredIndex === index) && !rIsDragging,
+                                                dragging: rIsDragging && rDraggedCardIndex === index
+                                              }"
           :style                          =     "{
                                                   left: `${index * rDynamicStep}px`,
-                                                  zIndex: rHoveredIndex === index ? 10 : index
+                                                  zIndex: (rLockedHoveredIndex !== null ? rLockedHoveredIndex === index : rHoveredIndex === index) ? 10 : index
                                                 }"
-          @mouseenter                     =   "rHoveredIndex = index"
-          @mouseleave                     =   "rHoveredIndex = null"
+          @mouseenter                     =   "!rIsDragging && rLockedHoveredIndex === null && (rHoveredIndex = index)"
+          @mouseleave                     =   "!rIsDragging && rLockedHoveredIndex === null && (rHoveredIndex = null)"
           @touchstart.prevent.stop        =   "fOnTouchStartCardWrapper(index, $event)"
           @touchend.prevent.stop          =   "fOnTouchEndCardWrapper(index, $event)"
           @click.prevent                  =   "fOnClickCardWrapper(index, $event)"
@@ -56,8 +59,26 @@ const rStartTouchIndex            =   ref<number | null>(null);
 const rHoveredIndex               =   ref<number | null>(null);
 const rCardsListRef               =   ref<HTMLElement | null>(null);
 const rDynamicStep                =   ref(0);
+
+// Новые переменные для вертикального свайпа
+const rIsDragging                 =   ref(false);
+const rDragStartY                 =   ref(0);
+const rDragStartX                 =   ref(0);
+const rCurrentDragY               =   ref(0);
+const rDraggedCardIndex           =   ref<number | null>(null);
+const rDragDirection              =   ref<'none' | 'horizontal' | 'vertical'>('none');
+const rLockedHoveredIndex         =   ref<number | null>(null); // Новая переменная для блокировки индекса
+
+
 let   lInitialIndex               =   0;
 let   lStartX                     =   0;
+
+
+// Константы для настройки поведения свайпа
+const VERTICAL_THRESHOLD          =   30;  // Уменьшим порог для более быстрой реакции
+const DISMISS_THRESHOLD           =   120; // Расстояние, после которого карточка отправляется
+const HORIZONTAL_TOLERANCE        =   40;  // Увеличим толерантность для горизонтального движения
+const DIRECTION_LOCK_THRESHOLD    =   15;  // Порог для блокировки направления
 
 const cMaxHeight                  =   computed(() => props?.maxHeight ? `${props.maxHeight}px` : 'unset');
 
@@ -84,6 +105,9 @@ const fHandleTouchStart           =   (event: TouchEvent) =>  {
                                       };
 
 const fHandleTouchMove            =   (event: TouchEvent) => {
+                                        // Блокируем горизонтальную навигацию если карточка заблокирована
+                                        if (rLockedHoveredIndex.value !== null) return;
+
                                         const currentX = event.touches[0].clientX;
                                         const deltaX = currentX - lStartX;
 
@@ -146,22 +170,144 @@ const fDismissCard                =   (index: number, event: MouseEvent | TouchE
                                         }, 2000);
                                       };
 
-const fOnTouchEndCardWrapper      =   (index: number, $event: TouchEvent) => {
-                                        Console.log('>>> TOUCH END >>>', index, rHoveredIndex.value, rStartTouchIndex.value);
-                                        if(index == rHoveredIndex.value && rStartTouchIndex.value === null){
-                                          //fDismissCard
-                                          fDismissCard(index, $event);
-                                        }
-                                      }
+// Функция сброса состояния перетаскивания
+const fResetDragState             = () => {
+                                      rIsDragging.value = false;
+                                      rDraggedCardIndex.value = null;
+                                      rCurrentDragY.value = 0;
+                                      rDragDirection.value = 'none';
+                                      rLockedHoveredIndex.value = null; // Сбрасываем блокировку
+                                    };
 
+const fReturnCardToNormalState    = (cardWrapper: HTMLElement) => {
+                                      cardWrapper.style.transition = 'transform 0.3s ease';
+                                      cardWrapper.style.transform = 'scale(1) translateY(0px)';
+
+                                      setTimeout(() => {
+                                        cardWrapper.style.transition = '';
+                                        cardWrapper.style.transform = '';
+                                      }, 300);
+                                    };
+
+
+// Новые функции для работы с вертикальным свайпом
 const fOnTouchStartCardWrapper    =   (index: number, $event: TouchEvent) => {
                                         Console.log('>>> TOUCH START >>>', index, rHoveredIndex.value);
+
+                                        const touch = $event.touches[0];
+
+                                        // Сохраняем начальные координаты
+                                        rDragStartX.value = touch.clientX;
+                                        rDragStartY.value = touch.clientY;
+                                        rCurrentDragY.value = 0;
+
                                         rStartTouchIndex.value = (rHoveredIndex.value != index) ? index : null;
                                         rHoveredIndex.value = index;
+
+                                        // Сбрасываем состояние перетаскивания
+                                        fResetDragState();
                                       }
+
+
+const fHandleCardTouchMove        =   (event: TouchEvent) => {
+                                        if (rHoveredIndex.value === null) return;
+
+                                        const touch = event.touches[0];
+                                        const deltaX = touch.clientX - rDragStartX.value;
+                                        const deltaY = touch.clientY - rDragStartY.value;
+
+                                        const absDeltaX = Math.abs(deltaX);
+                                        const absDeltaY = Math.abs(deltaY);
+
+                                        // Определяем направление движения только если оно еще не зафиксировано
+                                        if (rDragDirection.value === 'none' && (absDeltaX > DIRECTION_LOCK_THRESHOLD || absDeltaY > DIRECTION_LOCK_THRESHOLD)) {
+                                          if (absDeltaY > absDeltaX && deltaY < 0) {
+                                            // Вертикальное движение вверх
+                                            rDragDirection.value = 'vertical';
+                                            rIsDragging.value = true;
+                                            rDraggedCardIndex.value = rHoveredIndex.value;
+                                            rLockedHoveredIndex.value = rHoveredIndex.value; // Блокируем индекс
+                                            event.preventDefault();
+                                          } else if (absDeltaX > absDeltaY) {
+                                            // Горизонтальное движение
+                                            rDragDirection.value = 'horizontal';
+                                          }
+                                        }
+
+                                        if (rDragDirection.value === 'vertical' && rIsDragging.value) {
+                                          // Обрабатываем вертикальное перетаскивание
+                                          rCurrentDragY.value = deltaY;
+
+                                          const cardElement = event.target as HTMLElement;
+                                          const cardWrapper = cardElement.closest('.card-wrapper') as HTMLElement;
+
+                                          if (cardWrapper) {
+                                            const dragDistance = Math.abs(deltaY);
+                                            let scale: number;
+                                            let translateY: number;
+
+                                            if (deltaY < 0) {
+                                              // Движение вверх
+                                              scale = Math.max(0.8, 1.5 - (dragDistance / DISMISS_THRESHOLD) * 0.7);
+                                              translateY = deltaY - 20;
+                                            } else {
+                                              // Движение вниз (возврат)
+                                              const returnProgress = Math.min(1, dragDistance / 50);
+                                              scale = 1.5 - (0.5 * returnProgress);
+                                              translateY = -20 + (20 * returnProgress);
+                                            }
+
+                                            cardWrapper.style.transform = `scale(${scale}) translateY(${translateY}px)`;
+                                            cardWrapper.style.transition = 'none';
+                                          }
+                                        } else if (rDragDirection.value === 'horizontal' || rDragDirection.value === 'none') {
+                                          // Обрабатываем горизонтальное движение только если не в режиме вертикального перетаскивания
+                                          if (!rIsDragging.value) {
+                                            fHandleTouchMove(event);
+                                          }
+                                        }
+                                      };
+
+
+const fOnTouchEndCardWrapper      =   (index: number, $event: TouchEvent) => {
+                                        Console.log('>>> TOUCH END >>>', index, rHoveredIndex.value, rStartTouchIndex.value, 'isDragging:', rIsDragging.value, 'direction:', rDragDirection.value);
+
+                                        if (rIsDragging.value && rDraggedCardIndex.value === index && rDragDirection.value === 'vertical') {
+                                          // Завершаем вертикальный свайп
+                                          const cardElement = $event.target as HTMLElement;
+                                          const cardWrapper = cardElement.closest('.card-wrapper') as HTMLElement;
+
+                                          if (cardWrapper) {
+                                            const dragDistance = Math.abs(rCurrentDragY.value);
+                                            const isUpwardDrag = rCurrentDragY.value < 0;
+
+                                            if (isUpwardDrag && dragDistance >= DISMISS_THRESHOLD) {
+                                              // Карточка перетащена достаточно далеко вверх - отправляем её
+                                              fDismissCard(index, $event);
+                                            } else {
+                                              // Возвращаем карточку в нормальное состояние и убираем hover
+                                              fReturnCardToNormalState(cardWrapper);
+                                              rHoveredIndex.value = null; // Убираем активное состояние
+                                            }
+                                          }
+                                        } else if (index === rHoveredIndex.value && rStartTouchIndex.value === null && !rIsDragging.value && rDragDirection.value !== 'horizontal') {
+                                          // Обычный тап по карточке (только если не было горизонтального движения)
+                                          fDismissCard(index, $event);
+                                        }
+
+                                        // Сбрасываем все состояния
+                                        rStartTouchIndex.value = null;
+                                        fResetDragState();
+                                      }
+
+
+
 const fOnClickCardWrapper         =   (index: number, $event: MouseEvent | TouchEvent) => {
+                                      // Клик мышью (для десктопа)
+                                      if (!rIsDragging.value) {
                                         fDismissCard(index, $event);
                                       }
+                                    }
 
 const fUpdateCardsDistance        =   () => {
                                         if (!rCardsListRef.value || (cAvailableCards.value?.length || 0) < 2) {
@@ -188,6 +334,8 @@ onMounted(() => {
                 if (rCardsListRef.value) {
                   rCardsListRef.value.addEventListener('touchmove', fHandleTouchMove, { passive: true });
                   rCardsListRef.value.addEventListener('touchstart', fHandleTouchStart, { passive: true });
+                  // Добавляем новый обработчик для вертикального движения карточек
+                  rCardsListRef.value.addEventListener('touchmove', fHandleCardTouchMove, { passive: false });
                 }
               });
 
@@ -196,6 +344,7 @@ onUnmounted(() => {
                     if (rCardsListRef.value) {
                       rCardsListRef.value.removeEventListener('touchstart', fHandleTouchStart);
                       rCardsListRef.value.removeEventListener('touchmove', fHandleTouchMove);
+                      rCardsListRef.value.removeEventListener('touchmove', fHandleCardTouchMove);
                     }
                   });
 
@@ -229,9 +378,19 @@ onUnmounted(() => {
   cursor: pointer;
   transform: scale(1);
   will-change: transform;
+
   &.active {
     transform: scale(1.5) translateY(-20px);
     z-index: 999;
+  }
+
+  &.dragging {
+    z-index: 1000;
+
+    // Во время перетаскивания убираем стили класса active
+    &.active {
+      transform: none;
+    }
   }
 }
 </style>
