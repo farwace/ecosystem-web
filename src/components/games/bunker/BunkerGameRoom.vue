@@ -40,7 +40,7 @@
           @touch-place="onTouchPlace($event)"
           @vote="sendVote"
       />
-      <div class="bunker__places__finish-speak" @click="sendFinishSpeak" v-if="currentSpeakerId == id">
+      <div class="bunker__places__finish-speak" @click="sendFinishSpeak" v-if="currentSpeakerId == id && !((cardRevealTimeRemaining || 0) > 0)">
         <BunkerButton class="finish" @click="$emit('invite')">
           Договорил <UiIcon class="inline-icon microphone-off" name="microphone-off"/>
         </BunkerButton>

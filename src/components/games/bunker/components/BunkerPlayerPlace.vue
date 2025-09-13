@@ -29,7 +29,7 @@
       <UiIcon name="microphone-on" />
     </div>
     <div class="place__vote" v-if="gameStage == 'voting' && !player?.isEliminated && !!player?.id && !isSelf">
-      <BunkerButton class="small" @click="$emit('vote')">Голосовать</BunkerButton>
+      <BunkerButton class="small" @click.prevent.stop="$emit('vote')">Голосовать</BunkerButton>
     </div>
   </div>
 </template>
