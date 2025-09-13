@@ -75,9 +75,7 @@ let   lStartX                     =   0;
 
 
 // Константы для настройки поведения свайпа
-const VERTICAL_THRESHOLD          =   30;  // Уменьшим порог для более быстрой реакции
 const DISMISS_THRESHOLD           =   120; // Расстояние, после которого карточка отправляется
-const HORIZONTAL_TOLERANCE        =   40;  // Увеличим толерантность для горизонтального движения
 const DIRECTION_LOCK_THRESHOLD    =   15;  // Порог для блокировки направления
 
 const cMaxHeight                  =   computed(() => props?.maxHeight ? `${props.maxHeight}px` : 'unset');
@@ -118,6 +116,7 @@ const fHandleTouchMove            =   (event: TouchEvent) => {
 
                                         const floatIndex = lInitialIndex + deltaX / stepSize;
                                         const clampedIndex = Math.max(0, Math.min((cAvailableCards.value?.length || 0) - 1, floatIndex));
+                                        Console.log('>>> CHANGE rHOVERED INDEX fHandleTouchMove >>>')
                                         rHoveredIndex.value = Math.round(clampedIndex);
                                       };
 
@@ -194,7 +193,7 @@ const fReturnCardToNormalState    = (cardWrapper: HTMLElement) => {
 
 // Новые функции для работы с вертикальным свайпом
 const fOnTouchStartCardWrapper    =   (index: number, $event: TouchEvent) => {
-                                        Console.log('>>> TOUCH START >>>', index, rHoveredIndex.value);
+                                        Console.log('>>> TOUCH START >>>', index, rHoveredIndex.value, rDynamicStep.value);
 
                                         const touch = $event.touches[0];
                                         const currentSession = Date.now();
@@ -205,6 +204,7 @@ const fOnTouchStartCardWrapper    =   (index: number, $event: TouchEvent) => {
                                         rCurrentDragY.value = 0;
 
                                         rStartTouchIndex.value = (rHoveredIndex.value != index) ? index : null;
+                                        Console.log('>>> CHANGE rHOVERED INDEX fOnTouchStartCardWrapper >>>')
                                         rHoveredIndex.value = index;
 
                                         // Сбрасываем состояние перетаскивания
@@ -227,6 +227,7 @@ const fHandleCardTouchMove        =   (event: TouchEvent) => {
                                           if (absDeltaY > absDeltaX && deltaY < 0) {
                                             // Вертикальное движение вверх
                                             rDragDirection.value = 'vertical';
+                                            Console.log('>>> VERTICAL MOVE >>>');
                                             rIsDragging.value = true;
                                             rDraggedCardIndex.value = rHoveredIndex.value;
                                             rLockedHoveredIndex.value = rHoveredIndex.value;
@@ -234,6 +235,7 @@ const fHandleCardTouchMove        =   (event: TouchEvent) => {
                                           } else if (absDeltaX > absDeltaY) {
                                             // Горизонтальное движение
                                             rDragDirection.value = 'horizontal';
+                                            Console.log('>>> HORIZONTAL MOVE >>>');
                                             // НЕ блокируем, просто продолжаем горизонтальное движение
                                             if (!rIsDragging.value) {
                                               fHandleTouchMove(event);
@@ -268,7 +270,7 @@ const fHandleCardTouchMove        =   (event: TouchEvent) => {
                                             cardWrapper.style.transform = `scale(${scale}) translateY(${translateY}px)`;
                                             cardWrapper.style.transition = 'none';
                                           }
-                                        } else if (rDragDirection.value === 'horizontal' || rDragDirection.value === 'none') {
+                                        } else if (rDragDirection.value === 'horizontal') {
                                           // Обрабатываем горизонтальное движение только если не в режиме вертикального перетаскивания
                                           if (!rIsDragging.value) {
                                             fHandleTouchMove(event);
@@ -300,7 +302,8 @@ const fOnTouchEndCardWrapper      =   (index: number, $event: TouchEvent) => {
                                           }
                                         } else if (index === rHoveredIndex.value && rStartTouchIndex.value === null && !rIsDragging.value && rDragDirection.value !== 'horizontal') {
                                           // Обычный тап по карточке (только если не было горизонтального движения)
-                                          fDismissCard(index, $event);
+                                          rHoveredIndex.value = null;
+                                          //fDismissCard(index, $event);
                                         }
 
                                         // Сбрасываем все состояния - ВАЖНО: каждая новая сессия начинает заново
@@ -343,7 +346,10 @@ const fClearAllDragStyles          =   () => {
                                       }
 
 watch(cAvailableCards, ()     =>  { fUpdateCardsDistance(); });
-watch(rHoveredIndex, ()  =>  { fClearAllDragStyles(); });
+watch(rHoveredIndex, (neoVal)  =>  {
+  Console.log('>>> HOVERED INDEX >>>', neoVal);
+  fClearAllDragStyles();
+});
 
 
 onMounted(() => {
@@ -351,7 +357,7 @@ onMounted(() => {
                 window.addEventListener('resize', fUpdateCardsDistance);
 
                 if (rCardsListRef.value) {
-                  rCardsListRef.value.addEventListener('touchmove', fHandleTouchMove, { passive: true });
+                  //rCardsListRef.value.addEventListener('touchmove', fHandleTouchMove, { passive: true });
                   rCardsListRef.value.addEventListener('touchstart', fHandleTouchStart, { passive: true });
                   // Добавляем новый обработчик для вертикального движения карточек
                   rCardsListRef.value.addEventListener('touchmove', fHandleCardTouchMove, { passive: false });
@@ -362,7 +368,7 @@ onUnmounted(() => {
                     window.removeEventListener('resize', fUpdateCardsDistance);
                     if (rCardsListRef.value) {
                       rCardsListRef.value.removeEventListener('touchstart', fHandleTouchStart);
-                      rCardsListRef.value.removeEventListener('touchmove', fHandleTouchMove);
+                      //rCardsListRef.value.removeEventListener('touchmove', fHandleTouchMove);
                       rCardsListRef.value.removeEventListener('touchmove', fHandleCardTouchMove);
                     }
                   });
