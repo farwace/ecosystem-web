@@ -37,6 +37,11 @@
           @touch-player="onTouchPlayer($event)"
           @touch-place="onTouchPlace($event)"
       />
+      <div class="bunker__places__finish-speak" @click="sendFinishSpeak" v-if="currentSpeakerId == id">
+        <BunkerButton class="finish" @click="$emit('invite')">
+          Договорил <UiIcon class="inline-icon microphone-off" name="microphone-off"/>
+        </BunkerButton>
+      </div>
     </div>
 
     <div class="bunker__controls"> <!-- todo: передавать вкл/выкл микрофон -->
@@ -86,6 +91,8 @@ import BunkerUserCards from "@/components/games/bunker/components/BunkerUserCard
 import {Card} from "@/components/games/bunker/schemas/schemas/Card.ts";
 import {ArraySchema} from "@colyseus/schema";
 import {CardCustomData} from "@/components/games/bunker/schemas/schemas/CardCustomData.ts";
+import BunkerButton from "@/components/games/bunker/components/BunkerButton.vue";
+import UiIcon from "@/components/common/icons/UiIcon.vue";
 
 const props = defineProps<{
   room: Room
@@ -448,6 +455,10 @@ const onSendCard = (cardId: number | string) => {
   props.room?.send('revealCard', +cardId.toString());
 }
 
+const sendFinishSpeak = () => {
+  props.room?.send('finishSpeaking');
+}
+
 const requestChangePlace = (place: number | string) => {
   props.room?.send('changePlace', +place.toString());
 }
@@ -684,6 +695,26 @@ onBeforeUnmount(() => {
     //top: calc(50% - 40px);
     top: 50%;
     transform: translateY(-50%);
+
+
+    &__finish-speak{
+      position: absolute;
+      bottom: 0;
+      text-align: center;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      cursor: pointer;
+
+      .finish{
+        background-color: #95501B;
+        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
+
+        .microphone-off{
+          margin-top: 0;
+        }
+      }
+    }
   }
 
   &__settings {
