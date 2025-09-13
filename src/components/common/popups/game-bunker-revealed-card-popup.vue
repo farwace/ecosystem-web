@@ -10,7 +10,7 @@
 
           <!-- Лицевая сторона -->
           <div class="card-front">
-            <BunkerCard @picture-load="onCardLoad" :card="card" :is-male="true" :maxHeight="maxHeight" full-width/>
+            <BunkerCard @picture-load="onCardLoad" :card="card" :is-male="!!player?.isMale" :maxHeight="maxHeight" full-width/>
           </div>
         </div>
       </div>

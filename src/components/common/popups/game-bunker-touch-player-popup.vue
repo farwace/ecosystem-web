@@ -37,7 +37,7 @@
 
     <div class="bunker-popup__cards" v-if="(player.revealedCards?.length || 0) > 0 && widthIsCalculated">
       <div @click="showCardPopup(card)" class="item" v-for="card in player.revealedCards" :key="`player-${player.id}-revealed-card-${card.id}`">
-        <BunkerCard :max-width="maxCardWidth" :card="card" :is-male="player.isMale" />
+        <BunkerCard :max-width="maxCardWidth" :card="card" :is-male="!!props.player?.isMale" />
       </div>
     </div>
   </div>
