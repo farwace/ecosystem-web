@@ -279,7 +279,7 @@ const fHandleCardTouchMove        =   (event: TouchEvent) => {
 
 const fOnTouchEndCardWrapper      =   (index: number, $event: TouchEvent) => {
                                         Console.log('>>> TOUCH END >>>', index, rHoveredIndex.value, rStartTouchIndex.value, 'isDragging:', rIsDragging.value, 'direction:', rDragDirection.value);
-                                        clearAllDragStyles();
+                                        fClearAllDragStyles();
                                         if (rIsDragging.value && rDraggedCardIndex.value === index && rDragDirection.value === 'vertical') {
                                           // Завершаем вертикальный свайп
                                           const cardElement = $event.target as HTMLElement;
@@ -330,7 +330,7 @@ const fUpdateCardsDistance        =   () => {
                                         rDynamicStep.value = Math.max(30, Math.min(idealStep, 100));
                                       };
 
-const clearAllDragStyles          =   () => {
+const fClearAllDragStyles          =   () => {
                                         if(rCardsListRef.value){
                                           /* @ts-ignore */
                                           rCardsListRef.value?.querySelectorAll?.('.card-wrapper').forEach?.((cardWrapper: HTMLElement) => {
@@ -343,7 +343,7 @@ const clearAllDragStyles          =   () => {
                                       }
 
 watch(cAvailableCards, ()     =>  { fUpdateCardsDistance(); });
-watch(rHoveredIndex, ()  =>  { clearAllDragStyles(); });
+watch(rHoveredIndex, ()  =>  { fClearAllDragStyles(); });
 
 
 onMounted(() => {
