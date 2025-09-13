@@ -37,7 +37,7 @@
 import type { ArraySchema } from "@colyseus/schema";
 import type { Card } from "@/components/games/bunker/schemas/schemas/Card.ts";
 import BunkerCard from "@/components/games/bunker/components/BunkerCard.vue";
-import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import {computed, nextTick, onMounted, onUnmounted, ref, watch} from "vue";
 import { ClickOutside } from "@/classes/directives/clickOutside.ts";
 import {Console} from "@/classes/utils/Console.ts";
 
@@ -67,7 +67,7 @@ const rDragStartX                 =   ref(0);
 const rCurrentDragY               =   ref(0);
 const rDraggedCardIndex           =   ref<number | null>(null);
 const rDragDirection              =   ref<'none' | 'horizontal' | 'vertical'>('none');
-const rLockedHoveredIndex         =   ref<number | null>(null); // Новая переменная для блокировки индекса
+const rLockedHoveredIndex         =   ref<number | null>(null);
 
 
 let   lInitialIndex               =   0;
@@ -100,9 +100,11 @@ const fOnClickOutside             =   () => {
                                       }
 
 const fHandleTouchStart           =   (event: TouchEvent) =>  {
+                                        // Создаем новую сессию для каждого touchstart
                                         lStartX = event.touches[0].clientX;
                                         lInitialIndex = rHoveredIndex.value ?? 0;
                                       };
+
 
 const fHandleTouchMove            =   (event: TouchEvent) => {
                                         // Блокируем горизонтальную навигацию если карточка заблокирована
@@ -176,7 +178,7 @@ const fResetDragState             = () => {
                                       rDraggedCardIndex.value = null;
                                       rCurrentDragY.value = 0;
                                       rDragDirection.value = 'none';
-                                      rLockedHoveredIndex.value = null; // Сбрасываем блокировку
+                                      rLockedHoveredIndex.value = null;
                                     };
 
 const fReturnCardToNormalState    = (cardWrapper: HTMLElement) => {
@@ -195,6 +197,7 @@ const fOnTouchStartCardWrapper    =   (index: number, $event: TouchEvent) => {
                                         Console.log('>>> TOUCH START >>>', index, rHoveredIndex.value);
 
                                         const touch = $event.touches[0];
+                                        const currentSession = Date.now();
 
                                         // Сохраняем начальные координаты
                                         rDragStartX.value = touch.clientX;
@@ -226,11 +229,16 @@ const fHandleCardTouchMove        =   (event: TouchEvent) => {
                                             rDragDirection.value = 'vertical';
                                             rIsDragging.value = true;
                                             rDraggedCardIndex.value = rHoveredIndex.value;
-                                            rLockedHoveredIndex.value = rHoveredIndex.value; // Блокируем индекс
+                                            rLockedHoveredIndex.value = rHoveredIndex.value;
                                             event.preventDefault();
                                           } else if (absDeltaX > absDeltaY) {
                                             // Горизонтальное движение
                                             rDragDirection.value = 'horizontal';
+                                            // НЕ блокируем, просто продолжаем горизонтальное движение
+                                            if (!rIsDragging.value) {
+                                              fHandleTouchMove(event);
+                                            }
+                                            return;
                                           }
                                         }
 
@@ -271,7 +279,7 @@ const fHandleCardTouchMove        =   (event: TouchEvent) => {
 
 const fOnTouchEndCardWrapper      =   (index: number, $event: TouchEvent) => {
                                         Console.log('>>> TOUCH END >>>', index, rHoveredIndex.value, rStartTouchIndex.value, 'isDragging:', rIsDragging.value, 'direction:', rDragDirection.value);
-
+                                        clearAllDragStyles();
                                         if (rIsDragging.value && rDraggedCardIndex.value === index && rDragDirection.value === 'vertical') {
                                           // Завершаем вертикальный свайп
                                           const cardElement = $event.target as HTMLElement;
@@ -287,7 +295,7 @@ const fOnTouchEndCardWrapper      =   (index: number, $event: TouchEvent) => {
                                             } else {
                                               // Возвращаем карточку в нормальное состояние и убираем hover
                                               fReturnCardToNormalState(cardWrapper);
-                                              rHoveredIndex.value = null; // Убираем активное состояние
+                                              rHoveredIndex.value = null;
                                             }
                                           }
                                         } else if (index === rHoveredIndex.value && rStartTouchIndex.value === null && !rIsDragging.value && rDragDirection.value !== 'horizontal') {
@@ -295,7 +303,7 @@ const fOnTouchEndCardWrapper      =   (index: number, $event: TouchEvent) => {
                                           fDismissCard(index, $event);
                                         }
 
-                                        // Сбрасываем все состояния
+                                        // Сбрасываем все состояния - ВАЖНО: каждая новая сессия начинает заново
                                         rStartTouchIndex.value = null;
                                         fResetDragState();
                                       }
@@ -322,9 +330,20 @@ const fUpdateCardsDistance        =   () => {
                                         rDynamicStep.value = Math.max(30, Math.min(idealStep, 100));
                                       };
 
-
+const clearAllDragStyles          =   () => {
+                                        if(rCardsListRef.value){
+                                          /* @ts-ignore */
+                                          rCardsListRef.value?.querySelectorAll?.('.card-wrapper').forEach?.((cardWrapper: HTMLElement) => {
+                                            if(cardWrapper?.style){
+                                              cardWrapper.style.transition = '';
+                                              cardWrapper.style.transform = '';
+                                            }
+                                          });
+                                        }
+                                      }
 
 watch(cAvailableCards, ()     =>  { fUpdateCardsDistance(); });
+watch(rHoveredIndex, ()  =>  { clearAllDragStyles(); });
 
 
 onMounted(() => {
