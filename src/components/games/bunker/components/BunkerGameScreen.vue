@@ -129,6 +129,7 @@ const normalizedTimer = computed(() => {
     font-weight: normal;
     background-color: rgba(0,0,0,.3);
     padding: 2px 10px;
+    border-radius: 2px;
   }
 }
 

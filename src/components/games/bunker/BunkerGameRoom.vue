@@ -55,6 +55,7 @@
           :is-speaker="currentSpeakerId == currentPlayer?.id"
           :candSehd="canSendCard"
           @sendCard="onSendCard"
+          ref="bunkerUserCardsComponentRef"
       />
     </div>
 
@@ -94,6 +95,7 @@ const notificationsProvider: INotificationsProvider | undefined = inject(Notific
 const {id} = storeToRefs(ecosystemStore());
 
 const placesDiv = ref<HTMLDivElement>();
+const bunkerUserCardsComponentRef = ref<typeof BunkerUserCards>();
 const bunkerContainer = ref<HTMLDivElement>();
 const freeAreaHeight = ref<number>(0);
 
@@ -282,6 +284,7 @@ const initializeGame = () => {
   props.room?.onMessage?.('cardRevealed', (message: { playerId: number,  card: {id: Card['id'], name: Card['name'], type: Card['type'], imageUrl: string, customData: CardCustomData}}) => {
     if(message.playerId == currentPlayer.value?.id){
       canSendCard.value = false;
+      bunkerUserCardsComponentRef.value?.fForceDropCard?.(message.card.id);
     }
     const playerCard = new Card();
     playerCard.id = message.card.id;

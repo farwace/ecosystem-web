@@ -120,14 +120,12 @@ const fHandleTouchMove            =   (event: TouchEvent) => {
                                         rHoveredIndex.value = Math.round(clampedIndex);
                                       };
 
-const fDropCard                   = (index: number) => {
-                                      const cardId = cAvailableCards?.value?.[index]?.id;
+const fForceDropCard              = (cardId?: string | number) => {
                                       if(cardId){
-                                        rHoveredIndex.value = null;
                                         rSkipCardId.value = cardId;
                                         setTimeout(() => {
                                           rSkipCardId.value = undefined;
-                                        }, 3000)
+                                        }, 2000)
                                       }
                                     }
 
@@ -351,6 +349,9 @@ watch(rHoveredIndex, (neoVal)  =>  {
   fClearAllDragStyles();
 });
 
+defineExpose({
+  fForceDropCard
+});
 
 onMounted(() => {
                 fUpdateCardsDistance();
