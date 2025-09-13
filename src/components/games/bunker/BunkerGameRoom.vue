@@ -251,9 +251,12 @@ const initializeGame = () => {
     })
   });
   props.room?.onMessage?.('gameInit', () => {
-    if(scenario.value){
-      showScenarioModal('-auto');
-    }
+    setTimeout(() => {
+      if(scenario.value){
+        showScenarioModal('-auto');
+      }
+    }, 150);
+
   });
 
 
