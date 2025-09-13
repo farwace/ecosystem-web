@@ -107,6 +107,7 @@ const fDropCard                   = (index: number) => {
                                     }
 
 const fDismissCard                =   (index: number, event: MouseEvent | TouchEvent) => {
+                                        if(!props.isSpeaker){return;}
                                         const cardId = cAvailableCards?.value?.[index]?.id;
                                         const cardEl = (event.currentTarget as HTMLElement);
                                         if (!cardEl) return;
