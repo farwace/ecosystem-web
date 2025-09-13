@@ -15,6 +15,8 @@
           :is-speaker="speakerId == playerId && playerId != 0"
           :room-status="status"
           :game-stage="stage"
+          :is-voted="isVoted"
+          :vote-results="voteResults?.[(+playerId).toString()] || []"
           :can-abstain-this-round="canAbstainThisRound"
           @touch-place="onTouchPlace(place)"
           @touch-player="onTouchPlayer(playerId.toString())"
@@ -37,6 +39,8 @@ const props = defineProps<{
   speakerId?: number | string,
   stage?: TGameStage,
   canAbstainThisRound?: boolean,
+  isVoted?: boolean,
+  voteResults?: {[p: string]: string[]},
 }>();
 
 const {id} = storeToRefs(ecosystemStore());
@@ -61,39 +65,6 @@ const onTouchPlayer = (playerId: string) => {
 }
 
 :deep(.place){
-  .place__microphone{
-    position: absolute;
-    top: 20px;
-
-    svg{
-      width: 20px;
-      height: 20px;
-    }
-  }
-
-  .place__action{
-    position: absolute;
-    top: 20px;
-
-    &.ready{
-      width: 20px;
-      height: 20px;
-      border-radius: 100%;
-      background-image: url('/assets/img/white-check.svg');
-      background-size: 10px 10px;
-      background-repeat: no-repeat;
-      background-position: center;
-      background-color: #7eba70;
-    }
-  }
-
-  .place__vote{
-    position: absolute;
-    top: 20px;
-    .game-btn{
-      background-color: #95501B;
-    }
-  }
 
   &:nth-child(odd){
     left: 0;
@@ -111,7 +82,12 @@ const onTouchPlayer = (playerId: string) => {
     }
     .place__vote{
       right: -50px;
+
+      &__results{
+        left: 90px;
+      }
     }
+
   }
   &:nth-child(even){
     margin-left: auto;
@@ -130,6 +106,10 @@ const onTouchPlayer = (playerId: string) => {
     }
     .place__vote{
       left: -50px;
+      &__results{
+        right: 90px;
+        flex-direction: row-reverse;
+      }
     }
   }
 

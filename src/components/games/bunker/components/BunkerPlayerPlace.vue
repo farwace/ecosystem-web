@@ -28,8 +28,16 @@
     <div class="place__microphone" v-if="isSpeaker">
       <UiIcon name="microphone-on" />
     </div>
-    <div class="place__vote" v-if="gameStage == 'voting' && !player?.isEliminated && !!player?.id && !isSelf">
-      <BunkerButton class="small" @click.prevent.stop="$emit('vote')">Голосовать</BunkerButton>
+    <div class="place__vote" v-if="!isVoted && gameStage == 'voting' && !player?.isEliminated && !!player?.id">
+      <BunkerButton class="small" :class="{'is-self': isSelf}" @click.prevent.stop="$emit('vote')">
+        <template v-if="isSelf">Воздержаться</template>
+        <template v-else>Голосовать</template>
+      </BunkerButton>
+    </div>
+    <div class="place__vote__results" v-if="gameStage == 'voting' && isVoted && voteResults && player?.id">
+      <div class="result-item" v-for="result in voteResults" :key="`player-${player?.id}-results`">
+        {{ result }}
+      </div>
     </div>
   </div>
 </template>
@@ -51,6 +59,8 @@ const props = defineProps<{
   roomStatus?: TRoomStatus,
   gameStage?: TGameStage,
   canAbstainThisRound?: boolean,
+  isVoted?: boolean,
+  voteResults?: string[],
 }>();
 
 const emit = defineEmits(['touch-player', 'touch-place', 'vote']);
@@ -189,6 +199,67 @@ const handleClick = () => {
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  &__action{
+    position: absolute;
+    top: 20px;
+
+    &.ready{
+      width: 20px;
+      height: 20px;
+      border-radius: 100%;
+      background-image: url('/assets/img/white-check.svg');
+      background-size: 10px 10px;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-color: #7eba70;
+    }
+  }
+
+  &__microphone{
+    position: absolute;
+    top: 20px;
+
+    svg{
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  &__vote{
+    position: absolute;
+    top: 20px;
+    .game-btn{
+      background-color: #95501B;
+
+      &.is-self{
+        background-color: #334240;
+      }
+    }
+
+    &__results{
+      position: absolute;
+      top: 10px;
+      display: flex;
+      gap: 2px 4px;
+      flex-wrap: wrap;
+      width: 50px;
+
+      .result-item{
+        font-size: 12px;
+        width: 14px;
+        height: 14px;
+        border-radius: 100%;
+        background-color: #95501B;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #E5CC9F;
+        font-weight: 600;
+        box-shadow: 0 0 10px rgba(0, 0, 0, .3);
+      }
+    }
   }
 }
 

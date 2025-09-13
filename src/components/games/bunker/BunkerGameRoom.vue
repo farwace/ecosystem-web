@@ -36,6 +36,8 @@
           :stage="gameStage"
           :can-abstain-this-round="canAbstainThisRound"
           :speaker-id="currentSpeakerId"
+          :is-voted="isVoted"
+          :vote-results="voteResults"
           @touch-player="onTouchPlayer($event)"
           @touch-place="onTouchPlace($event)"
           @vote="sendVote"
@@ -62,6 +64,7 @@
           :is-male="currentPlayer?.isMale"
           :is-speaker="currentSpeakerId == currentPlayer?.id"
           :candSehd="canSendCard"
+          :is-eliminated="currentPlayer?.isEliminated"
           @sendCard="onSendCard"
           ref="bunkerUserCardsComponentRef"
       />
@@ -128,6 +131,8 @@ const scenario = ref<TScenario>();
 const votingResults = ref();
 const canAbstainThisRound = ref<boolean>(false);
 const canSendCard = ref<boolean>(false);
+const isVoted = ref<boolean>(false);
+const voteResults = ref<{[key:string]: string[]}>();
 
 const router = useAnimatedRouter();
 
@@ -139,6 +144,8 @@ const initializeGame = () => {
 
   unbindCallbacks.push($(props.room.state).listen("currentRound", (currentValue, previousValue) => {
     console.log('>>> CURRENT ROUND', currentValue, previousValue);
+    voteResults.value = {};
+    isVoted.value = false;
     currentRound.value = currentValue;
   }));
   unbindCallbacks.push($(props.room.state).listen("currentSpeakerId", (currentValue, previousValue) => {
@@ -197,6 +204,25 @@ const initializeGame = () => {
       Console.log('>>> PLACES ON REMOVE: placeIndex:', placeIndex, 'id: ', playerId);
       delete places.value?.[placeIndex];
     }
+  }));
+
+  unbindCallbacks.push($(props.room.state).currentVotes.onAdd((votesId, playerId) => {
+    if(playerId == currentPlayer.value?.id){
+      isVoted.value = true;
+    }
+    if(!voteResults.value?.[votesId]){
+      voteResults.value![votesId] = [];
+    }
+    if(places.value){
+      let placeNumber = 0;
+      Object.keys(places.value).forEach((place) => {
+        if(places.value?.[place] == playerId){
+          placeNumber = +place;
+        }
+      })
+      voteResults.value![votesId].push(placeNumber.toString());
+    }
+
   }));
 
   unbindCallbacks.push($(props.room.state).players.onAdd((playerData, playerId) => {
@@ -581,7 +607,12 @@ const onPlayersPlusClick = () => {
 const setGameStubs = () => {
   currentSpeakerId.value = 0;
   currentRound.value = 0;
-  gameStage.value = 'introduction';
+  gameStage.value = 'voting';
+  isVoted.value = true;
+  voteResults.value = {
+    10: ['8', '7', '6', '5', '4', '3', '1'],
+    2: ['8', '7', '6', '5', '4', '3', '1'],
+  };
   hostId.value = 1;
   isPrivateRoom.value = false;
   maxPlayers.value = 8;
@@ -628,6 +659,7 @@ watch(currentSpeakerId, (neoVal) => {
 });
 
 onMounted(() => {
+  voteResults.value = {};
   places.value = {
     "0": 0,
     "1": 0,
@@ -709,7 +741,7 @@ onBeforeUnmount(() => {
 
     &__finish-speak{
       position: absolute;
-      bottom: 0;
+      top: calc(50% - 20px);
       text-align: center;
       width: 100%;
       display: flex;

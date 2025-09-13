@@ -49,6 +49,7 @@ const props                       =   defineProps<{
                                                   revealedCards   ?: ArraySchema<Card>,
                                                   isSpeaker       ?: boolean,
                                                   isMale          ?: boolean,
+                                                  isEliminated    ?: boolean,
                                                 }>();
 
 const emits                       =  defineEmits(['sendCard']);
@@ -348,7 +349,11 @@ watch(rHoveredIndex, (neoVal)  =>  {
   Console.log('>>> HOVERED INDEX >>>', neoVal);
   fClearAllDragStyles();
 });
-
+watch(() => props.isEliminated, (neoVal) => {
+  if(neoVal){
+    fForceDropCard(props.cards?.[0]?.id);
+  }
+})
 defineExpose({
   fForceDropCard
 });
