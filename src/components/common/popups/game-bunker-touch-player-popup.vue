@@ -130,6 +130,7 @@ const showCardPopup = (card: any) => {
     card: card,
     maxHeight: 200,
     player: props.player,
+    noPlayer: true,
   })
 }
 
