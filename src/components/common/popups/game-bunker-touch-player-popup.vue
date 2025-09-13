@@ -128,7 +128,8 @@ const showCardPopup = (card: any) => {
     noScroll: true,
     class: 'game-bunker',
     card: card,
-    maxHeight: 200
+    maxHeight: 200,
+    player: props.player,
   })
 }
 

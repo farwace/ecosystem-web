@@ -15,7 +15,7 @@
         </div>
       </div>
     </div>
-    <div class="pp-revealed-card__player" v-if="player">
+    <div class="pp-revealed-card__player" v-if="player && !noPlayer">
       <UserAvatar :first-name="player.name" :avatar="player.avatar" small avatar-small/>
     </div>
   </div>
@@ -31,7 +31,8 @@ import UserAvatar from "@/components/pages/Home/UserAvatar.vue";
 const props = defineProps<{
   card: Card,
   player?: TPlayer,
-  maxHeight: number
+  maxHeight: number,
+  noPlayer?: boolean,
 }>();
 
 const isReady = ref<boolean>(false);

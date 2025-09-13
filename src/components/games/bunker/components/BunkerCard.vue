@@ -1,8 +1,8 @@
 <template>
   <div class="card">
-    <template v-if="card.type == 'age' && card.customData.value && calculatedTextSize">
+    <template v-if="card.type == 'age' && card.value && calculatedTextSize">
       <div class="card-text" :style="{bottom: textBottomStyle, fontSize: textFontSize}">
-        {{ card.customData.value }} {{ PluralForm(card.customData.value, 'год', 'года', 'лет')  }}
+        {{ card.value }} {{ PluralForm(card.value, 'год', 'года', 'лет')  }}
       </div>
     </template>
     <img

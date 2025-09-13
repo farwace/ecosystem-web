@@ -128,6 +128,7 @@ const initializeGame = () => {
   const $ = getStateCallbacks(props.room);
 
   unbindCallbacks.push($(props.room.state).listen("currentRound", (currentValue, previousValue) => {
+    console.log('>>> CURRENT ROUND', currentValue, previousValue);
     currentRound.value = currentValue;
   }));
   unbindCallbacks.push($(props.room.state).listen("currentSpeakerId", (currentValue, previousValue) => {
@@ -238,7 +239,7 @@ const initializeGame = () => {
   });
   props.room?.onMessage?.('gameInit', () => {
     if(scenario.value){
-      showScenarioModal();
+      showScenarioModal('-auto');
     }
   });
 
@@ -275,6 +276,7 @@ const initializeGame = () => {
     //todo: обработка события когда ход перешел к другому игроку
     Console.log('>>> PLAYER TURN STARTED', message);
     notificationsProvider?.removePopup?.('game-bunker-revealed-card-popup');
+    notificationsProvider?.removePopup?.('game-scenario-auto');
   })
 
   props.room?.onMessage?.('cardRevealed', (message: { playerId: number,  card: {id: Card['id'], name: Card['name'], type: Card['type'], imageUrl: string, customData: CardCustomData}}) => {
@@ -294,6 +296,7 @@ const initializeGame = () => {
     customData.to = message.card.customData?.to;
     customData.value = message.card.customData?.value;
     playerCard.customData = customData;
+    playerCard.value = message.card.customData?.value || 0;
     showRevealedCardPopup(message.playerId, playerCard);
     Console.log('>>> CARD REVEALED', message);
   });
@@ -338,6 +341,7 @@ const testAction = () => {
     sendTestCard.maleImageUrl = testCard.imageUrl;
     sendTestCard.femaleImageUrl = testCard.imageUrl;
     sendTestCard.customData = customData;
+    sendTestCard.value = customData?.value || 0;
     const playerId = 2;
 
     showRevealedCardPopup(playerId, sendTestCard);
@@ -362,10 +366,10 @@ const showRevealedCardPopup = (playerId: number, card: Card) => {
   }
 }
 
-const showScenarioModal = () => {
+const showScenarioModal = (postfix: string = '') => {
   setTimeout(() => {
     if(scenario.value?.id){
-      notificationsProvider?.addPopup('game-scenario', 'game-bunker-scenario-popup', {
+      notificationsProvider?.addPopup(('game-scenario' + postfix), 'game-bunker-scenario-popup', {
         noPaddings: true,
         noBackground: true,
         noTitle: true,
@@ -572,6 +576,7 @@ const setGameStubs = () => {
     cards.name = card.name;
     cards.maleImageUrl = card.maleImageUrl;
     cards.femaleImageUrl = card.femaleImageUrl;
+    cards.value = card.value;
     const customData = new CardCustomData();
     customData.from = cards.customData?.from;
     customData.to = cards.customData?.to;

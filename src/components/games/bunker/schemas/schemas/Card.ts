@@ -17,4 +17,5 @@ export class Card extends Schema {
     @type("string") public femaleImageUrl!: string;
     @type(CardCustomData) public customData: CardCustomData = new CardCustomData();
     @type("boolean") public isRevealed!: boolean;
+    @type("number") public value!: number;
 }
