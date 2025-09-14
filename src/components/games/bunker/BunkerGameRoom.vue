@@ -61,7 +61,13 @@
           <span v-if="liveKitProvider.isConnectedToRoom()" style="color: green;">
             🎤 Голосовой чат подключен
           </span>
-              <span v-else style="color: orange;">
+          <span v-else-if="voiceError" style="color: red;">
+            ❌ {{ voiceError }}
+            <button @click="retryVoiceConnection" style="margin-left: 10px; font-size: 10px;">
+              Повторить
+            </button>
+          </span>
+          <span v-else style="color: orange;">
             🔌 Подключение к голосовому чату...
           </span>
         </div>
@@ -186,6 +192,7 @@ const isMicrophoneOn = ref<boolean>(false);
 const router = useAnimatedRouter();
 const isTouchDevide = ref<boolean>(true);
 const unbindCallbacks: any[] = [];
+const voiceError = ref<string | null>(null);
 
 const initializeGame = () => {
   const roomState = props.room.state as BunkerGameRoomState;
@@ -615,6 +622,11 @@ const topText = computed(() => {
   return data;
 });
 
+const retryVoiceConnection = () => {
+  voiceError.value = null;
+  requestVoiceToken();
+};
+
 const requestVoiceToken = () => {
   props.room?.send('requestVoiceToken');
 }
@@ -858,6 +870,12 @@ onMounted(() => {
     liveKitProvider.onError((error) => {
       Console.error('>>>>>> LiveKit error:', error);
       // Можешь показать уведомление пользователю
+      voiceError.value = error;
+
+      // Автоматически скрываем ошибку через 10 секунд
+      setTimeout(() => {
+        voiceError.value = null;
+      }, 10000);
     });
   }
 

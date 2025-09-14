@@ -214,6 +214,54 @@ export class LiveKitProvider implements ILiveKitProvider{
         this.clearAllCallbacks();
     }
 
+    private isMediaDevicesSupported(): boolean {
+        return !!(navigator &&
+            navigator.mediaDevices &&
+            navigator.mediaDevices.getUserMedia);
+    }
+
+    private async requestMicrophonePermission(): Promise<void> {
+        try {
+            // Предварительный запрос разрешения на доступ к микрофону
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            // Сразу останавливаем, это только для получения разрешения
+            stream.getTracks().forEach(track => track.stop());
+            console.log('LiveKitProvider: Microphone permission granted');
+        } catch (error) {
+            console.error('LiveKitProvider: Microphone permission denied:', error);
+            throw new Error('Microphone access denied. Please allow microphone access in browser settings.');
+        }
+    }
+
+    private getOptimizedAudioOptions() {
+        // Определяем настройки аудио в зависимости от устройства
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+        if (isIOS) {
+            // Для iOS используем минимальные настройки
+            return {
+                echoCancellation: true,
+                noiseSuppression: false, // Может вызывать проблемы на iOS
+                autoGainControl: false,  // Может вызывать проблемы на iOS
+            };
+        } else if (isMobile) {
+            // Для других мобильных устройств
+            return {
+                echoCancellation: true,
+                noiseSuppression: true,
+                autoGainControl: false,
+            };
+        } else {
+            // Для десктопа полные настройки
+            return {
+                autoGainControl: true,
+                echoCancellation: true,
+                noiseSuppression: true,
+            };
+        }
+    }
+
     // Private methods
     private async createLocalAudioTrack(): Promise<void> {
         try {
@@ -221,17 +269,46 @@ export class LiveKitProvider implements ILiveKitProvider{
                 return; // Трек уже создан
             }
 
-            this.localAudioTrack = await createLocalAudioTrack({
-                autoGainControl: true,
-                echoCancellation: true,
-                noiseSuppression: true,
-            });
+            // Проверяем поддержку медиа API
+            if (!this.isMediaDevicesSupported()) {
+                throw new Error('MediaDevices API not supported on this device');
+            }
 
-            console.log('LiveKitProvider: Local audio track created');
+            // Запрашиваем разрешения на микрофон с fallback для мобильных устройств
+            await this.requestMicrophonePermission();
+
+            console.log('LiveKitProvider: Creating local audio track...');
+
+            // Создаем трек с настройками, оптимизированными для мобильных устройств
+            const audioOptions = this.getOptimizedAudioOptions();
+            this.localAudioTrack = await createLocalAudioTrack(audioOptions);
+
+            console.log('LiveKitProvider: Local audio track created successfully');
         } catch (error) {
             const errorMessage = `Failed to create audio track: ${error instanceof Error ? error.message : 'Unknown error'}`;
-            console.error('LiveKitProvider:', errorMessage);
+            console.error('LiveKitProvider:', errorMessage, error);
             this.emitError(errorMessage);
+
+            // Попытка создать простой трек без дополнительных опций
+            await this.createFallbackAudioTrack();
+        }
+    }
+
+    private async createFallbackAudioTrack(): Promise<void> {
+        try {
+            console.log('LiveKitProvider: Trying fallback audio track creation...');
+
+            // Создаем максимально простой трек без дополнительных опций
+            this.localAudioTrack = await createLocalAudioTrack({
+                echoCancellation: false,
+                noiseSuppression: false,
+                autoGainControl: false,
+            });
+
+            console.log('LiveKitProvider: Fallback audio track created');
+        } catch (fallbackError) {
+            console.error('LiveKitProvider: Fallback audio track creation also failed:', fallbackError);
+            throw fallbackError;
         }
     }
 
