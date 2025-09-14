@@ -83,7 +83,10 @@ export class LiveKitProvider implements ILiveKitProvider{
             // Обрабатываем отложенные операции
             await this.processPendingOperations(); // Добавь эту строку
 
-            setTimeout(() => this.diagnoseAudioIssues(), 2000);
+            setTimeout(() => {
+                this.diagnoseAudioIssues();
+                this.diagnoseIncomingAudio();
+            }, 2000);
 
             return true;
         } catch (error) {
@@ -399,6 +402,46 @@ export class LiveKitProvider implements ILiveKitProvider{
         }
     }
 
+    private diagnoseIncomingAudio(): void {
+        console.log('>>> LiveKit >>> LiveKitProvider: Diagnosing incoming audio...');
+
+        if (!this.room) {
+            console.log('>>> LiveKit >>> No room available');
+            return;
+        }
+
+        const remoteParticipants = Array.from(this.room.remoteParticipants.values());
+        console.log(`>>> LiveKit >>> Found ${remoteParticipants.length} remote participants`);
+
+        remoteParticipants.forEach((participant) => {
+            console.log(`>>> LiveKit >>> Participant ${participant.identity}:`);
+            participant.audioTrackPublications.forEach((pub) => {
+                console.log(`>>> LiveKit >>>   Audio track: ${pub.trackName}`, {
+                    subscribed: pub.isSubscribed,
+                    enabled: pub.isEnabled,
+                    muted: pub.isMuted,
+                    hasTrack: !!pub.track
+                });
+            });
+        });
+
+        // Проверяем созданные аудио элементы
+        const container = document.getElementById('livekit-audio-container');
+        if (container) {
+            const audioElements = container.querySelectorAll('audio');
+            console.log(`>>> LiveKit >>> Found ${audioElements.length} audio elements in container`);
+            audioElements.forEach((audio, index) => {
+                console.log(`>>> LiveKit >>> Audio element ${index}:`, {
+                    paused: audio.paused,
+                    volume: audio.volume,
+                    muted: audio.muted,
+                    readyState: audio.readyState,
+                    currentTime: audio.currentTime
+                });
+            });
+        }
+    }
+
     private setupRoomEventListeners(): void {
         if (!this.room) return;
 
@@ -410,18 +453,36 @@ export class LiveKitProvider implements ILiveKitProvider{
             this.emitConnectionStateChanged();
             this.emitParticipantJoined(participant);
 
-            // Подписываемся на аудиотреки участника
+            // Обрабатываем уже существующие треки
             participant.audioTrackPublications.forEach((publication) => {
+                console.log(`>>> LiveKit >>> Found existing audio publication from ${participant.identity}:`, {
+                    trackName: publication.trackName,
+                    subscribed: publication.isSubscribed,
+                    enabled: publication.isEnabled,
+                    muted: publication.isMuted
+                });
+
                 if (publication.track) {
                     this.handleRemoteAudioTrack(publication.track as RemoteAudioTrack, participant);
                 }
             });
 
             // Слушаем новые треки
-            participant.on('trackSubscribed', (track) => {
+            participant.on('trackSubscribed', (track, publication) => {
+                console.log(`>>> LiveKit >>> New track subscribed from ${participant.identity}:`, {
+                    kind: track.kind,
+                    trackName: publication.trackName,
+                    enabled: publication.isEnabled
+                });
+
                 if (track.kind === Track.Kind.Audio) {
                     this.handleRemoteAudioTrack(track as RemoteAudioTrack, participant);
                 }
+            });
+
+            // Слушаем события треков
+            participant.on('trackUnsubscribed', (track, publication) => {
+                console.log(`>>> LiveKit >>> Track unsubscribed from ${participant.identity}`);
             });
         });
 
@@ -460,12 +521,38 @@ export class LiveKitProvider implements ILiveKitProvider{
     }
 
     private handleRemoteAudioTrack(track: RemoteAudioTrack, participant: Participant): void {
-        console.log(`LiveKitProvider: Handling remote audio from ${participant.identity}`);
+        console.log(`>>> LiveKit >>> LiveKitProvider: Handling remote audio from ${participant.identity}`);
+        console.log('>>> LiveKit >>> Remote track details:', {
+            kind: track.kind,
+            sid: track.sid,
+            enabled: track.mediaStreamTrack.enabled,
+            readyState: track.mediaStreamTrack.readyState,
+            muted: track.mediaStreamTrack.muted
+        });
 
         const audioElement = track.attach() as HTMLAudioElement;
         audioElement.autoplay = true;
-        // Правильная типизация для playsInline
-        (audioElement as any).playsInline = true;
+        (audioElement as any).playsInline = true; // Исправляем типизацию
+        audioElement.volume = 1.0; // Максимальная громкость
+
+        console.log('>>> LiveKit >>> Audio element created:', {
+            autoplay: audioElement.autoplay,
+            volume: audioElement.volume,
+            muted: audioElement.muted
+        });
+
+        // Принудительно запускаем воспроизведение (для мобильных браузеров)
+        audioElement.play().then(() => {
+            console.log(`>>> LiveKit >>> Audio playback started for ${participant.identity}`);
+        }).catch((error) => {
+            console.error(`>>> LiveKit >>>  to start audio playback for ${participant.identity}:`, error);
+            // Пробуем повторно через секунду
+            setTimeout(() => {
+                audioElement.play().catch(e =>
+                    console.error('>>> LiveKit >>> Retry audio play failed:', e)
+                );
+            }, 1000);
+        });
 
         // Добавляем в скрытый контейнер в DOM
         const container = this.getOrCreateAudioContainer();
@@ -473,6 +560,7 @@ export class LiveKitProvider implements ILiveKitProvider{
 
         // Удаляем при завершении трека
         track.on('ended', () => {
+            console.log(`>>> LiveKit >>> Remote audio track ended for ${participant.identity}`);
             audioElement.remove();
         });
     }
@@ -483,7 +571,10 @@ export class LiveKitProvider implements ILiveKitProvider{
             container = document.createElement('div');
             container.id = 'livekit-audio-container';
             container.style.display = 'none';
+            container.style.position = 'absolute';
+            container.style.top = '-9999px'; // Прячем, но оставляем в DOM
             document.body.appendChild(container);
+            console.log('>>> LiveKit >>> LiveKitProvider: Audio container created');
         }
         return container;
     }
