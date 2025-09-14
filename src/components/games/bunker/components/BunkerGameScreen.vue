@@ -64,6 +64,15 @@ const subText = computed(() => {
     if(props.stage == 'card_reveal' && (props.round || 0) > 0){
       return 'Раунд ' + props.round;
     }
+    if(props.stage == 'introduction' && (props.round || 0) == 0){
+      return 'Знакомство';
+    }
+    if(props.stage == 'results' && (props.timer || 0) > 0){
+      return 'Результаты';
+    }
+  }
+  if(props.roomStatus == 'finished'){
+    return 'Конец игры'
   }
 
   return '';

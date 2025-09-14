@@ -47,6 +47,9 @@
           Договорил <UiIcon class="inline-icon microphone-off" name="microphone-off"/>
         </BunkerButton>
       </div>
+      <div style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);" v-if="currentSpeakerId == id && (cardRevealTimeRemaining || 0) > 1 && (cardRevealTimeRemaining || 0) < 10">
+        <vue3-lottie animationLink="/assets/lottie/send-card-help.json" :height="100" :width="100" :auto-play="true" :loop="true"/>
+      </div>
     </div>
 
     <div class="bunker__controls"> <!-- todo: передавать вкл/выкл микрофон -->
@@ -99,6 +102,7 @@ import {ArraySchema} from "@colyseus/schema";
 import {CardCustomData} from "@/components/games/bunker/schemas/schemas/CardCustomData.ts";
 import BunkerButton from "@/components/games/bunker/components/BunkerButton.vue";
 import UiIcon from "@/components/common/icons/UiIcon.vue";
+import {Vue3Lottie} from 'vue3-lottie';
 
 const props = defineProps<{
   room: Room
