@@ -47,8 +47,8 @@
           Договорил <UiIcon class="inline-icon microphone-off" name="microphone-off"/>
         </BunkerButton>
       </div>
-      <div style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);" v-if="currentSpeakerId == id && (cardRevealTimeRemaining || 0) > 1 && (cardRevealTimeRemaining || 0) < 10">
-        <vue3-lottie animationLink="/assets/lottie/send-card-help.json" :height="100" :width="100" :auto-play="true" :loop="true"/>
+      <div style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);" v-if="currentSpeakerId == id && (cardRevealTimeRemaining || 0) > 1 && (cardRevealTimeRemaining || 0) < 12">
+        <vue3-lottie animationLink="/assets/lottie/send-card-help.json" :height="200" :width="200" :auto-play="true" :loop="true"/>
       </div>
     </div>
 
