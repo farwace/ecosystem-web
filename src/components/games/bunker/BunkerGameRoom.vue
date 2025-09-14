@@ -47,9 +47,11 @@
           Договорил <UiIcon class="inline-icon microphone-off" name="microphone-off"/>
         </BunkerButton>
       </div>
-      <div style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);" v-if="currentSpeakerId == id && (cardRevealTimeRemaining || 0) > 1 && (cardRevealTimeRemaining || 0) < 12">
-        <vue3-lottie animationLink="/assets/lottie/send-card-help.json" :height="200" :width="200" :auto-play="true" :loop="true"/>
-      </div>
+      <transition name="opacity">
+        <div style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);" v-if="currentSpeakerId == id && (cardRevealTimeRemaining || 0) > 1 && (cardRevealTimeRemaining || 0) < 12">
+          <vue3-lottie animationLink="/assets/lottie/send-card-help.json" :height="200" :width="200" :auto-play="true" :loop="true"/>
+        </div>
+      </transition>
     </div>
 
     <div class="bunker__controls"> <!-- todo: передавать вкл/выкл микрофон -->
@@ -611,6 +613,7 @@ const onPlayersPlusClick = () => {
 const setGameStubs = () => {
   currentSpeakerId.value = 0;
   currentRound.value = 0;
+  cardRevealTimeRemaining.value = 0;
   gameStage.value = 'voting';
   isVoted.value = true;
   voteResults.value = {
