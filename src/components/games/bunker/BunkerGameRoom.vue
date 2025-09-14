@@ -54,6 +54,25 @@
           <vue3-lottie :animationLink="isTouchDevide ? '/assets/lottie/send-card-help-mobile.json' : '/assets/lottie/send-card-help-desktop.json'" :height="180" :width="180" :auto-play="true" :loop="true"/>
         </div>
       </transition>
+
+      <div style="position: absolute; bottom: 0; text-align: center; width: 100%">
+        <!-- Индикатор состояния голосового чата -->
+        <div v-if="liveKitProvider" style="margin-bottom: 10px; font-size: 12px;">
+          <span v-if="liveKitProvider.isConnectedToRoom()" style="color: green;">
+            🎤 Голосовой чат подключен
+          </span>
+              <span v-else style="color: orange;">
+            🔌 Подключение к голосовому чату...
+          </span>
+        </div>
+        <div v-if="canIToggleMicrophone">
+          <label>
+            <input type="checkbox" v-model="isMicrophoneOn">
+            <span v-if="isMicrophoneOn">MICROPHONE ON</span>
+            <span v-else>MICROPHONE OFF</span>
+          </label>
+        </div>
+      </div>
     </div>
 
     <div class="bunker__controls"> <!-- todo: передавать вкл/выкл микрофон -->
@@ -85,7 +104,18 @@
 </template>
 <script lang="ts" setup>
 import {getStateCallbacks, type Room} from "colyseus.js";
-import {computed, inject, nextTick, onBeforeUnmount, onMounted, reactive, ref, shallowRef, watch} from "vue";
+import {
+  computed,
+  inject,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  onUnmounted,
+  reactive,
+  ref,
+  shallowRef,
+  watch
+} from "vue";
 import type {TGameStage, TPlayer, TRoomStatus, TScenario} from "@/components/games/bunker/types.ts";
 import type {BunkerGameRoomState} from "@/components/games/bunker/schemas/schemas/BunkerGameRoomState.ts";
 import {Player} from "@/components/games/bunker/schemas/schemas/Player.ts";
@@ -110,6 +140,8 @@ import {Vue3Lottie} from 'vue3-lottie';
 import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
 import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
 import {CutString} from "@/classes/utils/CutString.ts";
+import type {ILiveKitProvider} from "@/modules/LiveKitModule/Interfaces/ILiveKitProvider.ts";
+import {LiveKitSymbol} from "@/modules/LiveKitModule/symbols.ts";
 
 const props = defineProps<{
   room: Room
@@ -117,6 +149,7 @@ const props = defineProps<{
 
 const notificationsProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
 const bridgeProvider: IPlatformEvents | undefined = inject(PlatformEventsSymbol);
+const liveKitProvider: ILiveKitProvider | undefined = inject(LiveKitSymbol);
 
 const {id} = storeToRefs(ecosystemStore());
 
@@ -146,6 +179,9 @@ const canAbstainThisRound = ref<boolean>(false);
 const canSendCard = ref<boolean>(false);
 const isVoted = ref<boolean>(false);
 const voteResults = ref<{[key:string]: string[]}>();
+const canISpeak = ref<boolean>(false);
+const canIToggleMicrophone = ref<boolean>(false);
+const isMicrophoneOn = ref<boolean>(false);
 
 const router = useAnimatedRouter();
 const isTouchDevide = ref<boolean>(true);
@@ -192,11 +228,11 @@ const initializeGame = () => {
     turnTimeLimit.value = currentValue;
   }));
   unbindCallbacks.push($(props.room.state).listen("turnTimeRemaining", (currentValue, previousValue) => {
-    Console.log('>>> currentTimeRemaining', currentValue, previousValue);
+    //Console.log('>>> currentTimeRemaining', currentValue, previousValue);
     turnTimeRemaining.value = currentValue;
   }));
   unbindCallbacks.push($(props.room.state).listen("cardRevealTimeRemaining", (currentValue, previousValue) => {
-    Console.log('>>> cardRevealTimeRemaining', currentValue, previousValue);
+    //Console.log('>>> cardRevealTimeRemaining', currentValue, previousValue);
     cardRevealTimeRemaining.value = currentValue;
   }));
 
@@ -267,6 +303,60 @@ const initializeGame = () => {
   // activeCardTypes.value = roomState.activeCardTypes;
   // eliminatedPlayers.value = roomState.eliminatedPlayers || [];
 
+
+  props.room?.onMessage?.('voiceToken', async (message: {canSpeak: boolean, roomName: string, token: string}) => {
+    Console.log('>>> VOICE_TOKEN <<<<<', message);
+
+    if (!liveKitProvider) {
+      Console.error('LiveKit provider not available');
+      return;
+    }
+
+    const serverUrl = import.meta.env.VITE_LIVEKIT_URL;
+
+    // Подключаемся к голосовой комнате
+    const connected = await liveKitProvider.connectToVoiceRoom(message.token, serverUrl);
+
+    if (connected) {
+      Console.log('>>>>>> Successfully connected to voice room');
+      // Устанавливаем начальное состояние микрофона
+      if (message.canSpeak) {
+        await liveKitProvider.enableMicrophone();
+        isMicrophoneOn.value = true;
+      }
+    }
+  });
+
+  props.room?.onMessage?.('voiceStatusUpdate', async (message: {currentSpeaker: string, voiceStatus: {[playerId: string]: boolean}}) => {
+    Console.log('>>> VOICE_STATUS_UPDATE <<<<<', message);
+
+    // Твоя существующая логика
+    if(currentSpeakerId.value == ""){
+      canIToggleMicrophone.value = true;
+    }
+    if(currentSpeakerId.value == currentPlayer.value?.id){
+      canIToggleMicrophone.value = false;
+      canISpeak.value = true;
+    }
+
+    const myPlayerId = currentPlayer.value?.id;
+    Object.keys(message?.voiceStatus || {}).forEach((playerId) => {
+      if(currentPlayer.value?.id == (+playerId)){
+        canISpeak.value = message.voiceStatus[playerId];
+
+        // Автоматически управляем микрофоном через LiveKit
+        if (liveKitProvider) {
+          if (canISpeak.value && !liveKitProvider.isMicrophoneActive()) {
+            liveKitProvider.enableMicrophone();
+            isMicrophoneOn.value = true;
+          } else if (!canISpeak.value && liveKitProvider.isMicrophoneActive()) {
+            liveKitProvider.disableMicrophone();
+            isMicrophoneOn.value = false;
+          }
+        }
+      }
+    });
+  });
 
   props.room?.onMessage?.('error', (message: string) => {
     notificationsProvider?.addNotification({
@@ -402,7 +492,7 @@ const showGameResultsPopup = (won: boolean, player?: TPlayer) => {
 
 
 const testAction = () => {
-  showGameResultsPopup(false, players.value[1]);
+  showGameResultsPopup(true, players.value[1]);
   return;
   const userCard = currentPlayer.value?.cards[1];
   if(userCard){
@@ -524,6 +614,10 @@ const topText = computed(() => {
   data.text = undefined;
   return data;
 });
+
+const requestVoiceToken = () => {
+  props.room?.send('requestVoiceToken');
+}
 
 const onSendCard = (cardId: number | string) => {
   props.room?.send('revealCard', (+cardId).toString());
@@ -700,6 +794,16 @@ watch(currentSpeakerId, (neoVal) => {
   }
 });
 
+watch(isMicrophoneOn, async (newValue: boolean) => {
+  if (!liveKitProvider || !canIToggleMicrophone.value) return;
+
+  if (newValue) {
+    await liveKitProvider.enableMicrophone();
+  } else {
+    await liveKitProvider.disableMicrophone();
+  }
+});
+
 onMounted(() => {
   voteResults.value = {};
   places.value = {
@@ -733,6 +837,30 @@ onMounted(() => {
     isTouchDevide.value = false;
   }
 
+  // Добавляем слушатели LiveKit
+  if (liveKitProvider) {
+    // Слушаем изменения состояния подключения
+    liveKitProvider.onConnectionStateChanged((state) => {
+      Console.log('>>>>>> Voice connection state changed:', state);
+      // Можешь добавить реактивные переменные для отображения состояния
+    });
+
+    // Слушаем участников
+    liveKitProvider.onParticipantJoined((participant) => {
+      Console.log('>>>>>> Participant joined voice:', participant.identity);
+    });
+
+    liveKitProvider.onParticipantLeft((participant) => {
+      Console.log('>>>>>> Participant left voice:', participant.identity);
+    });
+
+    // Слушаем ошибки
+    liveKitProvider.onError((error) => {
+      Console.error('>>>>>> LiveKit error:', error);
+      // Можешь показать уведомление пользователю
+    });
+  }
+
 });
 
 onBeforeUnmount(() => {
@@ -741,6 +869,12 @@ onBeforeUnmount(() => {
   }
   props.room.removeAllListeners();
   props.room.leave();
+});
+
+onUnmounted(async() => {
+  if(liveKitProvider){
+    await liveKitProvider.disconnectFromVoiceRoom();
+  }
 })
 
 </script>

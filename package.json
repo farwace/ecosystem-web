@@ -20,6 +20,7 @@
     "inversify": "^7.6.1",
     "izitoast": "^1.4.0",
     "laravel-echo": "^2.1.6",
+    "livekit-client": "^2.15.7",
     "pinia": "^3.0.3",
     "pusher-js": "^8.4.0",
     "reflect-metadata": "^0.2.2",
