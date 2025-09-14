@@ -142,7 +142,7 @@ const commonParams = {
 }
 
 watch(notifications, async (neoVal:{[key:string]:TNotification}) => {
-  const isBigScreen = window.innerWidth >= 768
+  const isBigScreen = window.innerWidth >= 629
   const position = isBigScreen ? 'topRight' : 'topCenter'
   const transitionIn = 'fadeInLeft';
   const transitionOut = 'fadeOutRight';
@@ -161,6 +161,18 @@ watch(notifications, async (neoVal:{[key:string]:TNotification}) => {
       notificationLayer?.setNotificationShown(key);
 
       let backgroundColor = getNotificationBackgroundColor(neoVal[key]['type']);
+      const customParams:any = {};
+
+
+      if(neoVal?.[key]?.['type'] == 'game-info'){
+        customParams.position = 'topLeft';
+        customParams.class = commonParams.class + ' game-info-notification';
+        customParams.transitionInMobile = 'fadeInLeft';
+        customParams.transitionOutMobile = 'fadeOutRight';
+        if(!neoVal[key]['timeout']){
+          customParams.timeout = 3000;
+        }
+      }
 
       /*@ts-ignore*/
       iziToast.show(Object.assign(commonParams, {
@@ -174,7 +186,7 @@ watch(notifications, async (neoVal:{[key:string]:TNotification}) => {
         onClosed: () => {
           notificationLayer?.removeNotification(key)
         },
-      }))
+      }, customParams))
     }
   })
 }, {
@@ -189,6 +201,8 @@ const getNotificationBackgroundColor = (eType?: TNotification['type']) => {
       return 'rgba(107, 211, 144, 0.80)';
     case 'info':
       return 'rgba(211,206,107,0.8)';
+    case 'game-info':
+      return 'rgba(0,0,0,0.3)';
     default:
       return 'rgba(255, 0, 0, 0.75)';
   }

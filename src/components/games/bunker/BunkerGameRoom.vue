@@ -107,6 +107,7 @@ import UiIcon from "@/components/common/icons/UiIcon.vue";
 import {Vue3Lottie} from 'vue3-lottie';
 import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
 import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
+import {CutString} from "@/classes/utils/CutString.ts";
 
 const props = defineProps<{
   room: Room
@@ -271,19 +272,19 @@ const initializeGame = () => {
   props.room?.onMessage?.('playerConnected', (player: Player) => {
     notificationsProvider?.addNotification({
       type: 'game-info',
-      message: 'Игрок ' + (player?.name ? (player.name + ' ') : '') + ' присоединился к комнате'
+      message: CutString((player?.name ? (player.name + ' ') : ''), 15) + ' присоединился к комнате'
     })
   });
   props.room?.onMessage?.('playerReconnected', (player: Player) => {
     notificationsProvider?.addNotification({
       type: 'game-info',
-      message: 'Игрок ' + (player?.name ? (player.name + ' ') : '') + ' вернулся'
+      message: CutString((player?.name ? (player.name + ' ') : ''), 15) + ' вернулся'
     })
   });
   props.room?.onMessage?.('playerLeft', (player: Player) => {
     notificationsProvider?.addNotification({
       type: 'game-info',
-      message: 'Игрок ' + (player?.name ? (player.name + ' ') : '') + ' вышел из комнаты'
+      message: CutString((player?.name ? (player.name + ' ') : ''), 15) + ' вышел из комнаты'
     })
   });
   props.room?.onMessage?.('gameInit', () => {
@@ -303,7 +304,7 @@ const initializeGame = () => {
   props.room?.onMessage?.('playerKicked', (player: Player) => {
     notificationsProvider?.addNotification({
       type: 'game-info',
-      message: 'Игрок ' + (player?.name ? (player.name + ' ') : '') + ' исключен из комнаты'
+      message: CutString((player?.name ? (player.name + ' ') : ''), 15) + ' исключен из комнаты'
     })
   });
 
@@ -317,6 +318,7 @@ const initializeGame = () => {
     })
     router.replace('/');
   });
+
   props.room?.onMessage?.('leaderChanged', (message: any) => {
     notificationsProvider?.addNotification({
       type: 'game-info',
@@ -325,8 +327,7 @@ const initializeGame = () => {
   });
 
   props.room?.onMessage?.('playerTurnStarted', ( message: { playerId: string, timeRemaining: number, cardRevealTime: number } ) => {
-    //todo: обработка события когда ход перешел к другому игроку
-    Console.log('>>> PLAYER TURN STARTED', message);
+    //todo: звуковое уведомление что игрок сменился
     notificationsProvider?.removePopup?.('game-bunker-revealed-card-popup');
     notificationsProvider?.removePopup?.('game-scenario-auto');
   })
@@ -356,12 +357,12 @@ const initializeGame = () => {
 
   props.room?.onMessage?.('votingStarted', (message: any) => {
     //todo: начало голосования
-    Console.log('>>> VOTING STARTED', message);
     notificationsProvider?.removePopup?.('game-bunker-revealed-card-popup');
   });
 
   props.room?.onMessage?.('votingResults', (message: {votes: any, eliminatedPlayerId: any, round: any}) => {
     //todo: отображение, что игрок не попал в бункер если действительно есть тот, кого выкинули
+
     Console.log('>>> VOTING RESULTS', message);
   });
 

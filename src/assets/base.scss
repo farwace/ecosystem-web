@@ -105,6 +105,38 @@ $themes: (
   text-align: center;
 }
 
+.iziToast-wrapper{
+  .iziToast{
+    &.game-info-notification{
+      min-height: unset;
+      .iziToast-texts{
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      >.iziToast-body .iziToast-texts{
+        margin-top: 2px;
+      }
+      >.iziToast-body .iziToast-message{
+        margin-bottom: 2px;
+      }
+      >.iziToast-body{
+        min-height: unset;
+      }
+
+
+      >.iziToast-body .iziToast-message, .iziToast>.iziToast-body .iziToast-title{
+        font-size: 12px;
+        line-height: 100%;
+        white-space: nowrap;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+}
+
 @media(max-width: 768px){
   .iziToast-wrapper{
     &.iziToast-wrapper-topCenter{
