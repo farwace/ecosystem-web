@@ -74,6 +74,8 @@ export class LiveKitProvider implements ILiveKitProvider{
             // Создаем локальный аудиотрек
             await this.createLocalAudioTrack();
 
+            setTimeout(() => this.diagnoseAudioIssues(), 2000);
+
             return true;
         } catch (error) {
             const errorMessage = `Connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`;
@@ -114,11 +116,24 @@ export class LiveKitProvider implements ILiveKitProvider{
         }
 
         try {
+            console.log('LiveKitProvider: Enabling microphone...');
+
+            // Сначала размутим трек
             await this.localAudioTrack.unmute();
-            await this.room.localParticipant.publishTrack(this.localAudioTrack);
+
+            // Проверяем, опубликован ли уже аудиотрек
+            const existingPublication = this.room.localParticipant.getTrackPublication(Track.Source.Microphone);
+            if (!existingPublication) {
+                console.log('Publishing audio track...');
+                await this.room.localParticipant.publishTrack(this.localAudioTrack);
+            }
 
             this.updateConnectionState({ isMicrophoneEnabled: true });
-            console.log('LiveKitProvider: Microphone enabled');
+            console.log('LiveKitProvider: Microphone enabled successfully');
+
+            // Диагностика после включения
+            await this.diagnoseAudioIssues();
+
             return true;
         } catch (error) {
             const errorMessage = `Failed to enable microphone: ${error instanceof Error ? error.message : 'Unknown error'}`;
@@ -135,11 +150,13 @@ export class LiveKitProvider implements ILiveKitProvider{
         }
 
         try {
-            await this.room.localParticipant.unpublishTrack(this.localAudioTrack);
+            console.log('LiveKitProvider: Disabling microphone...');
+
+            // Правильный способ - использовать mute() на самом треке
             await this.localAudioTrack.mute();
 
             this.updateConnectionState({ isMicrophoneEnabled: false });
-            console.log('LiveKitProvider: Microphone disabled');
+            console.log('LiveKitProvider: Microphone disabled successfully');
             return true;
         } catch (error) {
             const errorMessage = `Failed to disable microphone: ${error instanceof Error ? error.message : 'Unknown error'}`;
@@ -239,11 +256,14 @@ export class LiveKitProvider implements ILiveKitProvider{
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
         if (isIOS) {
-            // Для iOS используем минимальные настройки
+            // Для iOS используем настройки, которые точно работают
             return {
                 echoCancellation: true,
-                noiseSuppression: false, // Может вызывать проблемы на iOS
-                autoGainControl: false,  // Может вызывать проблемы на iOS
+                noiseSuppression: false,
+                autoGainControl: false,
+                // Добавляем явные ограничения для iOS
+                sampleRate: 48000,
+                channelCount: 1,
             };
         } else if (isMobile) {
             // Для других мобильных устройств
@@ -251,6 +271,8 @@ export class LiveKitProvider implements ILiveKitProvider{
                 echoCancellation: true,
                 noiseSuppression: true,
                 autoGainControl: false,
+                sampleRate: 48000,
+                channelCount: 1,
             };
         } else {
             // Для десктопа полные настройки
@@ -258,6 +280,8 @@ export class LiveKitProvider implements ILiveKitProvider{
                 autoGainControl: true,
                 echoCancellation: true,
                 noiseSuppression: true,
+                sampleRate: 48000,
+                channelCount: 1,
             };
         }
     }
@@ -309,6 +333,33 @@ export class LiveKitProvider implements ILiveKitProvider{
         } catch (fallbackError) {
             console.error('LiveKitProvider: Fallback audio track creation also failed:', fallbackError);
             throw fallbackError;
+        }
+    }
+
+    private async diagnoseAudioIssues(): Promise<void> {
+        console.log('LiveKitProvider: Diagnosing audio issues...');
+
+        if (!this.localAudioTrack) {
+            console.log('No local audio track available');
+            return;
+        }
+
+        // Проверяем состояние трека
+        console.log('Track enabled:', this.localAudioTrack.mediaStreamTrack.enabled);
+        console.log('Track muted:', this.localAudioTrack.isMuted);
+        console.log('Track readyState:', this.localAudioTrack.mediaStreamTrack.readyState);
+
+        // Проверяем настройки трека
+        const settings = this.localAudioTrack.mediaStreamTrack.getSettings();
+        console.log('Track settings:', settings);
+
+        // Проверяем, опубликован ли трек - используем правильный способ
+        if (this.room) {
+            const publication = this.room.localParticipant.getTrackPublication(Track.Source.Microphone);
+            console.log('Track published:', !!publication);
+            if (publication) {
+                console.log('Publication muted:', publication.isMuted);
+            }
         }
     }
 
