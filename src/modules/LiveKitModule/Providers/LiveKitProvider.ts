@@ -14,9 +14,16 @@ import {
 } from 'livekit-client';
 
 import {injectable, inject} from "inversify";
+import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
+import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
 
 @injectable()
 export class LiveKitProvider implements ILiveKitProvider{
+
+    constructor(
+        @inject(NotificationsSymbol)
+        private notificationsProvider: INotificationsProvider
+    ) {}
 
     private room: Room | null = null;
     private localAudioTrack: LocalAudioTrack | null = null;
@@ -55,7 +62,7 @@ export class LiveKitProvider implements ILiveKitProvider{
 
             const roomOptions: RoomOptions = {
                 adaptiveStream: true,
-                dynacast: true,
+                dynacast: false,
                 audioCaptureDefaults: {
                     autoGainControl: true,
                     echoCancellation: true,
@@ -76,8 +83,8 @@ export class LiveKitProvider implements ILiveKitProvider{
             console.log('>>> LiveKit >>> LiveKitProvider: Successfully connected to room');
 
             // Создаем локальный аудиотрек
-            await this.createLocalAudioTrack();
-
+            //await this.createLocalAudioTrack();
+            this.showEnableVoicePopup();
             this.isInitializing = false; // Добавь эту строку
 
             // Обрабатываем отложенные операции
@@ -531,72 +538,30 @@ export class LiveKitProvider implements ILiveKitProvider{
         });
 
         const audioElement = track.attach() as HTMLAudioElement;
-        audioElement.autoplay = true;
+        audioElement.autoplay = false; // autoplay убираем, Safari его блокирует
         (audioElement as any).playsInline = true;
         audioElement.volume = 1.0;
+        audioElement.muted = false;
 
-        // Принудительно размучиваем трек на уровне MediaStreamTrack
+        // Принудительно размучиваем сам MediaStreamTrack
         if (track.mediaStreamTrack.muted) {
             console.log(`>>> LiveKit >>> Forcing unmute of remote track from ${participant.identity}`);
             track.mediaStreamTrack.enabled = true;
         }
 
-        console.log('>>> LiveKit >>> Audio element created:', {
+        console.log('>>> LiveKit >>> Audio element prepared:', {
             autoplay: audioElement.autoplay,
             volume: audioElement.volume,
             muted: audioElement.muted
         });
 
-        // Добавляем в DOM перед попыткой воспроизведения
+        // Добавляем элемент в скрытый контейнер
         const container = this.getOrCreateAudioContainer();
         container.appendChild(audioElement);
 
-        // Более агрессивная попытка воспроизведения
-        const tryPlay = async () => {
-            try {
-                console.log(`>>> LiveKit >>> Attempting to play audio from ${participant.identity}, readyState: ${audioElement.readyState}`);
-                await audioElement.play();
-                console.log(`>>> LiveKit >>> Audio playback started for ${participant.identity}`);
-            } catch (error) {
-                console.error(`>>> LiveKit >>> Failed to start audio playback for ${participant.identity}:`, error);
-
-                // Пробуем через короткий интервал
-                setTimeout(async () => {
-                    try {
-                        await audioElement.play();
-                        console.log(`>>> LiveKit >>> Retry successful for ${participant.identity}`);
-                    } catch (retryError) {
-                        console.error(`>>> LiveKit >>> Retry failed for ${participant.identity}:`, retryError);
-                    }
-                }, 500);
-            }
-        };
-
-        // Пробуем воспроизвести сразу
-        tryPlay();
-
-        // И также когда данные загрузятся
-        audioElement.addEventListener('canplay', () => {
-            console.log(`>>> LiveKit >>> Audio can play for ${participant.identity}`);
-            if (audioElement.paused) {
-                tryPlay();
-            }
-        });
-
-        audioElement.addEventListener('loadeddata', () => {
-            console.log(`>>> LiveKit >>> Audio data loaded for ${participant.identity}`);
-            if (audioElement.paused) {
-                tryPlay();
-            }
-        });
-
-        // Слушаем изменения состояния трека
-        track.mediaStreamTrack.addEventListener('unmute', () => {
-            console.log(`>>> LiveKit >>> Remote track unmuted for ${participant.identity}`);
-            if (audioElement.paused) {
-                tryPlay();
-            }
-        });
+        // ВАЖНО: не вызываем play() здесь.
+        // Воспроизведение будет инициировано в onSubmitUsingVoiceCallback()
+        // после того как пользователь нажмёт кнопку "Разрешить голос".
 
         track.on('ended', () => {
             console.log(`>>> LiveKit >>> Remote audio track ended for ${participant.identity}`);
@@ -669,5 +634,53 @@ export class LiveKitProvider implements ILiveKitProvider{
         this.onParticipantLeftCallbacks = [];
         this.onConnectionStateChangedCallbacks = [];
         this.onErrorCallbacks = [];
+    }
+
+    public onSubmitUsingVoiceCallback = async (): Promise<void> => {
+        console.log('>>> LiveKit >>> User confirmed voice usage');
+
+        try {
+            // Создать локальный трек (сразу после user gesture Safari даст доступ)
+            if (!this.localAudioTrack) {
+                await this.createLocalAudioTrack();
+            }
+
+            // Включить микрофон (опубликовать трек в комнату)
+            if (!this.connectionState.isMicrophoneEnabled) {
+                await this.enableMicrophone();
+            }
+
+            // 🔑 Теперь просто запускаем воспроизведение всех уже подготовленных <audio>
+            const container = document.getElementById('livekit-audio-container');
+            if (container) {
+                const audioElements = container.querySelectorAll('audio');
+                for (const audio of Array.from(audioElements)) {
+                    try {
+                        await (audio as HTMLAudioElement).play();
+                        console.log('>>> LiveKit >>> Remote audio playback started');
+                    } catch (err) {
+                        console.error('>>> LiveKit >>> Failed to play remote audio element', err);
+                    }
+                }
+            }
+
+            console.log('>>> LiveKit >>> Voice initialized successfully');
+        } catch (err) {
+            console.error('>>> LiveKit >>> Error in onSubmitUsingVoiceCallback', err);
+            this.emitError(
+                'Ошибка при инициализации голоса: ' +
+                (err instanceof Error ? err.message : String(err))
+            );
+        }
+    };
+
+    public showEnableVoicePopup = () => {
+        this.notificationsProvider.addPopup('show-enable-voice-popup', 'show-enable-voice-popup', {
+            modal: true,
+            title: 'Эта игра требует использование микрофона',
+            darkBg: true,
+            middle: true,
+            submitCallback: this.onSubmitUsingVoiceCallback,
+        })
     }
 }
