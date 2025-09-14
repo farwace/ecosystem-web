@@ -40,14 +40,14 @@ export class LiveKitProvider implements ILiveKitProvider{
 
     async connectToVoiceRoom(token: string, roomUrl: string): Promise<boolean> {
         if (this.connectionState.isConnecting || this.connectionState.isConnected) {
-            console.warn('Already connecting or connected to voice room');
+            console.warn('>>> LiveKit >>> Already connecting or connected to voice room');
             return false;
         }
 
         try {
             this.updateConnectionState({ isConnecting: true, connectionError: null });
 
-            console.log('LiveKitProvider: Connecting to room:', roomUrl);
+            console.log('>>> LiveKit >>> LiveKitProvider: Connecting to room:', roomUrl);
 
             const roomOptions: RoomOptions = {
                 adaptiveStream: true,
@@ -69,7 +69,7 @@ export class LiveKitProvider implements ILiveKitProvider{
                 isConnecting: false
             });
 
-            console.log('LiveKitProvider: Successfully connected to room');
+            console.log('>>> LiveKit >>> LiveKitProvider: Successfully connected to room');
 
             // Создаем локальный аудиотрек
             await this.createLocalAudioTrack();
@@ -79,7 +79,7 @@ export class LiveKitProvider implements ILiveKitProvider{
             return true;
         } catch (error) {
             const errorMessage = `Connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`;
-            console.error('LiveKitProvider:', errorMessage);
+            console.error('>>> LiveKit >>> LiveKitProvider:', errorMessage);
 
             this.updateConnectionState({
                 isConnecting: false,
@@ -92,14 +92,14 @@ export class LiveKitProvider implements ILiveKitProvider{
     }
 
     async disconnectFromVoiceRoom(): Promise<void> {
-        console.log('LiveKitProvider: Disconnecting from voice room');
+        console.log('>>> LiveKit >>> LiveKitProvider: Disconnecting from voice room');
 
         try {
             if (this.room) {
                 await this.room.disconnect();
             }
         } catch (error) {
-            console.error('LiveKitProvider: Error during disconnect:', error);
+            console.error('>>> LiveKit >>> LiveKitProvider: Error during disconnect:', error);
         } finally {
             await this.cleanup();
         }
@@ -111,12 +111,12 @@ export class LiveKitProvider implements ILiveKitProvider{
 
     async enableMicrophone(): Promise<boolean> {
         if (!this.room || !this.localAudioTrack) {
-            console.error('LiveKitProvider: Room or audio track not available');
+            console.error('>>> LiveKit >>> LiveKitProvider: Room or audio track not available');
             return false;
         }
 
         try {
-            console.log('LiveKitProvider: Enabling microphone...');
+            console.log('>>> LiveKit >>> LiveKitProvider: Enabling microphone...');
 
             // Сначала размутим трек
             await this.localAudioTrack.unmute();
@@ -124,12 +124,12 @@ export class LiveKitProvider implements ILiveKitProvider{
             // Проверяем, опубликован ли уже аудиотрек
             const existingPublication = this.room.localParticipant.getTrackPublication(Track.Source.Microphone);
             if (!existingPublication) {
-                console.log('Publishing audio track...');
+                console.log('>>> LiveKit >>> Publishing audio track...');
                 await this.room.localParticipant.publishTrack(this.localAudioTrack);
             }
 
             this.updateConnectionState({ isMicrophoneEnabled: true });
-            console.log('LiveKitProvider: Microphone enabled successfully');
+            console.log('>>> LiveKit >>> LiveKitProvider: Microphone enabled successfully');
 
             // Диагностика после включения
             await this.diagnoseAudioIssues();
@@ -137,7 +137,7 @@ export class LiveKitProvider implements ILiveKitProvider{
             return true;
         } catch (error) {
             const errorMessage = `Failed to enable microphone: ${error instanceof Error ? error.message : 'Unknown error'}`;
-            console.error('LiveKitProvider:', errorMessage);
+            console.error('>>> LiveKit >>> LiveKitProvider:', errorMessage);
             this.emitError(errorMessage);
             return false;
         }
@@ -145,22 +145,22 @@ export class LiveKitProvider implements ILiveKitProvider{
 
     async disableMicrophone(): Promise<boolean> {
         if (!this.room || !this.localAudioTrack) {
-            console.error('LiveKitProvider: Room or audio track not available');
+            console.error('>>> LiveKit >>> LiveKitProvider: Room or audio track not available');
             return false;
         }
 
         try {
-            console.log('LiveKitProvider: Disabling microphone...');
+            console.log('>>> LiveKit >>> LiveKitProvider: Disabling microphone...');
 
             // Правильный способ - использовать mute() на самом треке
             await this.localAudioTrack.mute();
 
             this.updateConnectionState({ isMicrophoneEnabled: false });
-            console.log('LiveKitProvider: Microphone disabled successfully');
+            console.log('>>> LiveKit >>> LiveKitProvider: Microphone disabled successfully');
             return true;
         } catch (error) {
             const errorMessage = `Failed to disable microphone: ${error instanceof Error ? error.message : 'Unknown error'}`;
-            console.error('LiveKitProvider:', errorMessage);
+            console.error('>>> LiveKit >>> LiveKitProvider:', errorMessage);
             this.emitError(errorMessage);
             return false;
         }
@@ -207,7 +207,7 @@ export class LiveKitProvider implements ILiveKitProvider{
     }
 
     async cleanup(): Promise<void> {
-        console.log('LiveKitProvider: Cleaning up resources');
+        console.log('>>> LiveKit >>> LiveKitProvider: Cleaning up resources');
 
         // Остановим локальный трек
         if (this.localAudioTrack) {
@@ -243,9 +243,9 @@ export class LiveKitProvider implements ILiveKitProvider{
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             // Сразу останавливаем, это только для получения разрешения
             stream.getTracks().forEach(track => track.stop());
-            console.log('LiveKitProvider: Microphone permission granted');
+            console.log('>>> LiveKit >>> LiveKitProvider: Microphone permission granted');
         } catch (error) {
-            console.error('LiveKitProvider: Microphone permission denied:', error);
+            console.error('>>> LiveKit >>> LiveKitProvider: Microphone permission denied:', error);
             throw new Error('Microphone access denied. Please allow microphone access in browser settings.');
         }
     }
@@ -301,16 +301,16 @@ export class LiveKitProvider implements ILiveKitProvider{
             // Запрашиваем разрешения на микрофон с fallback для мобильных устройств
             await this.requestMicrophonePermission();
 
-            console.log('LiveKitProvider: Creating local audio track...');
+            console.log('>>> LiveKit >>> LiveKitProvider: Creating local audio track...');
 
             // Создаем трек с настройками, оптимизированными для мобильных устройств
             const audioOptions = this.getOptimizedAudioOptions();
             this.localAudioTrack = await createLocalAudioTrack(audioOptions);
 
-            console.log('LiveKitProvider: Local audio track created successfully');
+            console.log('>>> LiveKit >>> LiveKitProvider: Local audio track created successfully');
         } catch (error) {
             const errorMessage = `Failed to create audio track: ${error instanceof Error ? error.message : 'Unknown error'}`;
-            console.error('LiveKitProvider:', errorMessage, error);
+            console.error('>>> LiveKit >>> LiveKitProvider:', errorMessage, error);
             this.emitError(errorMessage);
 
             // Попытка создать простой трек без дополнительных опций
@@ -320,7 +320,7 @@ export class LiveKitProvider implements ILiveKitProvider{
 
     private async createFallbackAudioTrack(): Promise<void> {
         try {
-            console.log('LiveKitProvider: Trying fallback audio track creation...');
+            console.log('>>> LiveKit >>> LiveKitProvider: Trying fallback audio track creation...');
 
             // Создаем максимально простой трек без дополнительных опций
             this.localAudioTrack = await createLocalAudioTrack({
@@ -329,36 +329,36 @@ export class LiveKitProvider implements ILiveKitProvider{
                 autoGainControl: false,
             });
 
-            console.log('LiveKitProvider: Fallback audio track created');
+            console.log('>>> LiveKit >>> LiveKitProvider: Fallback audio track created');
         } catch (fallbackError) {
-            console.error('LiveKitProvider: Fallback audio track creation also failed:', fallbackError);
+            console.error('>>> LiveKit >>> LiveKitProvider: Fallback audio track creation also failed:', fallbackError);
             throw fallbackError;
         }
     }
 
     private async diagnoseAudioIssues(): Promise<void> {
-        console.log('LiveKitProvider: Diagnosing audio issues...');
+        console.log('>>> LiveKit >>> LiveKitProvider: Diagnosing audio issues...');
 
         if (!this.localAudioTrack) {
-            console.log('No local audio track available');
+            console.log('>>> LiveKit >>> No local audio track available');
             return;
         }
 
         // Проверяем состояние трека
-        console.log('Track enabled:', this.localAudioTrack.mediaStreamTrack.enabled);
-        console.log('Track muted:', this.localAudioTrack.isMuted);
-        console.log('Track readyState:', this.localAudioTrack.mediaStreamTrack.readyState);
+        console.log('>>> LiveKit >>> Track enabled:', this.localAudioTrack.mediaStreamTrack.enabled);
+        console.log('>>> LiveKit >>> Track muted:', this.localAudioTrack.isMuted);
+        console.log('>>> LiveKit >>> Track readyState:', this.localAudioTrack.mediaStreamTrack.readyState);
 
         // Проверяем настройки трека
         const settings = this.localAudioTrack.mediaStreamTrack.getSettings();
-        console.log('Track settings:', settings);
+        console.log('>>> LiveKit >>> Track settings:', settings);
 
         // Проверяем, опубликован ли трек - используем правильный способ
         if (this.room) {
             const publication = this.room.localParticipant.getTrackPublication(Track.Source.Microphone);
-            console.log('Track published:', !!publication);
+            console.log('>>> LiveKit >>> Track published:', !!publication);
             if (publication) {
-                console.log('Publication muted:', publication.isMuted);
+                console.log('>>> LiveKit >>> Publication muted:', publication.isMuted);
             }
         }
     }
@@ -368,7 +368,7 @@ export class LiveKitProvider implements ILiveKitProvider{
 
         // Участник подключился
         this.room.on(RoomEvent.ParticipantConnected, (participant: Participant) => {
-            console.log('LiveKitProvider: Participant connected:', participant.identity);
+            console.log('>>> LiveKit >>> LiveKitProvider: Participant connected:', participant.identity);
 
             this.connectionState.participants.set(participant.identity, participant);
             this.emitConnectionStateChanged();
@@ -391,7 +391,7 @@ export class LiveKitProvider implements ILiveKitProvider{
 
         // Участник отключился
         this.room.on(RoomEvent.ParticipantDisconnected, (participant: Participant) => {
-            console.log('LiveKitProvider: Participant disconnected:', participant.identity);
+            console.log('>>> LiveKit >>> LiveKitProvider: Participant disconnected:', participant.identity);
 
             this.connectionState.participants.delete(participant.identity);
             this.emitConnectionStateChanged();
@@ -400,14 +400,14 @@ export class LiveKitProvider implements ILiveKitProvider{
 
         // Комната отключилась
         this.room.on(RoomEvent.Disconnected, async (reason?: DisconnectReason) => {
-            console.log('LiveKitProvider: Room disconnected:', reason);
+            console.log('>>> LiveKit >>> LiveKitProvider: Room disconnected:', reason);
             await this.cleanup();
             this.emitConnectionStateChanged();
         });
 
         // Изменения состояния подключения
         this.room.on(RoomEvent.ConnectionStateChanged, (state: ConnectionState) => {
-            console.log('LiveKitProvider: Connection state changed:', state);
+            console.log('>>> LiveKit >>> LiveKitProvider: Connection state changed:', state);
 
             if (state === ConnectionState.Disconnected) {
                 this.updateConnectionState({
@@ -462,7 +462,7 @@ export class LiveKitProvider implements ILiveKitProvider{
             try {
                 callback(participant);
             } catch (error) {
-                console.error('LiveKitProvider: Error in participant joined callback:', error);
+                console.error('>>> LiveKit >>> LiveKitProvider: Error in participant joined callback:', error);
             }
         });
     }
@@ -472,7 +472,7 @@ export class LiveKitProvider implements ILiveKitProvider{
             try {
                 callback(participant);
             } catch (error) {
-                console.error('LiveKitProvider: Error in participant left callback:', error);
+                console.error('>>> LiveKit >>> LiveKitProvider: Error in participant left callback:', error);
             }
         });
     }
@@ -483,7 +483,7 @@ export class LiveKitProvider implements ILiveKitProvider{
             try {
                 callback(state);
             } catch (error) {
-                console.error('LiveKitProvider: Error in connection state callback:', error);
+                console.error('>>> LiveKit >>> LiveKitProvider: Error in connection state callback:', error);
             }
         });
     }
@@ -493,7 +493,7 @@ export class LiveKitProvider implements ILiveKitProvider{
             try {
                 callback(error);
             } catch (error) {
-                console.error('LiveKitProvider: Error in error callback:', error);
+                console.error('>>> LiveKit >>> LiveKitProvider: Error in error callback:', error);
             }
         });
     }
