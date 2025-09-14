@@ -34,7 +34,7 @@
           </div>
         </div>
       </template>
-      <div class="results-button">
+      <div class="results-button" :class="{won: won}">
         <div class="btn" @click="$emit('close')">
           Продолжить
         </div>
@@ -198,6 +198,11 @@ const pictureSrc = computed(() => {
     display: flex;
     justify-content: center;
 
+    &.won{
+      .btn{
+        border-color: #cb7500;
+      }
+    }
 
     .btn{
       border-radius: 100px;
