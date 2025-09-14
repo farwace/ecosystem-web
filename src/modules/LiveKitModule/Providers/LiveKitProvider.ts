@@ -525,6 +525,24 @@ export class LiveKitProvider implements ILiveKitProvider{
         this.room.on(RoomEvent.ConnectionQualityChanged, (quality, participant) => {
             console.log(`>>> LiveKit >>> LiveKitProvider: Connection quality for ${participant?.identity}: ${quality}`);
         });
+
+        // При реконнекте LiveKit может перевыпустить треки → нужно перезапускать воспроизведение
+        this.room.on(RoomEvent.Reconnected, async () => {
+            console.log('>>> LiveKit >>> Room reconnected, retrying audio playback');
+            const container = document.getElementById('livekit-audio-container');
+            if (container) {
+                const audioElements = container.querySelectorAll('audio');
+                for (const audio of Array.from(audioElements)) {
+                    try {
+                        await (audio as HTMLAudioElement).play();
+                        console.log(`>>> LiveKit >>> Replay success for ${audio.dataset.participantId}`);
+                    } catch (err) {
+                        console.error(`>>> LiveKit >>> Replay failed for ${audio.dataset.participantId}`, err);
+                    }
+                }
+            }
+        });
+
     }
 
     private handleRemoteAudioTrack(track: RemoteAudioTrack, participant: Participant): void {
@@ -542,6 +560,7 @@ export class LiveKitProvider implements ILiveKitProvider{
         (audioElement as any).playsInline = true;
         audioElement.volume = 1.0;
         audioElement.muted = false;
+        audioElement.dataset.participantId = participant.identity; // чтобы потом находить по identity
 
         // Принудительно размучиваем сам MediaStreamTrack
         if (track.mediaStreamTrack.muted) {
@@ -657,9 +676,9 @@ export class LiveKitProvider implements ILiveKitProvider{
                 for (const audio of Array.from(audioElements)) {
                     try {
                         await (audio as HTMLAudioElement).play();
-                        console.log('>>> LiveKit >>> Remote audio playback started');
+                        console.log(`>>> LiveKit >>> Remote audio playback started for ${audio.dataset.participantId}`);
                     } catch (err) {
-                        console.error('>>> LiveKit >>> Failed to play remote audio element', err);
+                        console.error(`>>> LiveKit >>> Failed to play audio for ${audio.dataset.participantId}`, err);
                     }
                 }
             }
