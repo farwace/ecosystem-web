@@ -356,6 +356,8 @@ const initializeGame = () => {
   props.room?.onMessage?.('gameFinished', (message: any) => {
     //todo: отображение модального окна с результатами и предложением выложить историю или просмотреть рекламу за двойную награду
     Console.log('>>> GAME FINISHED', message);
+    const isWon = !!message?.results?.filter?.((obInfo: any ) => obInfo?.playerId == id.value)?.[0]?.isWinner;
+    showGameResultsPopup(isWon, currentPlayer.value);
   });
 
 }
@@ -376,8 +378,30 @@ const showEliminatedPlayerPopup = (isEliminated: boolean, player?: TPlayer) => {
     notificationsProvider?.removePopup?.('player-eliminated-popup');
   }, 5000);
 }
+
+const showGameResultsPopup = (won: boolean, player?: TPlayer) => {
+  notificationsProvider?.addPopup('finish-game-popup', 'game-bunker-game-result-popup', {
+    darkBg: true,
+    modal: true,
+    noTitle: true,
+    noCloseButton: true,
+    noClose: true,
+    noPaddings: true,
+    noBackground: true,
+    fullHeight: true,
+    noMaxHeight: true,
+    class: 'game-bunker',
+    won: won,
+    player: player,
+  });
+  setTimeout(() => {
+    notificationsProvider?.removePopup?.('player-eliminated-popup');
+  }, 5000);
+}
+
+
 const testAction = () => {
-  showEliminatedPlayerPopup(true, players.value[1]);
+  showGameResultsPopup(false, players.value[1]);
   return;
   const userCard = currentPlayer.value?.cards[1];
   if(userCard){

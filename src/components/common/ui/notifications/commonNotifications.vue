@@ -25,6 +25,7 @@
           'no-scroll': popup.data?.noScroll,
           'no-bg': popup.data?.noBackground,
           'h-100': popup.data?.fullHeight,
+          'no-max-height': popup.data?.noMaxHeight,
           'bg-pink': popup.data?.pink,
           'small-popup': popup.data?.small,
           'middle-popup': popup.data?.middle,
@@ -360,6 +361,15 @@ onBeforeUnmount(() => {
     &.h-100{
       height: 100%;
       height: calc(100% - env(safe-area-inset-top, 0px));
+
+      &.no-max-height{
+        max-height: unset;
+
+        .popup__content{
+          display: flex;
+          flex-direction: column;
+        }
+      }
     }
     &.bg-pink{
       background-color: #FFB3D2;
