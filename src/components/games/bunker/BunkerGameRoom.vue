@@ -154,7 +154,7 @@ const initializeGame = () => {
   const $ = getStateCallbacks(props.room);
 
   unbindCallbacks.push($(props.room.state).listen("currentRound", (currentValue, previousValue) => {
-    console.log('>>> CURRENT ROUND', currentValue, previousValue);
+    Console.log('>>> CURRENT ROUND', currentValue, previousValue);
     voteResults.value = {};
     isVoted.value = false;
     currentRound.value = currentValue;
@@ -190,11 +190,11 @@ const initializeGame = () => {
     turnTimeLimit.value = currentValue;
   }));
   unbindCallbacks.push($(props.room.state).listen("turnTimeRemaining", (currentValue, previousValue) => {
-    console.log('>>> currentTimeRemaining', currentValue, previousValue);
+    Console.log('>>> currentTimeRemaining', currentValue, previousValue);
     turnTimeRemaining.value = currentValue;
   }));
   unbindCallbacks.push($(props.room.state).listen("cardRevealTimeRemaining", (currentValue, previousValue) => {
-    console.log('>>> cardRevealTimeRemaining', currentValue, previousValue);
+    Console.log('>>> cardRevealTimeRemaining', currentValue, previousValue);
     cardRevealTimeRemaining.value = currentValue;
   }));
 
@@ -248,6 +248,10 @@ const initializeGame = () => {
   }))
   unbindCallbacks.push($(props.room.state).players.onRemove((playerData, playerId) => {
     Console.log('>>> PLAYERS ON REMOVE', playerId, playerData);
+    notificationsProvider?.addNotification({
+      type: 'game-info',
+      message: CutString((playerData?.name ? (playerData?.name + ' ') : ''), 15) + ' покинул комнату'
+    })
     if(players.value![playerId]){
       delete players.value[playerId];
     }
@@ -275,18 +279,7 @@ const initializeGame = () => {
       message: CutString((player?.name ? (player.name + ' ') : ''), 15) + ' присоединился к комнате'
     })
   });
-  props.room?.onMessage?.('playerReconnected', (player: Player) => {
-    notificationsProvider?.addNotification({
-      type: 'game-info',
-      message: CutString((player?.name ? (player.name + ' ') : ''), 15) + ' вернулся'
-    })
-  });
-  props.room?.onMessage?.('playerLeft', (player: Player) => {
-    notificationsProvider?.addNotification({
-      type: 'game-info',
-      message: CutString((player?.name ? (player.name + ' ') : ''), 15) + ' вышел из комнаты'
-    })
-  });
+
   props.room?.onMessage?.('gameInit', () => {
     setTimeout(() => {
       if(scenario.value){
@@ -301,12 +294,6 @@ const initializeGame = () => {
     Console.log('>>> __playground_message_types', message); //todo: убрать обработчик
   });
 
-  props.room?.onMessage?.('playerKicked', (player: Player) => {
-    notificationsProvider?.addNotification({
-      type: 'game-info',
-      message: CutString((player?.name ? (player.name + ' ') : ''), 15) + ' исключен из комнаты'
-    })
-  });
 
   props.room?.onMessage?.('kicked', (message: any) => {
     notificationsProvider?.addPopup('you-are-kicked', 'simple-popup', {
