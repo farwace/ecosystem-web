@@ -34,6 +34,9 @@ export class LiveKitProvider implements ILiveKitProvider{
     private onConnectionStateChangedCallbacks: Array<(state: IVoiceConnectionState) => void> = [];
     private onErrorCallbacks: Array<(error: string) => void> = [];
 
+    private isInitializing = false;
+    private pendingOperations: Array<() => Promise<any>> = [];
+
     install(app: App, symbol: symbol) {
         app.provide(symbol, this);
     }
@@ -45,6 +48,7 @@ export class LiveKitProvider implements ILiveKitProvider{
         }
 
         try {
+            this.isInitializing = true; // Добавь эту строку
             this.updateConnectionState({ isConnecting: true, connectionError: null });
 
             console.log('>>> LiveKit >>> LiveKitProvider: Connecting to room:', roomUrl);
@@ -74,10 +78,16 @@ export class LiveKitProvider implements ILiveKitProvider{
             // Создаем локальный аудиотрек
             await this.createLocalAudioTrack();
 
+            this.isInitializing = false; // Добавь эту строку
+
+            // Обрабатываем отложенные операции
+            await this.processPendingOperations(); // Добавь эту строку
+
             setTimeout(() => this.diagnoseAudioIssues(), 2000);
 
             return true;
         } catch (error) {
+            this.isInitializing = false; // И эту тоже
             const errorMessage = `Connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`;
             console.error('>>> LiveKit >>> LiveKitProvider:', errorMessage);
 
@@ -110,6 +120,13 @@ export class LiveKitProvider implements ILiveKitProvider{
     }
 
     async enableMicrophone(): Promise<boolean> {
+        // Если еще инициализируемся, добавляем в очередь
+        if (this.isInitializing) {
+            console.log('>>> LiveKit >>> LiveKitProvider: Queuing microphone enable operation');
+            this.pendingOperations.push(() => this.enableMicrophone());
+            return true;
+        }
+
         if (!this.room || !this.localAudioTrack) {
             console.error('>>> LiveKit >>> LiveKitProvider: Room or audio track not available');
             return false;
@@ -118,10 +135,8 @@ export class LiveKitProvider implements ILiveKitProvider{
         try {
             console.log('>>> LiveKit >>> LiveKitProvider: Enabling microphone...');
 
-            // Сначала размутим трек
             await this.localAudioTrack.unmute();
 
-            // Проверяем, опубликован ли уже аудиотрек
             const existingPublication = this.room.localParticipant.getTrackPublication(Track.Source.Microphone);
             if (!existingPublication) {
                 console.log('>>> LiveKit >>> Publishing audio track...');
@@ -131,7 +146,6 @@ export class LiveKitProvider implements ILiveKitProvider{
             this.updateConnectionState({ isMicrophoneEnabled: true });
             console.log('>>> LiveKit >>> LiveKitProvider: Microphone enabled successfully');
 
-            // Диагностика после включения
             await this.diagnoseAudioIssues();
 
             return true;
@@ -144,6 +158,13 @@ export class LiveKitProvider implements ILiveKitProvider{
     }
 
     async disableMicrophone(): Promise<boolean> {
+        // Если еще инициализируемся, добавляем в очередь
+        if (this.isInitializing) {
+            console.log('>>> LiveKit >>> LiveKitProvider: Queuing microphone disable operation');
+            this.pendingOperations.push(() => this.disableMicrophone());
+            return true;
+        }
+
         if (!this.room || !this.localAudioTrack) {
             console.error('>>> LiveKit >>> LiveKitProvider: Room or audio track not available');
             return false;
@@ -152,7 +173,6 @@ export class LiveKitProvider implements ILiveKitProvider{
         try {
             console.log('>>> LiveKit >>> LiveKitProvider: Disabling microphone...');
 
-            // Правильный способ - использовать mute() на самом треке
             await this.localAudioTrack.mute();
 
             this.updateConnectionState({ isMicrophoneEnabled: false });
@@ -209,6 +229,9 @@ export class LiveKitProvider implements ILiveKitProvider{
     async cleanup(): Promise<void> {
         console.log('>>> LiveKit >>> LiveKitProvider: Cleaning up resources');
 
+        this.isInitializing = false; // Добавь эту строку
+        this.pendingOperations = []; // И эту
+
         // Остановим локальный трек
         if (this.localAudioTrack) {
             this.localAudioTrack.stop();
@@ -229,6 +252,19 @@ export class LiveKitProvider implements ILiveKitProvider{
 
         // Очистим callbacks
         this.clearAllCallbacks();
+    }
+
+    private async processPendingOperations(): Promise<void> {
+        while (this.pendingOperations.length > 0) {
+            const operation = this.pendingOperations.shift();
+            if (operation) {
+                try {
+                    await operation();
+                } catch (error) {
+                    console.error('>>> LiveKit >>> LiveKitProvider: Error processing pending operation:', error);
+                }
+            }
+        }
     }
 
     private isMediaDevicesSupported(): boolean {
