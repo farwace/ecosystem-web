@@ -39,7 +39,7 @@
       </BunkerButton>
     </div>
 
-    <div class="place__vote__results" v-if="gameStage == 'voting' && isVoted && voteResults && player?.id">
+    <div class="place__vote__results" v-if="gameStage == 'voting' && (isVoted || !!eliminated) && voteResults && player?.id">
       <div class="result-item" v-for="result in voteResults" :key="`player-${player?.id}-results`">
         {{ result }}
       </div>
@@ -67,6 +67,7 @@ const props = defineProps<{
   isVoted?: boolean,
   voteResults?: string[],
   canVote?: boolean,
+  eliminated?: boolean,
 }>();
 
 const emit = defineEmits(['touch-player', 'touch-place', 'vote']);

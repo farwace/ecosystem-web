@@ -19,6 +19,7 @@
           :vote-results="voteResults?.[(+playerId).toString()] || []"
           :can-abstain-this-round="canAbstainThisRound"
           :can-vote="!!canVote"
+          :eliminated="eliminated"
           @touch-place="onTouchPlace(place)"
           @touch-player="onTouchPlayer(playerId.toString())"
           @vote="$emit('vote', playerId == id ? 0 : playerId)"
@@ -43,6 +44,7 @@ const props = defineProps<{
   isVoted?: boolean,
   voteResults?: {[p: string]: string[]},
   canVote?: boolean,
+  eliminated?: boolean,
 }>();
 
 const {id} = storeToRefs(ecosystemStore());

@@ -39,6 +39,7 @@
           :is-voted="isVoted"
           :vote-results="voteResults"
           :can-vote="!currentPlayer?.isEliminated"
+          :eliminated="!!currentPlayer?.isEliminated"
           @touch-player="onTouchPlayer($event)"
           @touch-place="onTouchPlace($event)"
           @vote="sendVote"
