@@ -1,8 +1,10 @@
 <template>
   <menu-item :class="{unread: hasUnclaimedCompletedMission}" @click="openMissions" icon="checklist">Задания</menu-item>
   <menu-item @click="openRating" icon="rating">Рейтинг</menu-item>
-  <menu-item @click="openFriends" icon="friends">Друзья</menu-item>
-  <menu-item @click="openMessages" icon="message">Сообщения</menu-item>
+  <div style="width: 45px;"></div>
+  <div style="width: 45px;"></div>
+<!--  <menu-item @click="openFriends" icon="friends">Друзья</menu-item>
+  <menu-item @click="openMessages" icon="message">Сообщения</menu-item>-->
 </template>
 <script setup lang="ts">
 import MenuItem from "@/components/pages/Home/MenuItem.vue";

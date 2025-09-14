@@ -55,10 +55,10 @@
           <UiIcon name="gift" />
           Подарок
         </div>
-        <div class="btn btn-msg">
+<!--        <div class="btn btn-msg">
           <ui-icon name="msg" />
           Сообщение
-        </div>
+        </div>-->
       </div>
     </div>
   </div>

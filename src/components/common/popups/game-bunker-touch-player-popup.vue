@@ -23,10 +23,11 @@
       </div>
 
       <div class="buttons">
-        <div class="btn btn-add" @click="addToFriends" v-if="player.id != id && true"> <!-- todo: проверка есть ли уже игрок в друзьях? -->
+        <!-- todo: проверка есть ли уже игрок в друзьях? -->
+<!--        <div class="btn btn-add" @click="addToFriends" v-if="player.id != id && true">
           <UiIcon name="invite" />
           Добавить
-        </div>
+        </div>-->
 
         <div class="btn btn-gift" @click="openGiftPopup">
           <UiIcon name="gift" />
