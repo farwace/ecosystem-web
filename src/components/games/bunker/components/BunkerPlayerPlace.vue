@@ -28,12 +28,17 @@
     <div class="place__microphone" v-if="isSpeaker">
       <UiIcon name="microphone-on" />
     </div>
-    <div class="place__vote" v-if="!isVoted && gameStage == 'voting' && !player?.isEliminated && !!player?.id">
+    <div class="place__vote" v-if="canVote && !isVoted && gameStage == 'voting' && !player?.isEliminated && !!player?.id && !isSelf">
       <BunkerButton class="small" :class="{'is-self': isSelf}" @click.prevent.stop="$emit('vote')">
-        <template v-if="isSelf">Воздержаться</template>
-        <template v-else>Голосовать</template>
+        Голосовать
       </BunkerButton>
     </div>
+    <div class="place__vote" v-if="canVote && !isVoted && gameStage == 'voting' && !player?.isEliminated && !!player?.id && isSelf && !!canAbstainThisRound">
+      <BunkerButton class="small" :class="{'is-self': isSelf}" @click.prevent.stop="$emit('vote')">
+        Воздержаться
+      </BunkerButton>
+    </div>
+
     <div class="place__vote__results" v-if="gameStage == 'voting' && isVoted && voteResults && player?.id">
       <div class="result-item" v-for="result in voteResults" :key="`player-${player?.id}-results`">
         {{ result }}
@@ -61,6 +66,7 @@ const props = defineProps<{
   canAbstainThisRound?: boolean,
   isVoted?: boolean,
   voteResults?: string[],
+  canVote?: boolean,
 }>();
 
 const emit = defineEmits(['touch-player', 'touch-place', 'vote']);

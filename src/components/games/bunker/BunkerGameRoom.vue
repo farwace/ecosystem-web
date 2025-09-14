@@ -38,6 +38,7 @@
           :speaker-id="currentSpeakerId"
           :is-voted="isVoted"
           :vote-results="voteResults"
+          :can-vote="!currentPlayer?.isEliminated"
           @touch-player="onTouchPlayer($event)"
           @touch-place="onTouchPlace($event)"
           @vote="sendVote"
@@ -348,8 +349,7 @@ const initializeGame = () => {
   });
 
   props.room?.onMessage?.('votingResults', (message: {votes: any, eliminatedPlayerId: any, round: any}) => {
-    //todo: отображение, что игрок не попал в бункер если действительно есть тот, кого выкинули
-
+    showEliminatedPlayerPopup(!!message.eliminatedPlayerId, players.value?.[message.eliminatedPlayerId]);
     Console.log('>>> VOTING RESULTS', message);
   });
 
@@ -359,8 +359,26 @@ const initializeGame = () => {
   });
 
 }
-
+const showEliminatedPlayerPopup = (isEliminated: boolean, player?: TPlayer) => {
+  notificationsProvider?.addPopup('player-eliminated-popup', 'game-bunker-player-eliminated-popup', {
+    darkBg: true,
+    modal: true,
+    noTitle: true,
+    noCloseButton: true,
+    noClose: true,
+    noPaddings: true,
+    noBackground: true,
+    class: 'game-bunker',
+    eliminated: isEliminated,
+    player: player,
+  });
+  setTimeout(() => {
+    notificationsProvider?.removePopup?.('player-eliminated-popup');
+  }, 5000);
+}
 const testAction = () => {
+  showEliminatedPlayerPopup(true, players.value[1]);
+  return;
   const userCard = currentPlayer.value?.cards[1];
   if(userCard){
     const testCard: {id: Card['id'], name: Card['name'], type: Card['type'], imageUrl: string, customData: CardCustomData} = {
