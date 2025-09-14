@@ -49,7 +49,7 @@
       </div>
       <transition name="opacity">
         <div style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);" v-if="currentSpeakerId == id && (cardRevealTimeRemaining || 0) > 1 && (cardRevealTimeRemaining || 0) < 12">
-          <vue3-lottie animationLink="/assets/lottie/send-card-help.json" :height="200" :width="200" :auto-play="true" :loop="true"/>
+          <vue3-lottie :animationLink="isTouchDevide ? '/assets/lottie/send-card-help-mobile.json' : '/assets/lottie/send-card-help-desktop.json'" :height="180" :width="180" :auto-play="true" :loop="true"/>
         </div>
       </transition>
     </div>
@@ -105,12 +105,16 @@ import {CardCustomData} from "@/components/games/bunker/schemas/schemas/CardCust
 import BunkerButton from "@/components/games/bunker/components/BunkerButton.vue";
 import UiIcon from "@/components/common/icons/UiIcon.vue";
 import {Vue3Lottie} from 'vue3-lottie';
+import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
+import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
 
 const props = defineProps<{
   room: Room
 }>();
 
 const notificationsProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
+const bridgeProvider: IPlatformEvents | undefined = inject(PlatformEventsSymbol);
+
 const {id} = storeToRefs(ecosystemStore());
 
 const placesDiv = ref<HTMLDivElement>();
@@ -141,7 +145,7 @@ const isVoted = ref<boolean>(false);
 const voteResults = ref<{[key:string]: string[]}>();
 
 const router = useAnimatedRouter();
-
+const isTouchDevide = ref<boolean>(true);
 const unbindCallbacks: any[] = [];
 
 const initializeGame = () => {
@@ -611,9 +615,9 @@ const onPlayersPlusClick = () => {
 }
 
 const setGameStubs = () => {
-  currentSpeakerId.value = 0;
+  currentSpeakerId.value = 1;
   currentRound.value = 0;
-  cardRevealTimeRemaining.value = 0;
+  cardRevealTimeRemaining.value = 2;
   gameStage.value = 'voting';
   isVoted.value = true;
   voteResults.value = {
@@ -691,7 +695,12 @@ onMounted(() => {
       const containerHeight = bunkerContainer.value.clientHeight - paddingTop - paddingBottom;
       freeAreaHeight.value = Math.max((containerHeight - placesDivHeight) / 2, 0);
     }
-  })
+  });
+
+
+  if(bridgeProvider?.isDesktop()){
+    isTouchDevide.value = false;
+  }
 
 });
 

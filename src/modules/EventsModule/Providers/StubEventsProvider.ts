@@ -132,4 +132,8 @@ export class StubEventsProvider implements IPlatformEvents{
     getAuthToken = async () => {
         return;
     }
+
+    isDesktop = () => {
+        return !!('ontouchstart' in window || navigator.maxTouchPoints);
+    }
 }

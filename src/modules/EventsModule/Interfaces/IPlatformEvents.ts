@@ -13,4 +13,5 @@ export interface IPlatformEvents extends IModule{
     buySubscription: (s: TShopSubscription) => Promise<any>;
     buyMoney: (s: TShopCoin) => Promise<any>;
     getAuthToken: (s: RequestPropsMap["VKWebAppGetAuthToken"]) => Promise<any>;
+    isDesktop: () => boolean;
 }

@@ -24,6 +24,7 @@ export class BridgeEventsProvider implements IPlatformEvents {
     private ecosystemStore: Store<'ecosystem', IEcosystemStore>
     private themeStore: Store<'theme', IThemeStore>
     private arLaunchParams: any = undefined;
+    private _isDesktop = false;
     constructor(
         @inject(NotificationsSymbol)
         private notificationsProvider: INotificationsProvider
@@ -98,6 +99,7 @@ export class BridgeEventsProvider implements IPlatformEvents {
             }
             if(['desktop_web', 'desktop_app_messenger', 'desktop_web_messenger', 'web_external'].indexOf(launchParams.vk_platform) > -1){
                 document.documentElement.setAttribute('desktop' , '1');
+                this._isDesktop = true;
             }
 
 
@@ -205,5 +207,9 @@ export class BridgeEventsProvider implements IPlatformEvents {
         catch (e: any) {
             return undefined;
         }
+    }
+
+    isDesktop = () => {
+        return this._isDesktop;
     }
 }
