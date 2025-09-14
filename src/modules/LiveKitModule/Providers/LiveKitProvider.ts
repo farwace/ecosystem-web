@@ -516,7 +516,7 @@ export class LiveKitProvider implements ILiveKitProvider{
 
         // Ошибки
         this.room.on(RoomEvent.ConnectionQualityChanged, (quality, participant) => {
-            console.log(`LiveKitProvider: Connection quality for ${participant?.identity}: ${quality}`);
+            console.log(`>>> LiveKit >>> LiveKitProvider: Connection quality for ${participant?.identity}: ${quality}`);
         });
     }
 
@@ -532,8 +532,14 @@ export class LiveKitProvider implements ILiveKitProvider{
 
         const audioElement = track.attach() as HTMLAudioElement;
         audioElement.autoplay = true;
-        (audioElement as any).playsInline = true; // Исправляем типизацию
-        audioElement.volume = 1.0; // Максимальная громкость
+        (audioElement as any).playsInline = true;
+        audioElement.volume = 1.0;
+
+        // Принудительно размучиваем трек на уровне MediaStreamTrack
+        if (track.mediaStreamTrack.muted) {
+            console.log(`>>> LiveKit >>> Forcing unmute of remote track from ${participant.identity}`);
+            track.mediaStreamTrack.enabled = true;
+        }
 
         console.log('>>> LiveKit >>> Audio element created:', {
             autoplay: audioElement.autoplay,
@@ -541,24 +547,57 @@ export class LiveKitProvider implements ILiveKitProvider{
             muted: audioElement.muted
         });
 
-        // Принудительно запускаем воспроизведение (для мобильных браузеров)
-        audioElement.play().then(() => {
-            console.log(`>>> LiveKit >>> Audio playback started for ${participant.identity}`);
-        }).catch((error) => {
-            console.error(`>>> LiveKit >>>  to start audio playback for ${participant.identity}:`, error);
-            // Пробуем повторно через секунду
-            setTimeout(() => {
-                audioElement.play().catch(e =>
-                    console.error('>>> LiveKit >>> Retry audio play failed:', e)
-                );
-            }, 1000);
-        });
-
-        // Добавляем в скрытый контейнер в DOM
+        // Добавляем в DOM перед попыткой воспроизведения
         const container = this.getOrCreateAudioContainer();
         container.appendChild(audioElement);
 
-        // Удаляем при завершении трека
+        // Более агрессивная попытка воспроизведения
+        const tryPlay = async () => {
+            try {
+                console.log(`>>> LiveKit >>> Attempting to play audio from ${participant.identity}, readyState: ${audioElement.readyState}`);
+                await audioElement.play();
+                console.log(`>>> LiveKit >>> Audio playback started for ${participant.identity}`);
+            } catch (error) {
+                console.error(`>>> LiveKit >>> Failed to start audio playback for ${participant.identity}:`, error);
+
+                // Пробуем через короткий интервал
+                setTimeout(async () => {
+                    try {
+                        await audioElement.play();
+                        console.log(`>>> LiveKit >>> Retry successful for ${participant.identity}`);
+                    } catch (retryError) {
+                        console.error(`>>> LiveKit >>> Retry failed for ${participant.identity}:`, retryError);
+                    }
+                }, 500);
+            }
+        };
+
+        // Пробуем воспроизвести сразу
+        tryPlay();
+
+        // И также когда данные загрузятся
+        audioElement.addEventListener('canplay', () => {
+            console.log(`>>> LiveKit >>> Audio can play for ${participant.identity}`);
+            if (audioElement.paused) {
+                tryPlay();
+            }
+        });
+
+        audioElement.addEventListener('loadeddata', () => {
+            console.log(`>>> LiveKit >>> Audio data loaded for ${participant.identity}`);
+            if (audioElement.paused) {
+                tryPlay();
+            }
+        });
+
+        // Слушаем изменения состояния трека
+        track.mediaStreamTrack.addEventListener('unmute', () => {
+            console.log(`>>> LiveKit >>> Remote track unmuted for ${participant.identity}`);
+            if (audioElement.paused) {
+                tryPlay();
+            }
+        });
+
         track.on('ended', () => {
             console.log(`>>> LiveKit >>> Remote audio track ended for ${participant.identity}`);
             audioElement.remove();
