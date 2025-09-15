@@ -5,19 +5,19 @@
       <span v-else>🔇 Микрофон выключен</span>
     </button>
 
-    <!-- контейнер для аудиопотоков других игроков -->
     <div ref="audioContainer" style="display:none;"></div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, onMounted, onBeforeUnmount } from "vue";
+import { ref, onMounted, onBeforeUnmount } from "vue";
 import {
   Room,
-  RemoteParticipant,
-  RemoteTrackPublication,
   RoomEvent,
-  createLocalAudioTrack,
+  RemoteTrack,
+  RemoteTrackPublication,
+  RemoteParticipant,
+  LocalAudioTrack,
 } from "livekit-client";
 
 const props = defineProps<{
@@ -29,7 +29,7 @@ const props = defineProps<{
 
 const isMicEnabled = ref(false);
 let room: Room | null = null;
-
+let localAudioTrack: LocalAudioTrack | null = null; // один трек на всё время
 const audioContainer = ref<HTMLDivElement | null>(null);
 
 async function connectToRoom() {
@@ -37,7 +37,7 @@ async function connectToRoom() {
 
   room = new Room();
 
-  room.on(RoomEvent.TrackSubscribed, (track, pub, participant) => {
+  room.on(RoomEvent.TrackSubscribed, (track: RemoteTrack) => {
     if (track.kind === "audio") {
       const audioEl = track.attach();
       audioEl.autoplay = true;
@@ -52,16 +52,23 @@ async function connectToRoom() {
 
   await room.connect(import.meta.env.VITE_LIVEKIT_URL, props.liveKitToken);
 
-  // if (props.canISpeak) {
-  //   await enableMicrophone();
-  // }
+  // 🚫 Не включаем микрофон сразу, только по кнопке
 }
 
 async function enableMicrophone() {
   if (!room) return;
+
   try {
-    const audioTrack = await createLocalAudioTrack();
-    await room.localParticipant.publishTrack(audioTrack);
+    if (!localAudioTrack) {
+      // получаем трек только один раз
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const track = stream.getTracks()[0];
+      localAudioTrack = new LocalAudioTrack(track);
+      await room.localParticipant.publishTrack(localAudioTrack);
+    }
+    if(localAudioTrack.isMuted){
+      await localAudioTrack.unmute();
+    }
     isMicEnabled.value = true;
   } catch (e) {
     console.error("Ошибка включения микрофона:", e);
@@ -69,11 +76,11 @@ async function enableMicrophone() {
 }
 
 async function disableMicrophone() {
-  if (!room) return;
-  room.localParticipant.audioTrackPublications.forEach((pub) => {
-    pub.track?.stop();
-    room?.localParticipant.unpublishTrack(pub.track!);
-  });
+  if (!room || !localAudioTrack) return;
+  if(!localAudioTrack.isMuted){
+    await localAudioTrack.mute();
+  }
+
   isMicEnabled.value = false;
 }
 
@@ -91,6 +98,8 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   room?.disconnect();
+  localAudioTrack?.stop();
+  localAudioTrack = null;
 });
 </script>
 
