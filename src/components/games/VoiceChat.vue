@@ -63,12 +63,12 @@ async function enableMicrophone() {
       // получаем трек только один раз
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const track = stream.getTracks()[0];
-      localAudioTrack = new LocalAudioTrack(track);
-      await room.localParticipant.publishTrack(localAudioTrack);
+      //localAudioTrack = new LocalAudioTrack(track);
+      //await room.localParticipant.publishTrack(localAudioTrack);
     }
-    if(localAudioTrack.isMuted){
-      await localAudioTrack.unmute();
-    }
+    // if(localAudioTrack.isMuted){
+    //   await localAudioTrack.unmute();
+    // }
     isMicEnabled.value = true;
   } catch (e) {
     console.error("Ошибка включения микрофона:", e);
