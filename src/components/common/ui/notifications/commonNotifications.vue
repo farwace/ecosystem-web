@@ -69,7 +69,8 @@ import type {IziToast, IziToastProgress, IziToastSettings} from "izitoast";
 import {ClickOutside} from "@/classes/directives/clickOutside";
 import UiIcon from "@/components/common/icons/UiIcon.vue";
 import AsyncPopupItem from "@/components/common/ui/notifications/AsyncPopupItem.vue";
-import * as Console from "node:console";
+import {Console} from "@/classes/utils/Console.ts";
+
 
 
 const { notifications, isNotificationsInitialized, popups } = storeToRefs(notificationsStore());
