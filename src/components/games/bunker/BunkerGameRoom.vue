@@ -55,9 +55,9 @@
         </div>
       </transition>
 
-      <div style="position: absolute; bottom: 0; text-align: center; width: 100%">
+      <div class="bunker__voice-controls" v-if="attachVoiceChat">
         <!-- Индикатор состояния голосового чата -->
-        <VoiceChat
+        <Component :is="VoiceChat"
             v-if="liveKitToken && liveKitRoomName"
             :live-kit-token="liveKitToken"
             :live-kit-room-name="liveKitRoomName"
@@ -97,7 +97,7 @@
 <script lang="ts" setup>
 import {getStateCallbacks, type Room} from "colyseus.js";
 import {
-  computed,
+  computed, defineAsyncComponent,
   inject,
   nextTick,
   onBeforeUnmount,
@@ -132,7 +132,11 @@ import {Vue3Lottie} from 'vue3-lottie';
 import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
 import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
 import {CutString} from "@/classes/utils/CutString.ts";
-import VoiceChat from "@/components/games/VoiceChat.vue";
+
+const VoiceChat = defineAsyncComponent(() =>
+    import ('./../VoiceChat.vue')
+);
+
 
 const props = defineProps<{
   room: Room
@@ -176,6 +180,7 @@ const canISpeak = ref<boolean>(false);
 const canIToggleMicrophone = ref<boolean>(false);
 const isMicrophoneOn = ref<boolean>(false);
 
+const attachVoiceChat = ref<boolean>(false);
 const router = useAnimatedRouter();
 const isTouchDevide = ref<boolean>(true);
 const unbindCallbacks: any[] = [];
@@ -309,6 +314,7 @@ const initializeGame = () => {
     }
     if(message.token){
       liveKitToken.value = message.token;
+      attachVoiceChat.value = true;
     }
 
   });
@@ -841,6 +847,13 @@ onBeforeUnmount(() => {
     left: 0;
     display: flex;
     flex-direction: row;
+  }
+
+  &__voice-controls{
+    position: absolute;
+    bottom: 0;
+    text-align: center;
+    width: 100%;
   }
 
   &__controls{

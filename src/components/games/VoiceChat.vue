@@ -52,9 +52,9 @@ async function connectToRoom() {
 
   await room.connect(import.meta.env.VITE_LIVEKIT_URL, props.liveKitToken);
 
-  if (props.canISpeak) {
-    await enableMicrophone();
-  }
+  // if (props.canISpeak) {
+  //   await enableMicrophone();
+  // }
 }
 
 async function enableMicrophone() {
