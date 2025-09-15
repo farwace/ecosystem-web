@@ -57,13 +57,13 @@
 
       <div style="position: absolute; bottom: 0; text-align: center; width: 100%">
         <!-- Индикатор состояния голосового чата -->
-        <div v-if="canIToggleMicrophone">
-          <label>
-            <input type="checkbox" v-model="isMicrophoneOn">
-            <span v-if="isMicrophoneOn">MICROPHONE ON</span>
-            <span v-else>MICROPHONE OFF</span>
-          </label>
-        </div>
+        <VoiceChat
+            v-if="liveKitToken && liveKitRoomName"
+            :live-kit-token="liveKitToken"
+            :live-kit-room-name="liveKitRoomName"
+            :can-i-speak="canISpeak"
+            :can-i-toggle-microphone="canIToggleMicrophone"
+        />
       </div>
     </div>
 
@@ -132,6 +132,7 @@ import {Vue3Lottie} from 'vue3-lottie';
 import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
 import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
 import {CutString} from "@/classes/utils/CutString.ts";
+import VoiceChat from "@/components/games/VoiceChat.vue";
 
 const props = defineProps<{
   room: Room
@@ -140,6 +141,8 @@ const props = defineProps<{
 const notificationsProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
 const bridgeProvider: IPlatformEvents | undefined = inject(PlatformEventsSymbol);
 const liveKitServerUrl = import.meta.env.VITE_LIVEKIT_URL;
+const liveKitToken = ref<string>();
+const liveKitRoomName = ref<string>();
 
 const {id} = storeToRefs(ecosystemStore());
 
@@ -300,6 +303,12 @@ const initializeGame = () => {
 
     if (message.canSpeak) {
       isMicrophoneOn.value = true;
+    }
+    if(message.roomName){
+      liveKitRoomName.value = message.roomName;
+    }
+    if(message.token){
+      liveKitToken.value = message.token;
     }
 
   });
