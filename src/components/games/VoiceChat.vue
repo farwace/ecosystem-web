@@ -62,7 +62,7 @@ async function enableMicrophone() {
     if (!localAudioTrack) {
       // получаем трек только один раз
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const track = stream.getTracks()[0];
+      //const track = stream.getTracks()[0];
       //localAudioTrack = new LocalAudioTrack(track);
       //await room.localParticipant.publishTrack(localAudioTrack);
     }
