@@ -14,4 +14,5 @@ interface ImportMetaEnv {
     readonly VITE_REVERB_APP_AUTH_ENDPOINT:string
     readonly VITE_GAME_ENDPOINT:string
     readonly VITE_LIVEKIT_URL:string
+    readonly VITE_HAWK_TOKEN:string
 }
