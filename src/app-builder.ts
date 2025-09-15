@@ -21,9 +21,9 @@ import type {IGiftsProvider} from "@/modules/ApiModule/Interfaces/IGiftsProvider
 import {GiftsProvider} from "@/modules/ApiModule/Providers/GiftsProvider.ts";
 import type {IBalanceProvider} from "@/modules/ApiModule/Interfaces/IBalanceProvider.ts";
 import {BalanceProvider} from "@/modules/ApiModule/Providers/BalanceProvider.ts";
-import type {ILiveKitProvider} from "@/modules/LiveKitModule/Interfaces/ILiveKitProvider.ts";
-import {LiveKitSymbol} from "@/modules/LiveKitModule/symbols.ts";
-import {LiveKitProvider} from "@/modules/LiveKitModule/Providers/LiveKitProvider.ts";
+// import type {ILiveKitProvider} from "@/modules/LiveKitModule/Interfaces/ILiveKitProvider.ts";
+// import {LiveKitSymbol} from "@/modules/LiveKitModule/symbols.ts";
+// import {LiveKitProvider} from "@/modules/LiveKitModule/Providers/LiveKitProvider.ts";
 
 export const AppBuilder = () => {
     return {
@@ -67,9 +67,9 @@ export const AppBuilder = () => {
             const ecosystemProvider = container.get<IEcosystemProvider>(EcosystemSymbol);
             ecosystemProvider.install($app, EcosystemSymbol);
 
-            container.bind<ILiveKitProvider>(LiveKitSymbol).to(LiveKitProvider).inSingletonScope();
-            const liveKitProvider = container.get<ILiveKitProvider>(LiveKitSymbol);
-            liveKitProvider.install($app, LiveKitSymbol);
+            // container.bind<ILiveKitProvider>(LiveKitSymbol).to(LiveKitProvider).inSingletonScope();
+            // const liveKitProvider = container.get<ILiveKitProvider>(LiveKitSymbol);
+            // liveKitProvider.install($app, LiveKitSymbol);
         }
     }
 }
