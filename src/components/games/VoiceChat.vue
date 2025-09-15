@@ -61,7 +61,7 @@ async function enableMicrophone() {
   if (!room) return;
   try {
     const audioTrack = await createLocalAudioTrack();
-    await room.localParticipant.publishTrack(audioTrack);
+    //await room.localParticipant.publishTrack(audioTrack);
     isMicEnabled.value = true;
   } catch (e) {
     console.error("Ошибка включения микрофона:", e);
