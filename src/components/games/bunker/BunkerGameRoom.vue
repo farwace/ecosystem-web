@@ -314,9 +314,7 @@ const initializeGame = () => {
     }
     if(message.token){
       liveKitToken.value = message.token;
-      setTimeout(() => {
-        attachVoiceChat.value = true;
-      }, 1000);
+      attachVoiceChat.value = true;
     }
 
   });
