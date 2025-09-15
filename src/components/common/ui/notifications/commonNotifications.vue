@@ -69,6 +69,7 @@ import type {IziToast, IziToastProgress, IziToastSettings} from "izitoast";
 import {ClickOutside} from "@/classes/directives/clickOutside";
 import UiIcon from "@/components/common/icons/UiIcon.vue";
 import AsyncPopupItem from "@/components/common/ui/notifications/AsyncPopupItem.vue";
+import * as Console from "node:console";
 
 
 const { notifications, isNotificationsInitialized, popups } = storeToRefs(notificationsStore());
@@ -175,19 +176,24 @@ watch(notifications, async (neoVal:{[key:string]:TNotification}) => {
         }
       }
 
-      /*@ts-ignore*/
-      iziToast.show(Object.assign(commonParams, {
-        id: 'toast' + key,
-        position: position,
-        message: neoVal[key]['message'],
-        timeout: neoVal[key]['timeout'] || (neoVal[key]['timeout'] === false ? false : 5000),
-        backgroundColor: backgroundColor,
-        transitionIn: transitionIn,
-        transitionOut: transitionOut,
-        onClosed: () => {
-          notificationLayer?.removeNotification(key)
-        },
-      }, customParams))
+      try{
+        /*@ts-ignore*/
+        iziToast.show(Object.assign(commonParams, {
+          id: 'toast' + key,
+          position: position,
+          message: neoVal[key]['message'],
+          timeout: neoVal[key]['timeout'] || (neoVal[key]['timeout'] === false ? false : 5000),
+          backgroundColor: backgroundColor,
+          transitionIn: transitionIn,
+          transitionOut: transitionOut,
+          onClosed: () => {
+            notificationLayer?.removeNotification(key)
+          },
+        }, customParams))
+      }
+      catch (e){
+        Console.error(e);
+      }
     }
   })
 }, {
