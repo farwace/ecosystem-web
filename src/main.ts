@@ -11,8 +11,6 @@ const $app = createApp(App);
 AppBuilder().build($app);
 $app.use(router);
 
-$app.mount('#app');
-
 Sentry.init({
     dsn: import.meta.env.VITE_HAWK_TOKEN!,
     app: $app,
@@ -21,4 +19,6 @@ Sentry.init({
     integrations: [
         Sentry.browserTracingIntegration({router})
     ]
-})
+});
+
+$app.mount('#app');
