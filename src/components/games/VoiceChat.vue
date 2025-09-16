@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import {ref, onMounted, onBeforeUnmount, watch, inject} from "vue";
 import {
   Room,
   RoomEvent,
@@ -20,6 +20,11 @@ import {
   LocalAudioTrack,
   Participant,
 } from "livekit-client";
+
+import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
+import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
+import {Console} from "@/classes/utils/Console.ts";
+const notificationsProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
 
 const props = defineProps<{
   liveKitToken: string;
@@ -156,7 +161,7 @@ async function enableMicrophone() {
     }
     isMicEnabled.value = true;
   } catch (e) {
-    console.error("Ошибка включения микрофона:", e);
+    Console.error(">>> VoiceChat.vue >>> Ошибка включения микрофона:", e);
   }
 }
 
@@ -169,12 +174,28 @@ async function disableMicrophone() {
 }
 
 async function toggleMicrophone() {
+  if(!props.canISpeak){
+    notificationsProvider?.addNotification({
+      type: 'game-info',
+      message: 'Нельзя говорить в текущий момент'
+    })
+  }
+
   if (isMicEnabled.value) {
     await disableMicrophone();
   } else {
     await enableMicrophone();
   }
 }
+
+watch( () => props.canISpeak, async (canISpeak) => {
+  if(canISpeak){
+    await enableMicrophone();
+  }
+  else{
+    await disableMicrophone();
+  }
+});
 
 onMounted(() => {
   connectToRoom();

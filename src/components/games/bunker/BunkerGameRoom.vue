@@ -338,6 +338,8 @@ const initializeGame = () => {
         canISpeak.value = message.voiceStatus[playerId];
       }
     });
+
+    Console.log('>>> VoiceChat.vue CAN I SPEAK', canISpeak.value);
   });
 
   props.room?.onMessage?.('error', (message: string) => {
