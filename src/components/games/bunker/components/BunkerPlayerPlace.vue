@@ -25,9 +25,11 @@
       </div>
     </div>
     <div class="place__action" v-if="roomStatus == 'waiting' || roomStatus == 'starting'" :class="{ready: player?.isReady}"></div>
-    <div class="place__microphone" v-if="isSpeaker">
-      <UiIcon name="microphone-on" />
-    </div>
+    <transition name="opacity">
+      <div class="place__microphone" v-if="isSpeaker || volume > 0.01">
+        <microphone-icon color="#939393" volume-color="#7eba70" :place="place" :volume="volume" />
+      </div>
+    </transition>
     <div class="place__vote" v-if="canVote && !isVoted && gameStage == 'voting' && !player?.isEliminated && !!player?.id && !isSelf">
       <BunkerButton class="small" :class="{'is-self': isSelf}" @click.prevent.stop="$emit('vote')">
         Голосовать
@@ -52,6 +54,7 @@ import UiIcon from "@/components/common/icons/UiIcon.vue";
 import {vMarquee} from "@/classes/directives/marquee.ts";
 import type {TGameStage, TPlayer, TRoomStatus} from "@/components/games/bunker/types.ts";
 import BunkerButton from "@/components/games/bunker/components/BunkerButton.vue";
+import MicrophoneIcon from "@/components/common/icons/MicrophoneIcon.vue";
 
 const props = defineProps<{
   place: number | string,
@@ -68,6 +71,7 @@ const props = defineProps<{
   voteResults?: string[],
   canVote?: boolean,
   eliminated?: boolean,
+  volume: number
 }>();
 
 const emit = defineEmits(['touch-player', 'touch-place', 'vote']);

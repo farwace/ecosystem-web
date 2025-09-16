@@ -8,6 +8,7 @@
       <BunkerPlayerPlace
           :place="place"
           :player-id="playerId"
+          :volume="volumes?.[playerId.toString()] || 0"
           :player="players?.[playerId.toString()]"
           :is-host="hostId == playerId"
           :is-self="playerId == id"
@@ -45,6 +46,7 @@ const props = defineProps<{
   voteResults?: {[p: string]: string[]},
   canVote?: boolean,
   eliminated?: boolean,
+  volumes?: {[p: string]: number},
 }>();
 
 const {id} = storeToRefs(ecosystemStore());

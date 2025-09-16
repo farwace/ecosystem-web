@@ -40,6 +40,7 @@
           :vote-results="voteResults"
           :can-vote="!currentPlayer?.isEliminated"
           :eliminated="!!currentPlayer?.isEliminated"
+          :volumes="volumes"
           @touch-player="onTouchPlayer($event)"
           @touch-place="onTouchPlace($event)"
           @vote="sendVote"
@@ -57,12 +58,14 @@
 
       <div class="bunker__voice-controls" v-if="attachVoiceChat">
         <!-- Индикатор состояния голосового чата -->
-        <Component :is="VoiceChat"
+        <Component
+            :is="VoiceChat"
             v-if="liveKitToken && liveKitRoomName"
             :live-kit-token="liveKitToken"
             :live-kit-room-name="liveKitRoomName"
             :can-i-speak="canISpeak"
             :can-i-toggle-microphone="canIToggleMicrophone"
+            @volumesUpdate="onVolumesUpdate"
         />
       </div>
     </div>
@@ -179,12 +182,12 @@ const voteResults = ref<{[key:string]: string[]}>();
 const canISpeak = ref<boolean>(false);
 const canIToggleMicrophone = ref<boolean>(false);
 const isMicrophoneOn = ref<boolean>(false);
+const volumes = ref<Record<string, number>>({});
 
 const attachVoiceChat = ref<boolean>(false);
 const router = useAnimatedRouter();
 const isTouchDevide = ref<boolean>(true);
 const unbindCallbacks: any[] = [];
-const voiceError = ref<string | null>(null);
 
 const initializeGame = () => {
   const roomState = props.room.state as BunkerGameRoomState;
@@ -470,6 +473,10 @@ const showGameResultsPopup = (won: boolean, player?: TPlayer) => {
 }
 
 
+function onVolumesUpdate(v: Record<string, number>) {
+  volumes.value = v;
+}
+
 const testAction = () => {
   showGameResultsPopup(true, players.value[1]);
   return;
@@ -595,7 +602,6 @@ const topText = computed(() => {
 });
 
 const retryVoiceConnection = () => {
-  voiceError.value = null;
   requestVoiceToken();
 };
 

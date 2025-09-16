@@ -5,18 +5,7 @@
       <span v-else>🔇 Микрофон выключен</span>
     </button>
 
-    <ul class="participants">
-      <li v-for="p in participants" :key="p.sid">
-        <span>{{ p.name }}</span>
-        <div class="volume-bar">
-          <div
-              class="volume-level"
-              :style="{ width: (p.volume * 100) + '%' }"
-          ></div>
-        </div>
-      </li>
-    </ul>
-
+    <!-- сюда будут цепляться <audio> -->
     <div ref="audioContainer" style="display:none;"></div>
   </div>
 </template>
@@ -39,26 +28,26 @@ const props = defineProps<{
   canIToggleMicrophone: boolean;
 }>();
 
+const emit = defineEmits<{
+  (e: "volumesUpdate", volumes: Record<string, number>): void;
+}>();
+
 const isMicEnabled = ref(false);
 let room: Room | null = null;
 let localAudioTrack: LocalAudioTrack | null = null;
 const audioContainer = ref<HTMLDivElement | null>(null);
 
-type ParticipantUI = {
-  sid: string;
-  name: string;
-  volume: number; // [0..1]
-};
-
-const participants = ref<ParticipantUI[]>([]);
-
-// 🔊 карта sid → функция обновления громкости
-const volumeMap = new Map<string, (level: number) => void>();
-
-// коэффициент усиления громкости (по умолчанию ×10)
+// 🔊 текущие громкости
+const volumes: Record<string, number> = {};
+const prevVolumes: Record<string, number> = {};
+// коэффициент усиления
 const amplifyFactor = 10;
+// минимальная разница для апдейта
+const minDiff = 0.02;
+// таймер эмита
+let emitTimer: number | null = null;
 
-function monitorVolume(track: MediaStreamTrack, sid: string) {
+function monitorVolume(track: MediaStreamTrack, identity: string) {
   const audioCtx = new AudioContext();
   const stream = new MediaStream([track]);
   const source = audioCtx.createMediaStreamSource(stream);
@@ -78,11 +67,9 @@ function monitorVolume(track: MediaStreamTrack, sid: string) {
     }
     const rms = Math.sqrt(sumSquares / dataArray.length);
 
-    // усиливаем сигнал
     const amplified = Math.min(1, rms * amplifyFactor);
 
-    const updateFn = volumeMap.get(sid);
-    if (updateFn) updateFn(amplified);
+    volumes[identity] = amplified;
 
     requestAnimationFrame(update);
   }
@@ -103,40 +90,53 @@ async function connectToRoom() {
       audioContainer.value?.appendChild(audioEl);
 
       addParticipant(participant);
-
-      monitorVolume(track.mediaStreamTrack, participant.sid);
+      monitorVolume(track.mediaStreamTrack, participant.identity);
     }
   });
 
   room.on(RoomEvent.TrackUnsubscribed, (track: RemoteTrack, pub, participant: RemoteParticipant) => {
     track.detach().forEach((el) => el.remove());
-    removeParticipant(participant.sid);
+    removeParticipant(participant.identity);
   });
 
   room.on(RoomEvent.ParticipantDisconnected, (participant) => {
-    removeParticipant(participant.sid);
+    removeParticipant(participant.identity);
   });
 
   await room.connect(import.meta.env.VITE_LIVEKIT_URL, props.liveKitToken);
 
   addParticipant(room.localParticipant);
+
+  // 🔁 запускаем эмит 20 раз/сек
+  emitTimer = window.setInterval(() => {
+    let changed = false;
+    const out: Record<string, number> = {};
+
+    for (const [id, val] of Object.entries(volumes)) {
+      const prev = prevVolumes[id] ?? -1;
+      out[id] = val;
+      if (Math.abs(val - prev) > minDiff) {
+        changed = true;
+      }
+    }
+
+    if (changed) {
+      emit("volumesUpdate", out);
+      Object.assign(prevVolumes, out);
+    }
+  }, 50);
 }
 
 function addParticipant(p: Participant) {
-  if (participants.value.find((x) => x.sid === p.sid)) return;
-  participants.value.push({ sid: p.sid, name: p.identity, volume: 0 });
-
-  volumeMap.set(p.sid, (level: number) => {
-    const idx = participants.value.findIndex((x) => x.sid === p.sid);
-    if (idx !== -1) {
-      participants.value[idx].volume = level;
-    }
-  });
+  if (!volumes[p.identity]) {
+    volumes[p.identity] = 0;
+    prevVolumes[p.identity] = 0;
+  }
 }
 
-function removeParticipant(sid: string) {
-  participants.value = participants.value.filter((p) => p.sid !== sid);
-  volumeMap.delete(sid);
+function removeParticipant(identity: string) {
+  delete volumes[identity];
+  delete prevVolumes[identity];
 }
 
 async function enableMicrophone() {
@@ -149,7 +149,7 @@ async function enableMicrophone() {
       localAudioTrack = new LocalAudioTrack(track);
       await room.localParticipant.publishTrack(localAudioTrack);
 
-      monitorVolume(track, room.localParticipant.sid);
+      monitorVolume(track, room.localParticipant.identity);
     }
     if (localAudioTrack.isMuted) {
       await localAudioTrack.unmute();
@@ -184,7 +184,7 @@ onBeforeUnmount(() => {
   room?.disconnect();
   localAudioTrack?.stop();
   localAudioTrack = null;
-  volumeMap.clear();
+  if (emitTimer) clearInterval(emitTimer);
 });
 </script>
 
@@ -196,33 +196,5 @@ onBeforeUnmount(() => {
   padding: 10px;
   border-radius: 6px;
   cursor: pointer;
-  margin-bottom: 10px;
-}
-
-.participants {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.participants li {
-  display: flex;
-  align-items: center;
-  margin: 4px 0;
-}
-
-.volume-bar {
-  flex: 1;
-  height: 6px;
-  background: #333;
-  margin-left: 8px;
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.volume-level {
-  height: 100%;
-  background: limegreen;
-  transition: width 0.15s linear;
 }
 </style>
