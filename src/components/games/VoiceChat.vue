@@ -1,6 +1,6 @@
 <template>
   <div class="voice-chat">
-    <button v-if="canIToggleMicrophone" @click="toggleMicrophone">
+    <button v-if="canISpeak" @click="toggleMicrophone">
       <span v-if="isMicEnabled">🎤 Микрофон включён</span>
       <span v-else>🔇 Микрофон выключен</span>
     </button>
@@ -30,7 +30,6 @@ const props = defineProps<{
   liveKitToken: string;
   liveKitRoomName: string;
   canISpeak: boolean;
-  canIToggleMicrophone: boolean;
 }>();
 
 const emit = defineEmits<{

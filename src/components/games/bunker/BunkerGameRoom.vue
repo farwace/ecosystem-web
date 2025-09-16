@@ -64,7 +64,6 @@
             :live-kit-token="liveKitToken"
             :live-kit-room-name="liveKitRoomName"
             :can-i-speak="canISpeak"
-            :can-i-toggle-microphone="canIToggleMicrophone"
             @volumesUpdate="onVolumesUpdate"
         />
       </div>
@@ -180,7 +179,6 @@ const canSendCard = ref<boolean>(false);
 const isVoted = ref<boolean>(false);
 const voteResults = ref<{[key:string]: string[]}>();
 const canISpeak = ref<boolean>(false);
-const canIToggleMicrophone = ref<boolean>(false);
 const isMicrophoneOn = ref<boolean>(false);
 const volumes = ref<Record<string, number>>({});
 
@@ -325,11 +323,7 @@ const initializeGame = () => {
   props.room?.onMessage?.('voiceStatusUpdate', async (message: {currentSpeaker: string, voiceStatus: {[playerId: string]: boolean}}) => {
     Console.log('>>> VOICE_STATUS_UPDATE <<<<<', message);
 
-    if(currentSpeakerId.value == "" || currentSpeakerId.value == "0"){
-      canIToggleMicrophone.value = true;
-    }
     if(currentSpeakerId.value == currentPlayer.value?.id){
-      canIToggleMicrophone.value = false;
       canISpeak.value = true;
     }
 
