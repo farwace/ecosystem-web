@@ -16,7 +16,7 @@
 <!--    <div class="settings-block">
       <MenuItem @click="openSettings" icon="settings">Настройки</MenuItem>
     </div>-->
-    <div class="add-to-block" v-if="!inFavorites && !inHomeScreen">
+    <div class="add-to-block" v-if="!inFavorites && !inHomeScreen && false">
       <div @click="addToFavorite" class="add-to-favorite" v-if="!inFavorites">
         <ui-icon class="favorite-icon" name="star"/>
         <span>Добавить в<br/>избранное</span>
