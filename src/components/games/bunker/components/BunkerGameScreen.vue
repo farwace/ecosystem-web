@@ -68,7 +68,7 @@ const subText = computed(() => {
       return 'Знакомство';
     }
     if(props.stage == 'results' && (props.timer || 0) > 0){
-      return 'Результаты';
+      //return 'Результаты';
     }
   }
   if(props.roomStatus == 'finished'){
