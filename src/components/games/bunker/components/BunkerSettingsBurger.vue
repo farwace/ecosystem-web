@@ -8,8 +8,8 @@
         Игроки
         <bunker-players-count-toggle :players-count="playersCount || 8" @minus="emit('minus')" @plus="emit('plus')" />
       </div>
-      <div class="item" @click="onSettingsClick">Настройки</div>
-      <div class="item" @click="onRulesClick">Правила игры</div>
+<!--      <div class="item" @click="onSettingsClick">Настройки</div>-->
+<!--      <div class="item" @click="onRulesClick">Правила игры</div>-->
       <div class="item" @click="onLeaveClick">Выйти</div>
     </div>
   </div>

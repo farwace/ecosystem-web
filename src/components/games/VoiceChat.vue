@@ -1,9 +1,9 @@
 <template>
   <div class="voice-chat">
-    <button v-if="canISpeak" @click="toggleMicrophone">
-      <span v-if="isMicEnabled">🎤 Микрофон включён</span>
-      <span v-else>🔇 Микрофон выключен</span>
-    </button>
+    <BunkerButton class="button" v-if="canISpeak" @click="toggleMicrophone">
+      <div class="btn-content" v-if="isMicEnabled"><span>🎤</span><span>Микрофон включён</span></div>
+      <div class="btn-content" v-else><span>🔇</span><span>Микрофон выключен</span></div>
+    </BunkerButton>
 
     <!-- сюда будут цепляться <audio> -->
     <div ref="audioContainer" style="display:none;"></div>
@@ -24,6 +24,7 @@ import {
 import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
 import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
 import {Console} from "@/classes/utils/Console.ts";
+import BunkerButton from "@/components/games/bunker/components/BunkerButton.vue";
 const notificationsProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
 
 const props = defineProps<{
@@ -209,12 +210,22 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.voice-chat button {
-  background: #444;
-  color: white;
-  border: none;
-  padding: 10px;
-  border-radius: 6px;
-  cursor: pointer;
+.voice-chat {
+  :deep(.game-btn__content){
+    padding: 5px 10px;
+  }
+  .button {
+    background: #444;
+    color: white;
+    border: none;
+    line-height: 14px;
+
+    .btn-content{
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
+      gap: 2px;
+    }
+  }
 }
 </style>

@@ -53,6 +53,8 @@ const props = defineProps<{
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
+    width: 100%;
+    overflow: hidden;
   }
 
   &__picture{

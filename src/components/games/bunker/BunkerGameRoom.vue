@@ -51,7 +51,7 @@
         </BunkerButton>
       </div>
       <transition name="opacity">
-        <div style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);" v-if="currentSpeakerId == id && (cardRevealTimeRemaining || 0) > 1 && (cardRevealTimeRemaining || 0) < 12">
+        <div class="bunker__cards-help" v-if="currentSpeakerId == id && (cardRevealTimeRemaining || 0) > 1 && (cardRevealTimeRemaining || 0) < 12">
           <vue3-lottie :animationLink="isTouchDevide ? '/assets/lottie/send-card-help-mobile.json' : '/assets/lottie/send-card-help-desktop.json'" :height="180" :width="180" :auto-play="true" :loop="true"/>
         </div>
       </transition>
@@ -861,7 +861,11 @@ onBeforeUnmount(() => {
     position: absolute;
     bottom: 0;
     text-align: center;
-    width: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    font-size: 14px;
+    width: 125px;
   }
 
   &__controls{
@@ -871,6 +875,14 @@ onBeforeUnmount(() => {
     bottom: 40px;
     display: flex;
     flex-direction: row;
+  }
+
+  &__cards-help{
+    position: absolute;
+    bottom: 48px;
+    left: 50%;
+    z-index: 2;
+    transform: translateX(-50%);
   }
 
   &__places{
