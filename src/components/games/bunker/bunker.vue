@@ -86,7 +86,7 @@ if(props.roomId){
   }
   catch (e: any){
     Console.log('>>> JOIN BY ID ERROR', e);
-    error.value = 'Не удалось присоединиться к игровой комнате';
+    error.value = 'Не удалось найти игровую комнату или все места заняты';
   }
 }
 else{
