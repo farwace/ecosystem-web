@@ -23,6 +23,25 @@
       </div>
     </div>
 
+    <transition name="opacity">
+      <div class="return-to-game" v-if="inGameRoom?.roomId">
+        <div class="return-to-game__close">
+          <UiIcon name="close" @click="inGameRoom = undefined"/>
+        </div>
+        <div v-if="inGameRoom?.code == 'bunker'" class="bunker" @click="returnToRoom(inGameRoom.roomId)">
+          <div class="bunker__title">
+            Вернуться в игру?
+          </div>
+          <div class="bunker__image">
+            <img src="/assets/img/games/bunker/return.png" alt="Вернуться в игру">
+          </div>
+          <div class="bunker__button">
+            Играть
+          </div>
+        </div>
+      </div>
+    </transition>
+
   </div>
 </template>
 <script lang="ts" setup>
@@ -42,13 +61,21 @@ import {inject} from "vue";
 import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
 import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
 import type {TDailyReward} from "@/modules/EventsModule/Types/TDailyRevard.ts";
+import {gameStore} from "@/stores/Game/gameStore.ts";
 
 const {id, firstName, avatar} = storeToRefs(ecosystemStore());
 const {inFavorites, inHomeScreen} = storeToRefs(bridgeStore());
 const {hasUnclaimedCompletedAchievement} = storeToRefs(achievementsStore());
 const router = useAnimatedRouter();
+const {inGameRoom} = storeToRefs(gameStore());
+
+
 
 const notificationsProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
+
+const returnToRoom = (roomId: string) => {
+  router.push({name: 'bunkerGame', query: {"room_id": roomId}});
+}
 
 const openSettings = () => {
 
@@ -137,6 +164,66 @@ const addToFavorite = () => {
       .dark-bg-2{
         fill: #E97B40;
       }
+    }
+  }
+
+  .return-to-game{
+    .bunker{
+      background-color: #222222;
+      color: #939393;
+
+      &__button{
+        background-color: #E97B40;
+        border-color: #B1742B;
+        color: #FFF6E9;
+      }
+    }
+  }
+}
+
+.return-to-game{
+  position: fixed;
+  z-index: 10;
+  right: 15px;
+  bottom: 40px;
+
+  &__close{
+    position: absolute;
+    cursor: pointer;
+    top: -15px;
+    right: -10px;
+    svg{
+      width: 30px;
+      height: 30px;
+    }
+  }
+
+  .bunker{
+    padding: 10px;
+    border-radius: 12px;
+    text-align: center;
+    font-weight: 600;
+    cursor: pointer;
+    background-color: #FFE6C2;
+    color: #976129;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    &__title{
+      margin-bottom: 5px;
+    }
+
+    &__button{
+      cursor: pointer;
+      margin-top: -20px;
+      position: relative;
+      border-radius: 100px;
+      background-color: #FFD06D;
+      border: 3px solid #B1742B;
+      padding: 2px 30px;
+      margin-bottom: 5px;
     }
   }
 }
