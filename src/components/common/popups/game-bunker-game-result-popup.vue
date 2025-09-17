@@ -3,38 +3,37 @@
     <div class="results__picture">
       <img :src="pictureSrc" alt="Результат игры">
     </div>
-    <div class="loose__text" v-if="!won">
-      <div class="results-button">
-        <div class="btn" @click="$emit('close')">
-          Продолжить
-        </div>
-      </div>
-      <div v-if="canShareResult" class="share-result">
-        <div class="share-button">
-          <div class="btn">
-            Поделиться поражением
-            <div class="share-prize">+100<UiIcon name="middle-money" /></div>
+    <div class="results__text">
+      <div v-if="experience || coins">
+        <div v-if="canShareResult" class="share-result" :class="{won: won}">
+          <div class="share-button">
+            <div class="btn">
+              <template v-if="!won">
+                Поделиться поражением
+              </template>
+              <template v-else>
+                Поделиться победой
+              </template>
+
+              <div class="share-prize">+100<UiIcon name="middle-money" /></div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-    <div class="results__text" v-if="won">
-      <template v-if="won">
-        <div class="results__prize">
+        <div class="results__prize" :class="{won: won, 'can-share': canShareResult}">
           <div>
             Награда:
           </div>
           <div class="items">
-            <div class="item" v-if="money">
-              <UiIcon name="middle-money" />
+            <div class="item" v-if="coins">
+              <UiIcon name="middle-money" /> {{ coins }}
             </div>
-            <div class="item">
-              <UiIcon name="experience" /> 20
+            <div class="item" v-if="experience">
+              <UiIcon name="experience" /> {{ experience }}
             </div>
           </div>
         </div>
-      </template>
-      <div class="results-button" :class="{won: won}">
+      </div>
+      <div class="results-button won">
         <div class="btn" @click="$emit('close')">
           Продолжить
         </div>
@@ -54,7 +53,8 @@ const canShareResult = ref<boolean>(false);
 const props = defineProps<{
   user?: TUser,
   won?: boolean,
-  money?: number,
+  experience?: number,
+  coins?: number,
 }>();
 
 const emits = defineEmits(['close']);
@@ -84,6 +84,17 @@ const pictureSrc = computed(() => {
 
 </script>
 <style lang="scss" scoped>
+
+.share-result{
+  position: absolute;
+  right: 0;
+  left: 0;
+  top: -50px;
+
+  &.won{
+    top: -25px;
+  }
+}
 
 .share-button{
   margin-top: 20px;
@@ -168,6 +179,13 @@ const pictureSrc = computed(() => {
           width: 30px;
           height: 30px;
         }
+      }
+    }
+
+
+    &.won{
+      &.can-share{
+        padding-top: 24px;
       }
     }
   }
