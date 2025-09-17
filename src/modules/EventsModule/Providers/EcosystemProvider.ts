@@ -29,6 +29,8 @@ import {themeStore} from "@/stores/Theme/themeStore.ts";
 import type {IThemeStore} from "@/stores/Theme/IThemeStore.ts";
 import {UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
 import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.ts";
+import type {IGameStore} from "@/stores/Game/IGameStore.ts";
+import {gameStore} from "@/stores/Game/gameStore.ts";
 
 @injectable()
 export class EcosystemProvider implements IEcosystemProvider{
@@ -39,6 +41,7 @@ export class EcosystemProvider implements IEcosystemProvider{
     private achievementsStore: Store<'achievements', IAchievementsStore>;
     private ecosystemStore: Store<'ecosystem', IEcosystemStore>;
     private themeStore: Store<'theme', IThemeStore>;
+    private gameStore: Store<'game', IGameStore>;
 
     constructor(
         @inject(ReverbSymbol)
@@ -56,6 +59,7 @@ export class EcosystemProvider implements IEcosystemProvider{
         this.achievementsStore = achievementsStore();
         this.ecosystemStore = ecosystemStore();
         this.themeStore = themeStore();
+        this.gameStore = gameStore();
     }
 
     install(app: App, symbol: symbol) {
@@ -160,6 +164,19 @@ export class EcosystemProvider implements IEcosystemProvider{
                 currentDay: message.data.day
             })
         });
+
+        this._reverbObserver$.pipe(
+            filter((message):message is TReverbMessage<{room_id: string}> => message.event === 'game_end'),
+        ).subscribe((message) => {
+            if(this.gameStore.$state.inGameRoom){
+                if(this.gameStore.$state.inGameRoom?.roomId == message.data.room_id){
+                    this.gameStore.$patch({
+                        inGameRoom: undefined
+                    })
+                }
+            }
+        });
+
 
         this._reverbObserver$.pipe(
             filter((message):message is TReverbMessage<any> => message.event === 'validateConnection'),

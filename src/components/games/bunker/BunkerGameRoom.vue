@@ -134,6 +134,8 @@ import {Vue3Lottie} from 'vue3-lottie';
 import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
 import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
 import {CutString} from "@/classes/utils/CutString.ts";
+import type {IGameProvider} from "@/modules/GameModule/Interfaces/IGameProvider.ts";
+import {GameProviderSymbol} from "@/modules/GameModule/symbols.ts";
 
 const VoiceChat = defineAsyncComponent(() =>
     import ('./../VoiceChat.vue')
@@ -146,7 +148,8 @@ const props = defineProps<{
 
 const notificationsProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
 const bridgeProvider: IPlatformEvents | undefined = inject(PlatformEventsSymbol);
-const liveKitServerUrl = import.meta.env.VITE_LIVEKIT_URL;
+const gameProvider: IGameProvider | undefined = inject(GameProviderSymbol);
+
 const liveKitToken = ref<string>();
 const liveKitRoomName = ref<string>();
 
@@ -223,6 +226,12 @@ const initializeGame = () => {
   }));
   unbindCallbacks.push($(props.room.state).listen("status", (currentValue, previousValue) => {
     status.value = currentValue;
+    if(status.value == 'playing'){
+      gameProvider?.setInGame({
+        roomId: props.room.roomId,
+        code: 'bunker'
+      })
+    }
   }));
   unbindCallbacks.push($(props.room.state).listen("turnTimeLimit", (currentValue, previousValue) => {
     turnTimeLimit.value = currentValue;
@@ -426,7 +435,7 @@ const initializeGame = () => {
     //todo: отображение модального окна с результатами и предложением выложить историю или просмотреть рекламу за двойную награду
     Console.log('>>> GAME FINISHED', message);
     const isWon = !!message?.results?.filter?.((obInfo: any ) => obInfo?.playerId == id.value)?.[0]?.isWinner;
-    showGameResultsPopup(isWon, currentPlayer.value);
+    //showGameResultsPopup(isWon, currentPlayer.value);
   });
 
 }
@@ -449,23 +458,20 @@ const showEliminatedPlayerPopup = (isEliminated: boolean, player?: TPlayer) => {
 }
 
 const showGameResultsPopup = (won: boolean, player?: TPlayer) => {
-  notificationsProvider?.addPopup('finish-game-popup', 'game-bunker-game-result-popup', {
-    darkBg: true,
-    modal: true,
-    noTitle: true,
-    noCloseButton: true,
-    noClose: true,
-    noPaddings: true,
-    noBackground: true,
-    fullHeight: true,
-    noMaxHeight: true,
-    class: 'game-bunker',
-    won: won,
-    player: player,
-  });
-  setTimeout(() => {
-    notificationsProvider?.removePopup?.('player-eliminated-popup');
-  }, 5000);
+  // notificationsProvider?.addPopup('finish-game-popup', 'game-bunker-game-result-popup', {
+  //   darkBg: true,
+  //   modal: true,
+  //   noTitle: true,
+  //   noCloseButton: true,
+  //   noClose: true,
+  //   noPaddings: true,
+  //   noBackground: true,
+  //   fullHeight: true,
+  //   noMaxHeight: true,
+  //   class: 'game-bunker',
+  //   won: won,
+  //   player: player,
+  // });
 }
 
 

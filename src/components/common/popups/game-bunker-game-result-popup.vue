@@ -45,15 +45,14 @@
   </div>
 </template>
 <script lang="ts" setup>
-import type {TPlayer} from "@/components/games/bunker/types.ts";
 import {computed, ref} from "vue";
-import {CutString} from "@/classes/utils/CutString.ts";
 import UiIcon from "@/components/common/icons/UiIcon.vue";
+import type {TUser} from "@/stores/Ecosystem/Types/TUser.ts";
 
 const canShareResult = ref<boolean>(false);
 
 const props = defineProps<{
-  player?: TPlayer,
+  user?: TUser,
   won?: boolean,
   money?: number,
 }>();
@@ -61,7 +60,7 @@ const props = defineProps<{
 const emits = defineEmits(['close']);
 
 const pictureSrc = computed(() => {
-  const male = !!props.player?.isMale;
+  const male = props.user?.sex != 1;
   const won = props.won;
 
   if(!won){

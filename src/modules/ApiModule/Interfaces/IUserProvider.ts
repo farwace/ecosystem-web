@@ -5,6 +5,7 @@ import type {TUserProfile} from "@/modules/ApiModule/Types/TUserProfile.ts";
 import type {TUser} from "@/stores/Ecosystem/Types/TUser.ts";
 import type {TGift} from "@/stores/Ecosystem/Types/TGift.ts";
 import type {TRequestScopeResponse} from "@/modules/ApiModule/Types/TRequestScopeResponse.ts";
+import type {TInGameInfo} from "@/stores/Game/Types/TInGameInfo.ts";
 
 export interface IUserProvider  extends IModule{
     getUserInfo: () => Promise<void>;
@@ -21,5 +22,5 @@ export interface IUserProvider  extends IModule{
     getPopularityRating: () => Promise<TResponse<TUser[]>>;
     queryAuthToken: (scope: string) => Promise<TResponse<TRequestScopeResponse>>;
     setAuthToken: (accessToken: string, scope: string, expires: number) => Promise<TResponse<boolean>>;
-
+    sendGameStarted: (game: TInGameInfo) => Promise<void>;
 }

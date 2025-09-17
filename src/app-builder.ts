@@ -21,9 +21,9 @@ import type {IGiftsProvider} from "@/modules/ApiModule/Interfaces/IGiftsProvider
 import {GiftsProvider} from "@/modules/ApiModule/Providers/GiftsProvider.ts";
 import type {IBalanceProvider} from "@/modules/ApiModule/Interfaces/IBalanceProvider.ts";
 import {BalanceProvider} from "@/modules/ApiModule/Providers/BalanceProvider.ts";
-// import type {ILiveKitProvider} from "@/modules/LiveKitModule/Interfaces/ILiveKitProvider.ts";
-// import {LiveKitSymbol} from "@/modules/LiveKitModule/symbols.ts";
-// import {LiveKitProvider} from "@/modules/LiveKitModule/Providers/LiveKitProvider.ts";
+import {GameProviderSymbol} from "@/modules/GameModule/symbols.ts";
+import {GameProvider} from "@/modules/GameModule/Providers/GameProvider.ts";
+import type {IGameProvider} from "@/modules/GameModule/Interfaces/IGameProvider.ts";
 
 export const AppBuilder = () => {
     return {
@@ -42,6 +42,10 @@ export const AppBuilder = () => {
             container.bind<IUserProvider>(UserProviderSymbol).to(UserProvider).inSingletonScope();
             const userProvider = container.get<IUserProvider>(UserProviderSymbol);
             userProvider.install($app, UserProviderSymbol);
+
+            container.bind<IGameProvider>(GameProviderSymbol).to(GameProvider).inSingletonScope();
+            const gameProvider = container.get<IGameProvider>(GameProviderSymbol);
+            gameProvider.install($app, GameProviderSymbol);
 
             const notificationsProvider = container.get<INotificationsProvider>(NotificationsSymbol);
             notificationsProvider.install($app, NotificationsSymbol);
@@ -67,9 +71,6 @@ export const AppBuilder = () => {
             const ecosystemProvider = container.get<IEcosystemProvider>(EcosystemSymbol);
             ecosystemProvider.install($app, EcosystemSymbol);
 
-            // container.bind<ILiveKitProvider>(LiveKitSymbol).to(LiveKitProvider).inSingletonScope();
-            // const liveKitProvider = container.get<ILiveKitProvider>(LiveKitSymbol);
-            // liveKitProvider.install($app, LiveKitSymbol);
         }
     }
 }

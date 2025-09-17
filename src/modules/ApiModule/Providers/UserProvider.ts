@@ -11,6 +11,7 @@ import type {TUserProfile} from "@/modules/ApiModule/Types/TUserProfile.ts";
 import type {TUser} from "@/stores/Ecosystem/Types/TUser.ts";
 import type {TGift} from "@/stores/Ecosystem/Types/TGift.ts";
 import type {TRequestScopeResponse} from "@/modules/ApiModule/Types/TRequestScopeResponse.ts";
+import type {TInGameInfo} from "@/stores/Game/Types/TInGameInfo.ts";
 
 @injectable()
 export class UserProvider extends ApiProvider implements IUserProvider{
@@ -200,5 +201,13 @@ export class UserProvider extends ApiProvider implements IUserProvider{
         },{
             accessToken, scope, expires
         }) as unknown as Promise<TResponse<boolean>>;
+    }
+
+    sendGameStarted = async (game: TInGameInfo): Promise<void> => {
+        await this.fetch(`${this.getApiEndpoint()}/user/game-start`, {
+            method: 'POST',
+        }, {
+            game
+        });
     }
 }
