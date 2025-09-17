@@ -11,11 +11,12 @@ import {Client, Room} from "colyseus.js";
 
 import {storeToRefs} from "pinia";
 import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
-import {inject, onBeforeUnmount, ref, shallowRef, watch} from "vue";
+import {inject, onBeforeUnmount, onMounted, ref, shallowRef, watch} from "vue";
 import BunkerGameRoom from "@/components/games/bunker/BunkerGameRoom.vue";
 import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
 import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
 import {useAnimatedRouter} from "@/classes/utils/useAnimatedRouter.ts";
+import {Console} from "@/classes/utils/Console.ts";
 
 const {authString} = storeToRefs(ecosystemStore());
 const router = useAnimatedRouter();
@@ -81,10 +82,11 @@ async function findOrCreateBunkerRoom(forceCreate = false): Promise<Room> {
 
 if(props.roomId){
   try {
-    //todo: присоединение к комнате напрямую await client.joinById(r.roomId, joinOptions);
+    room.value = await client.instance?.joinById(props.roomId, {authString: (authString.value || '').replace('Bearer ', '')});
   }
   catch (e: any){
-
+    Console.log('>>> JOIN BY ID ERROR', e);
+    error.value = 'Не удалось присоединиться к игровой комнате';
   }
 }
 else{
@@ -95,6 +97,17 @@ else{
     error.value = 'Не удалось присоединиться к игровой комнате';
   }
 }
+
+onMounted(() => {
+  if(!room.value?.roomId && error.value){
+    notificationsProvider?.addNotification({
+      type: 'error',
+      message: error.value
+    });
+
+    router.push('/');
+  }
+})
 
 onBeforeUnmount(() => {
   client.instance = null;

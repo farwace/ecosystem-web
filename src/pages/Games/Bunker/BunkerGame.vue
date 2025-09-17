@@ -1,7 +1,7 @@
 <template>
   <div class="game">
     <suspense>
-      <Bunker :neoRoom="neoRoom" :players-count="playersCount" :is-private-room="isPrivateRoom"/>
+      <Bunker :neoRoom="neoRoom" :players-count="playersCount" :is-private-room="isPrivateRoom" :room-id="roomId"/>
       <template #fallback>
         <LoadingPage />
       </template>
@@ -16,6 +16,7 @@ const route = useRoute();
 const neoRoom = !!route.query?.neo;
 const playersCount = route.query?.players as string;
 const isPrivateRoom = route.query?.private as string;
+const roomId = route.query?.room_id as string;
 
 
 </script>
