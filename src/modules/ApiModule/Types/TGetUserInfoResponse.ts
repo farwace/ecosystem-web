@@ -60,5 +60,12 @@ export type TGetUserInfoResponse = {
     authAccess: null | {
         scope: string[],
         requestedScope: string[],
+    },
+
+    inGame: null | {
+        room_id: string,
+        room_info: {
+            code: string,
+        }
     }
 }

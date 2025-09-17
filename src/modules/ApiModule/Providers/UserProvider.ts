@@ -100,6 +100,14 @@ export class UserProvider extends ApiProvider implements IUserProvider{
                 })
             }
 
+            if(resData.inGame?.room_id){
+                this.gameStore.$patch({
+                    inGameRoom: {
+                        roomId: resData.inGame.room_id,
+                        code: resData.inGame.room_info.code
+                    }
+                })
+            }
         }
         catch (e){
             await this.platformEvents.setApplicationLoadError();
