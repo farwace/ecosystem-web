@@ -58,7 +58,15 @@ export class GameProvider implements IGameProvider {
         }
         const router = useAnimatedRouter();
         if(obParameters?.['game'] == 'bunker' && obParameters?.['room']){
-            router.push({name: 'bunkerGame', query: {"room_id": obParameters['room']}});
+            console.log('>>> CHANGE FRAGMENT >>>');
+            console.log({name: 'bunkerGame', query: {"room_id": obParameters['room']}});
+            console.log('<<< CHANGE FRAGMENT <<<');
+            try {
+                router.push({name: 'bunkerGame', query: {"room_id": obParameters['room']}});
+            }
+            catch (e: any){
+                console.log(e);
+            }
         }
     }
 }
