@@ -227,9 +227,9 @@ export class BridgeEventsProvider implements IPlatformEvents {
     }
 
     getGameNameByCode = (gameCode?: string) => {
-        if(!gameCode) return ' игру';
+        if(!gameCode) return 'игру';
         if(gameCode == 'bunker'){
-            return ' Убежище'
+            return 'Убежище'
         }
     }
 }
