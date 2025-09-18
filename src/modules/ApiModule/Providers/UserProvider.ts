@@ -90,14 +90,15 @@ export class UserProvider extends ApiProvider implements IUserProvider{
             //При входе в приложение если есть уже разрешения - переспросить чтобы обновить токен
             if(((resData?.authAccess?.scope || [])?.length || 0) > 0){
                 const scopeList = (resData?.authAccess?.scope || []).join(',');
-                this.platformEvents.getAuthToken({
-                    scope: scopeList,
-                    app_id: import.meta.env.VITE_VK_APP_ID
-                }).then((data) => {
-                    if(data.accessToken){
-                        this.setAuthToken(data.accessToken, data.scope, (data?.expires || 0))
-                    }
-                })
+                //todo: убрать запрос если нет раздела друзья
+                // this.platformEvents.getAuthToken({
+                //     scope: scopeList,
+                //     app_id: import.meta.env.VITE_VK_APP_ID
+                // }).then((data) => {
+                //     if(data.accessToken){
+                //         this.setAuthToken(data.accessToken, data.scope, (data?.expires || 0))
+                //     }
+                // })
             }
 
             if(resData.inGame?.room_id){
