@@ -48,6 +48,23 @@ export class BridgeEventsProvider implements IPlatformEvents {
                 authString: `Bearer ${window.location.search.slice(1)}`
             });
         });
+
+        try {
+            const res = await bridge.send('VKWebAppGetConfig');
+            /*@ts-ignore*/
+            if(['space_gray', 'vkcom_dark'].indexOf(res?.scheme) > -1){
+                this.themeStore.$patch({
+                    theme: 'dark'
+                });
+            }
+            /*@ts-ignore*/
+            if(['bright_light', 'vkcom_light'].indexOf(res?.scheme) > -1){
+                this.themeStore.$patch({
+                    theme: 'light'
+                })
+            }
+        }
+        catch (e: any){}
     }
 
     getEmitter():Subject<VKBridgeEvent<keyof ReceiveDataMap>>{

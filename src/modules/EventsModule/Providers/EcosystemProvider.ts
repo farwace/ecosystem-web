@@ -24,13 +24,21 @@ import {achievementsStore} from "@/stores/Achievements/achievementsStore.ts";
 import type {IAchievementsStore} from "@/stores/Achievements/IAchievementsStore.ts";
 import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
 import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
-import type {ParentConfigData, ReceiveDataMap, SharedUpdateConfigData, VKBridgeEvent} from "@vkontakte/vk-bridge";
+import type {
+    ChangeFragmentResponse,
+    ParentConfigData,
+    ReceiveDataMap,
+    SharedUpdateConfigData,
+    VKBridgeEvent
+} from "@vkontakte/vk-bridge";
 import {themeStore} from "@/stores/Theme/themeStore.ts";
 import type {IThemeStore} from "@/stores/Theme/IThemeStore.ts";
 import {UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
 import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.ts";
 import type {IGameStore} from "@/stores/Game/IGameStore.ts";
 import {gameStore} from "@/stores/Game/gameStore.ts";
+import {GameProviderSymbol} from "@/modules/GameModule/symbols.ts";
+import type {IGameProvider} from "@/modules/GameModule/Interfaces/IGameProvider.ts";
 
 @injectable()
 export class EcosystemProvider implements IEcosystemProvider{
@@ -52,6 +60,8 @@ export class EcosystemProvider implements IEcosystemProvider{
         private platformEventsProvider: IPlatformEvents,
         @inject(UserProviderSymbol)
         private userProvider: IUserProvider,
+        @inject(GameProviderSymbol)
+        private gameProvider: IGameProvider,
     ) {
         this._reverbObserver$ = this.reverbProvider.getReverbObserver$();
         this._bridgeObserver$ = this.platformEventsProvider.getEmitter();
@@ -249,6 +259,15 @@ export class EcosystemProvider implements IEcosystemProvider{
                 this.themeStore.$patch({
                     theme: 'light'
                 })
+            }
+        });
+
+        this._bridgeObserver$.pipe(
+            filter((message):message is VKBridgeEvent<'VKWebAppChangeFragment'> => message.detail?.type === 'VKWebAppChangeFragment'),
+        ).subscribe(message => {
+            const data = message.detail.data as unknown as ChangeFragmentResponse;
+            if(data?.location){
+                this.gameProvider.navigateToGame(data.location);
             }
         })
     }

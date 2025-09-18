@@ -7,6 +7,7 @@ import {gameStore} from "@/stores/Game/gameStore.ts";
 import {UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
 import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.ts";
 import type {TInGameInfo} from "@/stores/Game/Types/TInGameInfo.ts";
+import {useAnimatedRouter} from "@/classes/utils/useAnimatedRouter.ts";
 
 @injectable()
 export class GameProvider implements IGameProvider {
@@ -41,5 +42,23 @@ export class GameProvider implements IGameProvider {
             this.setInGame(game);
         }
         catch (e: any){}
+    }
+
+    navigateToGame = (location?:string) => {
+        if(!location){
+            return;
+        }
+        const fragments = location.split('---');
+        const obParameters: {[key: string]: any} = {};
+        for(let i = 0; i < fragments.length; i++){
+            const param = fragments[i].split('=');
+            if(param[0] && param[1]){
+                obParameters[param[0]] = param[1];
+            }
+        }
+        const router = useAnimatedRouter();
+        if(obParameters?.['game'] == 'bunker' && obParameters?.['room']){
+            router.push({name: 'bunkerGame', query: {"room_id": obParameters['room']}});
+        }
     }
 }
