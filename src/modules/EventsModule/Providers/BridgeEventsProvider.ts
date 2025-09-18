@@ -25,6 +25,7 @@ export class BridgeEventsProvider implements IPlatformEvents {
     private themeStore: Store<'theme', IThemeStore>
     private arLaunchParams: any = undefined;
     private _isDesktop = false;
+    private _platform = '';
     constructor(
         @inject(NotificationsSymbol)
         private notificationsProvider: INotificationsProvider
@@ -101,8 +102,7 @@ export class BridgeEventsProvider implements IPlatformEvents {
                 document.documentElement.setAttribute('desktop' , '1');
                 this._isDesktop = true;
             }
-
-
+            this._platform = launchParams.vk_platform;
 
         }
         catch (e) {
@@ -211,12 +211,15 @@ export class BridgeEventsProvider implements IPlatformEvents {
 
     inviteFriendToGame = async (roomId: string, gameCode: string) => {
         const userId = this.ecosystemStore.$state.id;
+        const obData: {[key: string]: string} = {
+            link: import.meta.env.VITE_VK_APP_URL + '#user_id=' + userId + '---game='+ gameCode +'---room=' + roomId,
+        }
+        if(['mobile_android', 'mobile_ipad', 'mobile_iphone', 'mobile_android_messenger', 'mobile_iphone_messenger'].indexOf(this._platform) > -1){
+            obData['text'] = 'Заходи ко мне в ' + this.getGameNameByCode(gameCode) + '! Срочно нужен сокомандник!';
+        }
         try {
-            await bridge.send('VKWebAppShare', {
-                link: import.meta.env.VITE_VK_APP_URL + '#user_id=' + userId + '---game='+ gameCode +'---room=' + roomId,
-                /** @ts-ignore */
-                text: 'Заходи ко мне в ' + this.getGameNameByCode(gameCode) + '! Срочно нужен сокомандник!'
-            })
+            /**@ts-ignore*/
+            await bridge.send('VKWebAppShare', obData)
         }
         catch (e: any) {}
     }
