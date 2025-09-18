@@ -265,6 +265,9 @@ export class EcosystemProvider implements IEcosystemProvider{
         this._bridgeObserver$.pipe(
             filter((message):message is VKBridgeEvent<'VKWebAppChangeFragment'> => message.detail?.type === 'VKWebAppChangeFragment'),
         ).subscribe(message => {
+            console.log('>>> CHANGE FRAGMENT >>>');
+            console.log(message);
+            console.log('<<< CHANGE FRAGMENT <<<');
             const data = message.detail.data as unknown as ChangeFragmentResponse;
             if(data?.location){
                 this.gameProvider.navigateToGame(data.location);
