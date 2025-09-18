@@ -24,7 +24,7 @@ onBeforeMount(() => {
   let currentHash = window.location.hash;
   if(currentHash.length > 0){
     currentHash = currentHash.replace('#', '');
-    gameProvider?.navigateToGame(currentHash);
+    gameProvider?.navigateToGame?.(currentHash);
   }
 });
 

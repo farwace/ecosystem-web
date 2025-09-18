@@ -44,7 +44,7 @@ export class GameProvider implements IGameProvider {
         catch (e: any){}
     }
 
-    navigateToGame = (location?:string) => {
+    navigateToGame = async (location?:string) => {
         if(!location){
             return;
         }
@@ -62,7 +62,7 @@ export class GameProvider implements IGameProvider {
             console.log({name: 'bunkerGame', query: {"room_id": obParameters['room']}});
             console.log('<<< CHANGE FRAGMENT <<<');
             try {
-                router.push({name: 'bunkerGame', query: {"room_id": obParameters['room']}}).catch((e: any) => {
+                await router.push({name: 'bunkerGame', query: {"room_id": obParameters['room']}}).catch((e: any) => {
                     console.log(e);
                 });
             }

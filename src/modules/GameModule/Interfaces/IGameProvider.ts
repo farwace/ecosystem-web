@@ -5,5 +5,5 @@ export interface IGameProvider extends IModule {
     removeInGame: () => void;
     setInGame: (game: TInGameInfo) => void;
     sendGameStarted: (game: TInGameInfo) => Promise<void>;
-    navigateToGame: (location: string) => void;
+    navigateToGame: (location: string) => Promise<void>;
 }
