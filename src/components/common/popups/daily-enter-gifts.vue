@@ -164,7 +164,7 @@ const receiveDailyReward = async () => {
   &__list{
     position: relative;
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
     font-size: 14px;
     gap: 3px 2px;
@@ -334,6 +334,33 @@ const receiveDailyReward = async () => {
   .get-reward{
     background-color: #e8703e;
     border-color: #DE6431;
+  }
+}
+
+@media(max-width: 340px){
+  .daily-rewards__title{
+    font-size: 18px;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+  }
+
+  .daily-rewards__subtitle{
+    font-size: 14px;
+    line-height: 16px;
+  }
+  .daily-enter-photo{
+    max-height: 15vh;
+  }
+  .daily-rewards__alert{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+  .daily-rewards__receive{
+    .get-reward{
+      font-size: 18px;
+      padding: 5px 12px;
+    }
   }
 }
 </style>
