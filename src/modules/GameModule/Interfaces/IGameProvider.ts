@@ -6,4 +6,5 @@ export interface IGameProvider extends IModule {
     setInGame: (game: TInGameInfo) => void;
     sendGameStarted: (game: TInGameInfo) => Promise<void>;
     navigateToGame: (location: string) => Promise<void>;
+    setRouter: (router: any) => void;
 }

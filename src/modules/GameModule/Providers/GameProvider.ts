@@ -7,17 +7,22 @@ import {gameStore} from "@/stores/Game/gameStore.ts";
 import {UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
 import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.ts";
 import type {TInGameInfo} from "@/stores/Game/Types/TInGameInfo.ts";
-import {useAnimatedRouter} from "@/classes/utils/useAnimatedRouter.ts";
+
 
 @injectable()
 export class GameProvider implements IGameProvider {
     protected readonly gameStore: Store<'game', IGameStore>;
+    protected animatedRouter: any;
 
     constructor(
         @inject(UserProviderSymbol)
         private userProvider: IUserProvider,
     ) {
         this.gameStore = gameStore();
+    }
+
+    setRouter = (router: any) => {
+        this.animatedRouter = router;
     }
 
     install(app: App, symbol: symbol) {
@@ -56,15 +61,13 @@ export class GameProvider implements IGameProvider {
                 obParameters[param[0]] = param[1];
             }
         }
-        const router = useAnimatedRouter();
+
         if(obParameters?.['game'] == 'bunker' && obParameters?.['room']){
             console.log('>>> CHANGE FRAGMENT >>>');
             console.log({name: 'bunkerGame', query: {"room_id": obParameters['room']}});
             console.log('<<< CHANGE FRAGMENT <<<');
             try {
-                await router.push({name: 'bunkerGame', query: {"room_id": obParameters['room']}}).catch((e: any) => {
-                    console.log(e);
-                });
+                await this.animatedRouter?.push?.({name: 'bunkerGame', query: {"room_id": obParameters['room']}});
             }
             catch (e: any){
                 console.log(e);

@@ -13,11 +13,15 @@ import {themeStore} from "@/stores/Theme/themeStore.ts";
 import {inject, onBeforeMount, watch} from "vue";
 import type {IGameProvider} from "@/modules/GameModule/Interfaces/IGameProvider.ts";
 import {GameProviderSymbol} from "@/modules/GameModule/symbols.ts";
+import {useAnimatedRouter} from "@/classes/utils/useAnimatedRouter.ts";
 
 const {theme} = storeToRefs(themeStore());
 const gameProvider: IGameProvider | undefined = inject(GameProviderSymbol);
 
+const router = useAnimatedRouter();
+
 onBeforeMount(() => {
+  gameProvider?.setRouter(router);
   theme.value = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   document.documentElement.setAttribute('theme' , theme.value);
 
@@ -30,7 +34,7 @@ onBeforeMount(() => {
 
 watch(theme, (neoTheme) => {
   document.documentElement.setAttribute('theme' , neoTheme);
-})
+});
 </script>
 
 
