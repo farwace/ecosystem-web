@@ -45,11 +45,12 @@ export class BridgeEventsProvider implements IPlatformEvents {
     async init(){
         await this.queryLaunchParams();
         let AuthString = `Bearer ${window.location.search.slice(1)}`;
-        if(this.ecosystemStore.$state.launchParams){
+        const lp = this.ecosystemStore.$state.launchParams;
+        if(lp){
             let launchString = '';
-            Object.keys(this.ecosystemStore.$state.launchParams).forEach((k) => {
+            Object.keys(lp).forEach((k) => {
                 /* @ts-ignore */
-                launchString += k + '=' + state.launchParams[k] + '&';
+                launchString += k + '=' + lp[k] + '&';
             });
             if(launchString.length > 1){
                 launchString = launchString.slice(0, -1);
