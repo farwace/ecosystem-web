@@ -269,6 +269,26 @@ export class EcosystemProvider implements IEcosystemProvider{
             if(data?.location){
                 this.gameProvider.navigateToGame(data.location);
             }
-        })
+        });
+
+        this._bridgeObserver$.pipe(
+            filter((message):message is VKBridgeEvent<'VKWebAppViewHide'> => message.detail?.type === 'VKWebAppViewHide'),
+        ).subscribe(message => {
+            this.gameStore.$patch({
+                isHidden: true
+            })
+        });
+
+        this._bridgeObserver$.pipe(
+            filter((message):message is VKBridgeEvent<'VKWebAppViewRestore'> => message.detail?.type === 'VKWebAppViewRestore'),
+        ).subscribe(message => {
+            this.gameStore.$patch({
+                isHidden: false
+            })
+
+        });
+
+
+
     }
 }

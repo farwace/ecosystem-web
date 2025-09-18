@@ -5,6 +5,7 @@ import type {TInGameInfo} from "@/stores/Game/Types/TInGameInfo.ts";
 
 export const gameStore = defineStore('game', {
     state: ():IGameStore => ({
-        inGameRoom: undefined
+        inGameRoom: undefined,
+        isHidden: false,
     })
 })

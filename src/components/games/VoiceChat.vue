@@ -25,7 +25,11 @@ import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfa
 import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
 import {Console} from "@/classes/utils/Console.ts";
 import BunkerButton from "@/components/games/bunker/components/BunkerButton.vue";
+import {storeToRefs} from "pinia";
+import {gameStore} from "@/stores/Game/gameStore.ts";
+
 const notificationsProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
+const {isHidden} = storeToRefs(gameStore());
 
 const props = defineProps<{
   liveKitToken: string;
@@ -45,12 +49,12 @@ const audioContainer = ref<HTMLDivElement | null>(null);
 // 🔊 текущие громкости
 const volumes: Record<string, number> = {};
 const prevVolumes: Record<string, number> = {};
-// коэффициент усиления
 const amplifyFactor = 10;
-// минимальная разница для апдейта
 const minDiff = 0.02;
-// таймер эмита
 let emitTimer: number | null = null;
+
+// список <audio> элементов для remote
+const remoteAudioElements: HTMLAudioElement[] = [];
 
 function monitorVolume(track: MediaStreamTrack, identity: string) {
   const audioCtx = new AudioContext();
@@ -89,10 +93,12 @@ async function connectToRoom() {
 
   room.on(RoomEvent.TrackSubscribed, (track: RemoteTrack, pub, participant: RemoteParticipant) => {
     if (track.kind === "audio") {
-      const audioEl = track.attach();
+      const audioEl = track.attach() as HTMLAudioElement;
       audioEl.autoplay = true;
       audioEl.controls = false;
       audioContainer.value?.appendChild(audioEl);
+
+      remoteAudioElements.push(audioEl);
 
       addParticipant(participant);
       monitorVolume(track.mediaStreamTrack, participant.identity);
@@ -100,7 +106,11 @@ async function connectToRoom() {
   });
 
   room.on(RoomEvent.TrackUnsubscribed, (track: RemoteTrack, pub, participant: RemoteParticipant) => {
-    track.detach().forEach((el) => el.remove());
+    track.detach().forEach((el) => {
+      const idx = remoteAudioElements.indexOf(el as HTMLAudioElement);
+      if (idx !== -1) remoteAudioElements.splice(idx, 1);
+      el.remove();
+    });
     removeParticipant(participant.identity);
   });
 
@@ -112,7 +122,7 @@ async function connectToRoom() {
 
   addParticipant(room.localParticipant);
 
-  // 🔁 запускаем эмит 20 раз/сек
+  // 🔁 эмит 20 раз/сек
   emitTimer = window.setInterval(() => {
     let changed = false;
     const out: Record<string, number> = {};
@@ -146,6 +156,7 @@ function removeParticipant(identity: string) {
 
 async function enableMicrophone() {
   if (!room) return;
+  if (isHidden.value) return;
 
   try {
     if (!localAudioTrack) {
@@ -174,11 +185,11 @@ async function disableMicrophone() {
 }
 
 async function toggleMicrophone() {
-  if(!props.canISpeak){
+  if (!props.canISpeak) {
     notificationsProvider?.addNotification({
-      type: 'game-info',
-      message: 'Нельзя говорить в текущий момент'
-    })
+      type: "game-info",
+      message: "Нельзя говорить в текущий момент",
+    });
   }
 
   if (isMicEnabled.value) {
@@ -188,12 +199,27 @@ async function toggleMicrophone() {
   }
 }
 
-watch( () => props.canISpeak, async (canISpeak) => {
-  if(canISpeak){
+// 🔇 mute/unmute всех входящих дорожек
+const muteAll = () => {
+  remoteAudioElements.forEach((el) => (el.muted = true));
+};
+const unmuteAll = () => {
+  remoteAudioElements.forEach((el) => (el.muted = false));
+};
+
+watch(() => props.canISpeak, async (canISpeak) => {
+  if (canISpeak) {
     await enableMicrophone();
-  }
-  else{
+  } else {
     await disableMicrophone();
+  }
+});
+
+watch(isHidden, (neoVal) => {
+  if (neoVal) {
+    muteAll();
+  } else {
+    unmuteAll();
   }
 });
 
@@ -206,12 +232,13 @@ onBeforeUnmount(() => {
   localAudioTrack?.stop();
   localAudioTrack = null;
   if (emitTimer) clearInterval(emitTimer);
+  remoteAudioElements.splice(0, remoteAudioElements.length);
 });
 </script>
 
 <style scoped>
 .voice-chat {
-  :deep(.game-btn__content){
+  :deep(.game-btn__content) {
     padding: 5px 10px;
   }
   .button {
@@ -220,7 +247,7 @@ onBeforeUnmount(() => {
     border: none;
     line-height: 14px;
 
-    .btn-content{
+    .btn-content {
       display: flex;
       flex-wrap: nowrap;
       align-items: center;
