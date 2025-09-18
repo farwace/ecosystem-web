@@ -157,17 +157,17 @@ export class BridgeEventsProvider implements IPlatformEvents {
     }
     setApplicationIsReady = async () => {
         const authAccess = this.ecosystemStore.$state.authAccess;
-        if((authAccess?.requestedScope || []).indexOf('friends') < 0){
-            this.notificationsProvider.addPopup('request-access-rules', 'request-access-popup', {
-                modal: true,
-                noCloseButton: true,
-                noClose: true,
-                noTitle: true,
-                darkBg: true,
-                backdropBlur: true,
-                noPaddings: true,
-            })
-        }
+        // if((authAccess?.requestedScope || []).indexOf('friends') < 0){
+        //     this.notificationsProvider.addPopup('request-access-rules', 'request-access-popup', {
+        //         modal: true,
+        //         noCloseButton: true,
+        //         noClose: true,
+        //         noTitle: true,
+        //         darkBg: true,
+        //         backdropBlur: true,
+        //         noPaddings: true,
+        //     })
+        // }
         return bridge.send('VKWebAppInit');
     }
 
