@@ -44,10 +44,26 @@ export class BridgeEventsProvider implements IPlatformEvents {
 
     async init(){
         await this.queryLaunchParams().then(() => {
-            this.ecosystemStore.$patch({
-                authString: `Bearer ${window.location.search.slice(1)}`
+            this.ecosystemStore.$patch((state) => {
+                let AuthString = `Bearer ${window.location.search.slice(1)}`;
+                if(state.launchParams){
+                    let launchString = '';
+                    Object.keys(state.launchParams).forEach((k) => {
+                        /* @ts-ignore */
+                        launchString += k + '=' + state.launchParams[k] + '&';
+                    });
+                    if(launchString.length > 1){
+                        launchString = launchString.slice(0, -1);
+                        AuthString = `Bearer ${launchString}`;
+                    }
+                }
+                return {
+                    authString: AuthString
+                }
             });
         });
+
+
 
         try {
             const res = await bridge.send('VKWebAppGetConfig');
