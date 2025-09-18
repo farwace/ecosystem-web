@@ -62,7 +62,9 @@ export class GameProvider implements IGameProvider {
             console.log({name: 'bunkerGame', query: {"room_id": obParameters['room']}});
             console.log('<<< CHANGE FRAGMENT <<<');
             try {
-                router.push({name: 'bunkerGame', query: {"room_id": obParameters['room']}});
+                router.push({name: 'bunkerGame', query: {"room_id": obParameters['room']}}).catch((e: any) => {
+                    console.log(e);
+                });
             }
             catch (e: any){
                 console.log(e);
