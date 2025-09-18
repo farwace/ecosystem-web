@@ -14,4 +14,5 @@ export interface IPlatformEvents extends IModule{
     buyMoney: (s: TShopCoin) => Promise<any>;
     getAuthToken: (s: RequestPropsMap["VKWebAppGetAuthToken"]) => Promise<any>;
     isDesktop: () => boolean;
+    inviteFriendToGame: (roomId: string, gameCode: string) => Promise<any>;
 }

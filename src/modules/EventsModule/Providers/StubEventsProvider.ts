@@ -133,6 +133,10 @@ export class StubEventsProvider implements IPlatformEvents{
         return;
     }
 
+    inviteFriendToGame = (roomId: string, gameCode: string) => {
+        console.log('>>> INVITE FRIEND TO GAME >>>', roomId, gameCode);
+    }
+
     isDesktop = () => {
         return !!('ontouchstart' in window || navigator.maxTouchPoints);
     }

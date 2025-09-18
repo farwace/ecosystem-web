@@ -75,6 +75,7 @@
           :max-height="freeAreaHeight"
           :player="currentPlayer"
           @ready="requestReady($event)"
+          @invite="inviteFriend"
       />
       <bunker-user-cards
           v-if="status == 'playing'"
@@ -648,7 +649,7 @@ const onTouchPlace = (place: string | number) => {
       darkBg: true,
       class: 'game-bunker',
       placeNumber: (+place+1),
-      inviteFriendCallback: () => {}, //todo: пригласить друзей в игровую комнату
+      inviteFriendCallback: () => {inviteFriend()}, //todo: пригласить друзей в игровую комнату
       changePlaceCallback: () => {requestChangePlace(place)}
     });
   }
@@ -786,6 +787,9 @@ watch(currentSpeakerId, (neoVal) => {
   }
 });
 
+const inviteFriend = () => {
+  bridgeProvider?.inviteFriendToGame(props.room.roomId, 'bunker');
+}
 
 onMounted(() => {
   voteResults.value = {};

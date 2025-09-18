@@ -209,7 +209,27 @@ export class BridgeEventsProvider implements IPlatformEvents {
         }
     }
 
+    inviteFriendToGame = async (roomId: string, gameCode: string) => {
+        const userId = this.ecosystemStore.$state.id;
+        try {
+            await bridge.send('VKWebAppShare', {
+                link: import.meta.env.VITE_VK_APP_URL + '#user_id=' + userId + '---game='+ gameCode +'---room=' + roomId,
+                /** @ts-ignore */
+                text: 'Заходи ко мне в ' + this.getGameNameByCode(gameCode) + '! Срочно нужен сокомандник!'
+            })
+        }
+        catch (e: any) {}
+    }
+
+
     isDesktop = () => {
         return this._isDesktop;
+    }
+
+    getGameNameByCode = (gameCode?: string) => {
+        if(!gameCode) return ' игру';
+        if(gameCode == 'bunker'){
+            return ' Убежище'
+        }
     }
 }
