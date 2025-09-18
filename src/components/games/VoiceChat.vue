@@ -201,6 +201,7 @@ async function toggleMicrophone() {
 
 // 🔇 mute/unmute всех входящих дорожек
 const muteAll = () => {
+  disableMicrophone();
   remoteAudioElements.forEach((el) => (el.muted = true));
 };
 const unmuteAll = () => {
