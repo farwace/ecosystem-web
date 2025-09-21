@@ -278,6 +278,7 @@ onMounted(() => {
 
 
     .box{
+      cursor: pointer;
       flex-shrink: 0;
       position: relative;
       filter: saturate(0.6);
