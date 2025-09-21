@@ -46,6 +46,8 @@ const props = defineProps<{
 
   &__position{
     flex-shrink: 0;
+    width: 15px;
+    text-align: center;
   }
 
   &__body{
@@ -55,6 +57,7 @@ const props = defineProps<{
     flex-wrap: nowrap;
     width: 100%;
     overflow: hidden;
+    min-width: 0;
   }
 
   &__picture{
@@ -79,6 +82,7 @@ const props = defineProps<{
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+    min-width: 0;
 
     .content{
       border: 2px solid var(--card-border);
@@ -93,6 +97,10 @@ const props = defineProps<{
     color: #946240;
     font-size: 20px;
     font-weight: 700;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .value {
     color: #CBA882;
