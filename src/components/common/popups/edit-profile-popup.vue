@@ -8,6 +8,7 @@
               v-if="editName"
               v-model="userFirstName"
               @change="validateName"
+              :maxlength="20"
           />
           <div v-else class="item__static">{{ userFirstName }}</div>
         </div>
