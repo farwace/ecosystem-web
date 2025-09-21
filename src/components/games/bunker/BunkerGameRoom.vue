@@ -69,7 +69,7 @@
       </div>
     </div>
 
-    <div class="bunker__controls"> <!-- todo: передавать вкл/выкл микрофон -->
+    <div class="bunker__controls">
       <bunker-lobby-buttons
           v-if="status == 'waiting' || status == 'starting'"
           :max-height="freeAreaHeight"

@@ -9,6 +9,11 @@ export const themeStore = defineStore('theme', {
         musicVolume: '50',
         soundVolume: '50',
         voiceVolume: '50',
+        clientInfo: {
+            platform: '-',
+            app: 'vk',
+            version: '1.0.0'
+        }
     }),
     getters: {
         isDark(state): boolean {

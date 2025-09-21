@@ -1,8 +1,13 @@
 <template>
   <div class="voice-chat">
     <BunkerButton class="button" v-if="canISpeak" @click="toggleMicrophone">
-      <div class="btn-content" v-if="isMicEnabled"><span>🎤</span><span>Микрофон включён</span></div>
-      <div class="btn-content" v-else><span>🔇</span><span>Микрофон выключен</span></div>
+      <template v-if="!isMicrophoneSupports()">
+        <div class="btn-content"><span>🚫</span><span>Микрофон недоступен</span></div>
+      </template>
+      <template v-else>
+        <div class="btn-content" v-if="isMicEnabled"><span>🎤</span><span>Микрофон включён</span></div>
+        <div class="btn-content" v-else><span>🔇</span><span>Микрофон выключен</span></div>
+      </template>
     </BunkerButton>
 
     <!-- сюда будут цепляться <audio> -->
@@ -27,9 +32,14 @@ import {Console} from "@/classes/utils/Console.ts";
 import BunkerButton from "@/components/games/bunker/components/BunkerButton.vue";
 import {storeToRefs} from "pinia";
 import {gameStore} from "@/stores/Game/gameStore.ts";
+import {themeStore} from "@/stores/Theme/themeStore.ts";
+import {VersionComparator} from "@/classes/utils/VersionComparator.ts";
+import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
 
 const notificationsProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
 const {isHidden} = storeToRefs(gameStore());
+const { clientInfo } = storeToRefs(themeStore());
+const { platform } = storeToRefs(ecosystemStore());
 
 const props = defineProps<{
   liveKitToken: string;
@@ -155,6 +165,13 @@ function removeParticipant(identity: string) {
 }
 
 async function enableMicrophone() {
+  if(!isMicrophoneSupports()){
+    notificationsProvider?.addPopup('microphone-is-not-available', 'simple-popup', {
+      title: 'Включение микрофона недоступно',
+      message: 'Данная функция временно отключена на IPhone.<br/><br/>Подробнее в <a target="_blank" href="https://vk.com/wall-232362939_2">официальной группе Лапа Play</a>'
+    });
+    return;
+  }
   if (!room) return;
   if (isHidden.value) return;
 
@@ -223,6 +240,14 @@ watch(isHidden, (neoVal) => {
     unmuteAll();
   }
 });
+
+const isMicrophoneSupports = () => {
+  return !(platform?.value == 'mobile_iphone' &&
+      clientInfo.value.platform == 'ios' &&
+      clientInfo.value.app == 'vkclient' //&&
+      //!VersionComparator.isGreater(clientInfo.value.version, '8.147.0') //todo: указать версию, с которой не крашится приложение ВК на айфонах
+  );
+}
 
 onMounted(() => {
   connectToRoom();

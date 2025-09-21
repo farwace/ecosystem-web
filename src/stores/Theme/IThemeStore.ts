@@ -5,4 +5,9 @@ export interface IThemeStore {
     musicVolume: string,
     soundVolume: string,
     voiceVolume: string,
+    clientInfo: {
+        platform: string,
+        version: string,
+        app: string
+    }
 }

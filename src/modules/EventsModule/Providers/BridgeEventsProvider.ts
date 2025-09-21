@@ -173,13 +173,15 @@ export class BridgeEventsProvider implements IPlatformEvents {
     }
 
     loadClientVersion = () => {
-        bridge.send('VKWebAppGetClientVersion').then((version) => {
-            if(this.ecosystemStore.$state.socialId == 73736329){
-                this.notificationsProvider.addPopup('ttt', 'simple-popup', {
-                    title: 'aaa',
-                    message: "<pre style='overflow: auto; max-width: 100%;'>" + JSON.stringify(version) + "</pre>",
-                });
-            }
+        bridge.send('VKWebAppGetClientVersion').then((version ) => {
+            const v = version as unknown as any;
+            this.themeStore.$patch({
+                clientInfo: {
+                    version: v.version,
+                    platform: v.platform,
+                    app: v.app,
+                }
+            });
         });
     }
 
