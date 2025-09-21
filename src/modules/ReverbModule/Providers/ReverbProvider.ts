@@ -27,6 +27,7 @@ export class ReverbProvider implements IReverbProvider{
     private readonly _reverbObserver$: Subject<TReverbMessage<unknown>>;
     private privateChannel: any;
     private echo: Echo<keyof Broadcaster> | undefined;
+    private _heartBeatInterval: any;
 
     constructor(
         @inject(UserProviderSymbol)
@@ -52,7 +53,10 @@ export class ReverbProvider implements IReverbProvider{
 
     install(app: App, symbol: symbol) {
         app.provide(symbol, this);
+        this.createConnection();
+    }
 
+    createConnection(){
         this.echo = new Echo({
             broadcaster: 'reverb',
             key: import.meta.env.VITE_REVERB_APP_KEY,
@@ -113,7 +117,7 @@ export class ReverbProvider implements IReverbProvider{
                 this._reverbObserver$.next(p);
             });
 
-        setInterval(() => this.privateChannel.whisper('heartbeat', this.getAuthData()), 30_000);
+        this._heartBeatInterval = setInterval(() => this.privateChannel.whisper('heartbeat', this.getAuthData()), 30_000);
 
     }
 
@@ -122,6 +126,10 @@ export class ReverbProvider implements IReverbProvider{
     }
 
     closeConnections(){
+        if(this._heartBeatInterval){
+            clearInterval(this._heartBeatInterval);
+        }
+        this.echo?.leaveAllChannels();
         this.echo?.disconnect();
     }
 
