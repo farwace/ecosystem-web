@@ -32,7 +32,13 @@
         <div class="section__body" ref="sectionBody">
           <template v-if="id == props.id">
             <template v-for="achievement in achievementList">
-              <achievement @receive="receiveAchievement(achievement)" :outer-container="sectionBody?.[key]" :achievement="achievement" v-if="achievement.sectionId == section.id" :key="`user-${props.id}-achievement-${achievement.id}`"/>
+              <achievement
+                  @receive="receiveAchievement(achievement)"
+                  :outer-container="sectionBody?.[key]"
+                  :achievement="achievement"
+                  v-if="(achievement.sectionId == section.id) && (!achievement.hidden || achievement.completed)"
+                  :key="`user-${props.id}-achievement-${achievement.id}`"
+              />
             </template>
           </template>
           <template v-else>

@@ -46,6 +46,8 @@ const currentAchievements = computed(() => {
           return 1;
         }
         return 0;
+      }).filter((achievement) => {
+        return achievement.completed || !achievement.hidden
       }).slice(0, 5);
 })
 
