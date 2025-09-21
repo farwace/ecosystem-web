@@ -1,13 +1,14 @@
 import type {TGift} from "@/stores/Ecosystem/Types/TGift";
 import type {TAchievement} from "@/stores/Ecosystem/Types/TAchievement";
 import type {TUser} from "@/stores/Ecosystem/Types/TUser";
-import type {GetLaunchParamsResponse} from "@vkontakte/vk-bridge";
+import {EGetLaunchParamsResponsePlatforms, type GetLaunchParamsResponse} from "@vkontakte/vk-bridge";
 import type {TDailyEnter} from "@/stores/Ecosystem/Types/TDailyEnter.ts";
 import type {TSubscription} from "@/stores/Ecosystem/Types/TSubscription.ts";
 import type {TAnimal} from "@/stores/Ecosystem/Types/TAnimal.ts";
 import type {TUserAuthTokenScope} from "@/modules/ApiModule/Types/TUserAuthTokenScope.ts";
 
 export interface IEcosystemStore {
+    platform?: EGetLaunchParamsResponsePlatforms;
     authString: string;
     connectionId?:any,
     launchParams?:GetLaunchParamsResponse;

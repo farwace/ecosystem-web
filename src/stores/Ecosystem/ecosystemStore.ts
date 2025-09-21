@@ -4,6 +4,8 @@ import {AgeGroup} from "@/stores/Ecosystem/IEcosystemStore";
 
 export const ecosystemStore = defineStore('ecosystem', {
     state:():IEcosystemStore => ({
+        platform: undefined,
+
 
         authString: '',
         connectionId: '',

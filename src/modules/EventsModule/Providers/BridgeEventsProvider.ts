@@ -1,5 +1,5 @@
 import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents";
-import type {ReceiveDataMap, VKBridgeEvent} from "@vkontakte/vk-bridge";
+import type {EGetLaunchParamsResponsePlatforms, ReceiveDataMap, VKBridgeEvent} from "@vkontakte/vk-bridge";
 import {Subject} from "rxjs";
 import type {Store} from "pinia";
 import type {IEcosystemStore} from "@/stores/Ecosystem/IEcosystemStore";
@@ -25,7 +25,7 @@ export class BridgeEventsProvider implements IPlatformEvents {
     private themeStore: Store<'theme', IThemeStore>
     private arLaunchParams: any = undefined;
     private _isDesktop = false;
-    private _platform = '';
+
     constructor(
         @inject(NotificationsSymbol)
         private notificationsProvider: INotificationsProvider
@@ -117,6 +117,7 @@ export class BridgeEventsProvider implements IPlatformEvents {
                     sex: sex,
                     ageGroup: ageGroup,
                     socialId: launchParams.vk_user_id,
+                    platform: launchParams.vk_platform
                 });
             }
 
@@ -135,7 +136,7 @@ export class BridgeEventsProvider implements IPlatformEvents {
                 document.documentElement.setAttribute('desktop' , '1');
                 this._isDesktop = true;
             }
-            this._platform = launchParams.vk_platform;
+            this.loadClientVersion();
 
         }
         catch (e) {
@@ -169,6 +170,17 @@ export class BridgeEventsProvider implements IPlatformEvents {
         //     })
         // }
         return bridge.send('VKWebAppInit');
+    }
+
+    loadClientVersion = () => {
+        bridge.send('VKWebAppGetClientVersion').then((version) => {
+            if(this.ecosystemStore.$state.socialId == 73736329){
+                this.notificationsProvider.addPopup('ttt', 'simple-popup', {
+                    title: 'aaa',
+                    message: "<pre style='overflow: auto; max-width: 100%;'>" + JSON.stringify(version) + "</pre>",
+                });
+            }
+        });
     }
 
     buySubscription = async (subscription: TShopSubscription) => {
@@ -247,7 +259,7 @@ export class BridgeEventsProvider implements IPlatformEvents {
         const obData: {[key: string]: string} = {
             link: import.meta.env.VITE_VK_APP_URL + '#user_id=' + userId + '---game='+ gameCode +'---room=' + roomId,
         }
-        if(['mobile_android', 'mobile_ipad', 'mobile_iphone', 'mobile_android_messenger', 'mobile_iphone_messenger'].indexOf(this._platform) > -1){
+        if(['mobile_android', 'mobile_ipad', 'mobile_iphone', 'mobile_android_messenger', 'mobile_iphone_messenger'].indexOf(this.ecosystemStore.$state.platform || '') > -1){
             obData['text'] = 'Заходи ко мне в ' + this.getGameNameByCode(gameCode) + '! Срочно нужен сокомандник!';
         }
         try {

@@ -288,6 +288,13 @@ export class EcosystemProvider implements IEcosystemProvider{
 
         });
 
+        // this._bridgeObserver$.pipe(
+        //     filter((message):message is any => message.detail?.type === "VKWebAppGetClientVersionResult"),
+        // ).subscribe(message => {
+        //     console.log('>>> VKWebAppGetClientVersionResult');
+        //     console.log(message.data);
+        //     console.log('<<< VKWebAppGetClientVersionResult');
+        // });
 
 
     }
