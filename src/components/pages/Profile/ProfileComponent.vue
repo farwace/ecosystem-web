@@ -33,9 +33,9 @@
         <profile-fans :fans="profile?.topFans" />
       </div>
 
-      <div class="cursor-pointer" @click="openAchievementsModal">
+      <div :class="{'cursor-pointer': id == profile?.id}" @click="openAchievementsModal">
         <div class="title">
-          Достижения <span v-if="hasUnclaimedCompletedAchievement && profile?.id == id" class="note-circle"></span><UiIcon class="inline-icon" name="chevron-right"></UiIcon>
+          Достижения <span v-if="hasUnclaimedCompletedAchievement && profile?.id == id" class="note-circle"></span><UiIcon v-if="profile?.id == id" class="inline-icon" name="chevron-right"></UiIcon>
         </div>
         <profile-achievements :current="profile?.id == id" :name="profile?.name" :achievements="profile?.recentAchievements" />
       </div>
