@@ -88,7 +88,7 @@ if(props.roomId){
     lobby?.leave?.();
 
     const joinOptions = {authString: (authString.value || '').replace('Bearer ', '')};
-    const targetRoom = allRooms?.find?.((availableRoom) => availableRoom.name == "bunker_game" && availableRoom.metadata?.customID == props.roomId);
+    const targetRoom = allRooms?.find?.((availableRoom) => availableRoom.name == "bunker_game" && availableRoom.metadata?.customId == props.roomId);
 
     if(targetRoom){
       room.value = await client.instance!.joinById(targetRoom.roomId, joinOptions);
