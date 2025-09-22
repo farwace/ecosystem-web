@@ -82,10 +82,27 @@ async function findOrCreateBunkerRoom(forceCreate = false): Promise<Room> {
 
 if(props.roomId){
   try {
-    room.value = await client.instance?.joinById(props.roomId, {authString: (authString.value || '').replace('Bearer ', '')});
+    const lobby = await client.instance!.joinOrCreate("lobby");
+    const allRooms = await Promise.race([loadRooms(lobby), stubPromise(5000, [])]) as RoomAvailable[];
+    lobby?.removeAllListeners?.();
+    lobby?.leave?.();
+
+    const joinOptions = {authString: (authString.value || '').replace('Bearer ', '')};
+    const targetRoom = allRooms?.find?.((availableRoom) => availableRoom.name == "bunker_game" && availableRoom.metadata?.customID == props.roomId);
+
+    if(targetRoom){
+      room.value = await client.instance!.joinById(targetRoom.roomId, joinOptions);
+    }
+    else{
+      const createOptions = Object.assign({}, joinOptions, {
+        customId: props.roomId,
+      });
+
+      room.value = await client.instance!.create("bunker_game", createOptions);
+    }
   }
   catch (e: any){
-    Console.log('>>> JOIN BY ID ERROR', e);
+    Console.log('>>> JOIN BY CUSTOM ID ERROR', e);
     error.value = 'Не удалось найти игровую комнату или все места заняты';
   }
 }
