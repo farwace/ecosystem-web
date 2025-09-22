@@ -15,6 +15,7 @@ export class BunkerGameRoomState extends Schema {
     @type("boolean") public isPrivateRoom!: boolean;
     @type("number") public hostId!: number;
     @type("string") public currentSpeakerId!: string;
+    @type("string") public customId!: string;
     @type("number") public minPlayers!: number;
     @type("number") public maxPlayers!: number;
     @type("number") public playersCount!: number;

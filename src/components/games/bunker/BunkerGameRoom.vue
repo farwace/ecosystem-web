@@ -190,6 +190,7 @@ const attachVoiceChat = ref<boolean>(false);
 const router = useAnimatedRouter();
 const isTouchDevide = ref<boolean>(true);
 const unbindCallbacks: any[] = [];
+const customId = ref<string>();
 
 const initializeGame = () => {
   const roomState = props.room.state as BunkerGameRoomState;
@@ -210,6 +211,10 @@ const initializeGame = () => {
   unbindCallbacks.push($(props.room.state).listen("hostId", (currentValue, previousValue) => {
     hostId.value = currentValue;
   }));
+  unbindCallbacks.push($(props.room.state).listen("customId", (currentValue, previousValue) => {
+    customId.value = currentValue;
+  }));
+
   unbindCallbacks.push($(props.room.state).listen("isPrivateRoom", (currentValue, previousValue) => {
     isPrivateRoom.value = currentValue;
   }));
@@ -228,10 +233,12 @@ const initializeGame = () => {
   unbindCallbacks.push($(props.room.state).listen("status", (currentValue, previousValue) => {
     status.value = currentValue;
     if(status.value == 'playing'){
-      gameProvider?.setInGame({
-        roomId: props.room.roomId,
-        code: 'bunker'
-      })
+      if(customId.value){
+        gameProvider?.setInGame({
+          roomId: customId.value,
+          code: 'bunker'
+        })
+      }
     }
   }));
   unbindCallbacks.push($(props.room.state).listen("turnTimeLimit", (currentValue, previousValue) => {
@@ -788,7 +795,9 @@ watch(currentSpeakerId, (neoVal) => {
 });
 
 const inviteFriend = () => {
-  bridgeProvider?.inviteFriendToGame(props.room.roomId, 'bunker');
+  if(customId.value){
+    bridgeProvider?.inviteFriendToGame(customId.value, 'bunker');
+  }
 }
 
 onMounted(() => {
