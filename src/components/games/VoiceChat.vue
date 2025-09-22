@@ -35,6 +35,7 @@ import {gameStore} from "@/stores/Game/gameStore.ts";
 import {themeStore} from "@/stores/Theme/themeStore.ts";
 import {VersionComparator} from "@/classes/utils/VersionComparator.ts";
 import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
+import UiIcon from "@/components/common/icons/UiIcon.vue";
 
 const notificationsProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
 const {isHidden} = storeToRefs(gameStore());
@@ -168,7 +169,7 @@ async function enableMicrophone() {
   if(!isMicrophoneSupports()){
     notificationsProvider?.addPopup('microphone-is-not-available', 'simple-popup', {
       title: 'Включение микрофона недоступно',
-      message: 'Данная функция временно отключена на IPhone.<br/><br/>Подробнее в <a target="_blank" href="https://vk.com/wall-232362939_2">официальной группе Лапа Play</a>'
+      message: 'Данная функция временно отключена на IPhone.<br/><br/>Подробнее в <a target="_blank" href="https://vk.com/wall-232362939_3">официальной группе Лапа Play</a>'
     });
     return;
   }
@@ -188,8 +189,11 @@ async function enableMicrophone() {
       await localAudioTrack.unmute();
     }
     isMicEnabled.value = true;
-  } catch (e) {
+  } catch (e: any) {
     Console.error(">>> VoiceChat.vue >>> Ошибка включения микрофона:", e);
+    notificationsProvider?.addPopup('microphone-is-not-available', 'microphone-is-not-available-popup', {
+      title: 'Ошибка включения микрофона',
+    })
   }
 }
 
@@ -242,6 +246,7 @@ watch(isHidden, (neoVal) => {
 });
 
 const isMicrophoneSupports = () => {
+  return true;
   return !(platform?.value == 'mobile_iphone' &&
       clientInfo.value.platform == 'ios' &&
       clientInfo.value.app == 'vkclient' //&&
