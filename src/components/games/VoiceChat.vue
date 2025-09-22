@@ -165,7 +165,7 @@ function removeParticipant(identity: string) {
   delete prevVolumes[identity];
 }
 
-async function enableMicrophone() {
+async function enableMicrophone(manually = false) {
   if(!isMicrophoneSupports()){
     notificationsProvider?.addPopup('microphone-is-not-available', 'simple-popup', {
       title: 'Включение микрофона недоступно',
@@ -191,9 +191,11 @@ async function enableMicrophone() {
     isMicEnabled.value = true;
   } catch (e: any) {
     Console.error(">>> VoiceChat.vue >>> Ошибка включения микрофона:", e);
-    notificationsProvider?.addPopup('microphone-is-not-available', 'microphone-is-not-available-popup', {
-      title: 'Ошибка включения микрофона',
-    })
+    if(manually){
+      notificationsProvider?.addPopup('microphone-is-not-available', 'microphone-is-not-available-popup', {
+        title: 'Ошибка включения микрофона',
+      })
+    }
   }
 }
 
@@ -216,7 +218,7 @@ async function toggleMicrophone() {
   if (isMicEnabled.value) {
     await disableMicrophone();
   } else {
-    await enableMicrophone();
+    await enableMicrophone(true);
   }
 }
 
