@@ -192,6 +192,29 @@ const isTouchDevide = ref<boolean>(true);
 const unbindCallbacks: any[] = [];
 const customId = ref<string>();
 
+const syncCustomIdQuery = (value?: string | null) => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  const url = new URL(window.location.href);
+  const existingValue = url.searchParams.get('room_id');
+
+  if (value) {
+    if (existingValue === value) {
+      return;
+    }
+    url.searchParams.set('room_id', value);
+  } else {
+    if (!existingValue) {
+      return;
+    }
+    url.searchParams.delete('room_id');
+  }
+
+  window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
+};
+
 const initializeGame = () => {
   const roomState = props.room.state as BunkerGameRoomState;
   const $ = getStateCallbacks(props.room);
@@ -213,6 +236,7 @@ const initializeGame = () => {
   }));
   unbindCallbacks.push($(props.room.state).listen("customId", (currentValue, previousValue) => {
     customId.value = currentValue;
+    syncCustomIdQuery(currentValue);
   }));
 
   unbindCallbacks.push($(props.room.state).listen("isPrivateRoom", (currentValue, previousValue) => {
@@ -836,6 +860,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  syncCustomIdQuery(null);
   for(let i = 0; i < unbindCallbacks.length; i++){
     unbindCallbacks?.[i]?.();
   }

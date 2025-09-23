@@ -78,6 +78,32 @@ export class ReverbProvider implements IReverbProvider{
 
         });
 
+        if(import.meta.env.VITE_ENVELOP != 'development'){
+            const connector = (this.echo?.connector as any)?.pusher?.connection;
+            if(connector){
+                connector.bind('state_change', ({current}: { current: string }) => {
+                    if(current === 'failed' || current === 'unavailable'){
+                        this.notificationsProvider.addPopup('connection-error', 'simple-popup', {
+                            modal: true,
+                            darkBg: true,
+                            noClose: true,
+                            noCloseButton: true,
+                            title: 'Потеряно соединение с сервером',
+                            message: '<div>Соединение будет восстановлено автоматически.<br/><br/>Если ничего не происходит<br/><br/><span class="btn" style="margin-bottom: 20px;" onclick="window.location.reload()">Восстановить соединение</span></div>'
+
+                        });
+                    }
+                    if(current === 'connected'){
+                        this.notificationsProvider.removePopup('connection-error');
+                    }
+                });
+                connector.bind('error', (error: any) => {
+                    Console.error('>>> Reverb Connector error:', error);
+                });
+            }
+        }
+
+
         this.privateChannel = this.echo.private(`user.${this.ecosystemStore.$state.id}`);
 
         this.privateChannel
