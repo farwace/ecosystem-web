@@ -36,6 +36,32 @@ const client: {instance?: Client | null} = {
 const room = shallowRef<Room>();
 const error = ref<string>();
 
+const handleRoomLeave = (code: any) => {
+  if(code != 1000){
+    notificationsProvider?.addPopup('game-bunker-disconnect', 'simple-popup', {
+      title: 'Соединение разорвано',
+      message: 'Вы были отключены от игровой комнаты по причине потери соединения с сервером',
+      modal: true,
+      darkBg: true,
+      middle: true,
+    })
+    router.push('/');
+  }
+};
+
+const attachRoomHandlers = (roomInstance?: Room) => {
+  if(!roomInstance){
+    return;
+  }
+
+  roomInstance.onLeave.once((code) => {
+    handleRoomLeave(code);
+  });
+  roomInstance.onError((code, message) => {
+    Console.log('>>> BUNKER ROOM ERROR', code, message);
+  });
+};
+
 const loadRooms = (lobby: Room):Promise<RoomAvailable[]> => {
   return new Promise(async (resolve) => {
     lobby.onMessage("rooms", (rooms: RoomAvailable[]) => {
@@ -92,6 +118,7 @@ if(props.roomId){
 
     if(targetRoom){
       room.value = await client.instance!.joinById(targetRoom.roomId, joinOptions);
+      attachRoomHandlers(room.value);
     }
     else{
       const createOptions = Object.assign({}, joinOptions, {
@@ -99,6 +126,7 @@ if(props.roomId){
       });
 
       room.value = await client.instance!.create("bunker_game", createOptions);
+      attachRoomHandlers(room.value);
     }
   }
   catch (e: any){
@@ -109,6 +137,7 @@ if(props.roomId){
 else{
   try {
     room.value = await findOrCreateBunkerRoom(props.neoRoom);
+    attachRoomHandlers(room.value);
   }
   catch (e: any){
     error.value = 'Не удалось присоединиться к игровой комнате';
