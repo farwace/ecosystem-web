@@ -29,6 +29,7 @@ export type TPlayer = {
     isPremium: boolean;
     avatar: string;
     votesAgainst: number;
+    isBot: boolean;
 
     cards: ArraySchema<Card>;//todo: упростить тип
     revealedCards: ArraySchema<Card>;//todo: упростить тип

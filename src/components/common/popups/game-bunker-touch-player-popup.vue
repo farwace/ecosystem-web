@@ -18,11 +18,11 @@
 
         <div class="admin-buttons" v-if="isHost && player.id != id">
           <span @click="kickPlayer()">Исключить</span>
-          <span @click="setLeader()">Сделать лидером</span>
+          <span @click="setLeader()" v-if="!player.isBot">Сделать лидером</span>
         </div>
       </div>
 
-      <div class="buttons">
+      <div class="buttons" v-if="!player.isBot">
         <!-- todo: проверка есть ли уже игрок в друзьях? -->
 <!--        <div class="btn btn-add" @click="addToFriends" v-if="player.id != id && true">
           <UiIcon name="invite" />

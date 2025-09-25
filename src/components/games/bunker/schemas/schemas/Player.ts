@@ -16,6 +16,7 @@ export class Player extends Schema {
     @type("boolean") public isReady!: boolean;
     @type("boolean") public canSpeak!: boolean;
     @type("boolean") public isEliminated!: boolean;
+    @type("boolean") public isBot!: boolean;
     @type([ Card ]) public cards: ArraySchema<Card> = new ArraySchema<Card>();
     @type([ Card ]) public revealedCards: ArraySchema<Card> = new ArraySchema<Card>();
     @type("number") public experience!: number;

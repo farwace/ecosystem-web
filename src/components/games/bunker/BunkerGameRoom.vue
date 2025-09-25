@@ -596,6 +596,7 @@ const createPlayerObject = (playerData: Player): TPlayer => {
     votesAgainst: playerData.votesAgainst,
     revealedCards: playerData.revealedCards,
     cards: playerData.cards,
+    isBot: playerData.isBot,
   }
 }
 
