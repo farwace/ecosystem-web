@@ -116,17 +116,20 @@ const tryReceive = () => {
     width: 45px;
     height: 45px;
     margin: auto;
+    cursor: pointer;
   }
 
   &__title {
     font-size: 10px;
     margin-bottom: 5px;
     line-height: .8;
+    cursor: pointer;
   }
 
   &__description {
     font-size: 8px;
     line-height: 1;
+    cursor: pointer;
   }
 
   &__tooltip {
