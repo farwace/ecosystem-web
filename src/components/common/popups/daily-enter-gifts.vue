@@ -94,16 +94,6 @@ const receiveDailyReward = async () => {
   try {
     const res = await userProvider?.receiveDailyEnter();
 
-    if(res?.data && activeReward.value){
-      notificationsProvider?.addPopup('daily-reward-received', 'reward', {
-        darkBg: true,
-        modal: true,
-        noTitle: true,
-        coins: activeReward.value.reward,
-        message: 'Награда получена'
-      });
-    }
-
     emit('close');
   }
   catch (e: any){}
