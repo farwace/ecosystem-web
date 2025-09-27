@@ -5,16 +5,26 @@ import type {TGift} from "@/stores/Ecosystem/Types/TGift.ts";
 import type {TResponse} from "@/modules/ApiModule/Types/TResponse.ts";
 import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
 import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
+import type {TSendGiftResponse} from "@/modules/ApiModule/Types/TSendGiftResponse.ts";
+import {Subject} from "rxjs";
 
 @injectable()
 export class GiftsProvider extends ApiProvider implements IGiftsProvider{
+
+    private _sendGiftResult$: Subject<TSendGiftResponse>;
 
     constructor(
         @inject(NotificationsSymbol)
         private notificationProvider: INotificationsProvider
     ) {
         super();
+        this._sendGiftResult$ = new Subject();
     }
+
+    getEmitter$ = () => {
+        return this._sendGiftResult$;
+    }
+
     getGiftList = async () => {
         if(this.ecosystemStore.$state.giftList?.length || 0 > 0){
             return this.ecosystemStore.$state.giftList;
@@ -36,14 +46,16 @@ export class GiftsProvider extends ApiProvider implements IGiftsProvider{
         })
     }
 
-    sendGift(userId: number, giftId: number, count: number): Promise<TResponse<boolean>> {
-        return this.fetch(`${this.getApiEndpoint()}/gifts/send`, {
+    async sendGift(userId: number, giftId: number, count: number): Promise<TResponse<TSendGiftResponse>> {
+        const res = await this.fetch(`${this.getApiEndpoint()}/gifts/send`, {
             method: 'POST',
             body: JSON.stringify({
                 receiver: userId,
                 gift: giftId,
                 quantity: count,
             })
-        }) as unknown as Promise<TResponse<boolean>>;
+        }) as unknown as TResponse<TSendGiftResponse>;
+        this._sendGiftResult$.next(res.data);
+        return res;
     }
 }

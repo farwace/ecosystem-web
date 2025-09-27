@@ -64,7 +64,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import {computed, inject, onMounted, ref} from "vue";
+import {computed, inject, onBeforeUnmount, onMounted, ref} from "vue";
 import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.ts";
 import {GiftsProviderSymbol, UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
 import type {TUserProfile} from "@/modules/ApiModule/Types/TUserProfile.ts";
@@ -81,6 +81,7 @@ import UiIcon from "@/components/common/icons/UiIcon.vue";
 import type {IGiftsProvider} from "@/modules/ApiModule/Interfaces/IGiftsProvider.ts";
 import {achievementsStore} from "@/stores/Achievements/achievementsStore.ts";
 import {useAnimatedRouter} from "@/classes/utils/useAnimatedRouter.ts";
+import {filter, Subscription} from "rxjs";
 
 const router = useAnimatedRouter();
 const {id, firstName, sex} = storeToRefs(ecosystemStore());
@@ -88,6 +89,8 @@ const {id, firstName, sex} = storeToRefs(ecosystemStore());
 const notificationProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
 const giftsProvider: IGiftsProvider | undefined = inject(GiftsProviderSymbol);
 const {hasUnclaimedCompletedAchievement} = storeToRefs(achievementsStore());
+
+let sendGiftsSubscription: Subscription | undefined = undefined;
 
 const props = defineProps<{
   profileId?: number | string,
@@ -167,7 +170,20 @@ onMounted(async () => {
     await router.push({path: '/', replace: true});
   }
 
+  let sendGiftsEmitter = giftsProvider?.getEmitter$();
+  sendGiftsSubscription = sendGiftsEmitter?.pipe(
+      filter(message => message.receiverId == props.profileId)
+  )?.subscribe((message) => {
+    if(profile.value){
+      profile.value.giftsCount = message.giftsCount;
+      profile.value.topGifts = message.recentGifts;
+    }
+  })
 
+});
+
+onBeforeUnmount(() => {
+  sendGiftsSubscription?.unsubscribe?.();
 });
 
 
