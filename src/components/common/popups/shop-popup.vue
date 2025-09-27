@@ -10,12 +10,12 @@
 
     </div>
     <div ref="shopContainer" class="items-container">
-      <div class="shop__subscription" v-if="(shop?.subscriptions?.length || 0) > 0">
+      <div class="shop__subscription" v-if="(shop?.subscriptions?.length || 0) > 0 && !subscription">
         <div class="shop__title">
           Купить подписку
         </div>
         <div class="shop__subscription__list">
-          <SubscriptionItem :container="shopContainer" v-for="subscription in shop?.subscriptions" :key="`subscription-${subscription.code}`" :subscription="subscription"/>
+          <SubscriptionItem :container="shopContainer" v-for="shopSubscription in shop?.subscriptions" :key="`subscription-${shopSubscription.code}`" :subscription="shopSubscription"/>
         </div>
       </div>
       <div class="shop__coins" v-if="(shop?.coins?.length || 0) > 0">
@@ -38,6 +38,10 @@ import type {IBalanceProvider} from "@/modules/ApiModule/Interfaces/IBalanceProv
 import type {TShopResponse} from "@/modules/ApiModule/Types/TShopResponse.ts";
 import SubscriptionItem from "@/components/common/popups/Shop/SubscriptionItem.vue";
 import CoinItem from "@/components/common/popups/Shop/CoinItem.vue";
+import {storeToRefs} from "pinia";
+import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
+
+const { subscription } = storeToRefs(ecosystemStore());
 
 const balanceProvider: IBalanceProvider | undefined = inject(BalanceProviderSymbol);
 
@@ -59,7 +63,7 @@ const loadItems = async () => {
 
 onMounted(() => {
   const tmpCoins: TShopResponse['coins'] = [];
-  for(let i = 0; i < 6; i++){
+  for(let i = 0; i < 12; i++){
     tmpCoins.push({
       price: 10,
       name: '\\.(#coin#_#coin#)./',

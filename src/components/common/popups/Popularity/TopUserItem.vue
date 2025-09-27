@@ -8,8 +8,9 @@
         <img :src="user.avatar" :alt="user.firstName">
       </div>
       <div class="item__description">
+        <img v-if="user.premium" class="vip" src="/assets/img/popularity/vip.png" alt="vip">
         <div class="content">
-          <div class="name">
+          <div class="name" :class="{'vip-name': user.premium}">
             {{ user.firstName }}
           </div>
           <div class="value">
@@ -68,6 +69,7 @@ const props = defineProps<{
     width: 88px;
     height: 88px;
     position: relative;
+    z-index: 2;
     border: 2px solid var(--card-border);
     background-color: var(--card-bg);
 
@@ -83,6 +85,15 @@ const props = defineProps<{
     display: flex;
     flex-direction: column;
     min-width: 0;
+    position: relative;
+
+    img.vip{
+      width: 30px;
+      object-fit: contain;
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
 
     .content{
       border: 2px solid var(--card-border);

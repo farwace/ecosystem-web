@@ -1,6 +1,6 @@
 <template>
   <div class="profile__titles" v-if="profile">
-    <div class="item item__vip" v-if="profile.premium">  <!-- todo: по клику открывать инфу по ВИП -->
+    <div class="item item__vip" v-if="profile.premium || (profile.id == id && subscription?.personalAccess)">  <!-- todo: по клику открывать инфу по ВИП -->
       <img class="vip" src="/assets/img/popularity/vip.png" alt="vip">
     </div>
     <div class="exp item" v-if="cLvl"> <!-- todo: по клику открывать инфу по уровням -->
@@ -20,7 +20,7 @@ import {computed} from "vue";
 import {storeToRefs} from "pinia";
 import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
 
-const {id, popularityLevel, lvl} = storeToRefs(ecosystemStore());
+const {id, popularityLevel, lvl, subscription} = storeToRefs(ecosystemStore());
 
 const props = defineProps<{
   profile?:TUserProfile,

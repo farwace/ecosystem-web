@@ -1,7 +1,10 @@
 <template>
   <div class="avatar" :class="{alarm: alarm, 'no-padding': onlyPhoto}">
-    <div class="avatar__img" :class="{small: avatarSmall}">
-      <img :src="photo" alt="">
+    <div class="avatar__img__outer">
+      <div class="avatar__img" :class="{small: avatarSmall}">
+        <img :src="photo" alt="">
+      </div>
+      <img v-if="vip" class="vip" src="/assets/img/popularity/vip.png" alt="vip">
     </div>
     <div v-if="!onlyPhoto" class="avatar__name" :class="{small: small}">
       <div ref="avatarName" class="avatar__name__value">
@@ -20,6 +23,7 @@
     avatarSmall?:boolean,
     alarm?:boolean,
     onlyPhoto?: boolean,
+    vip?:boolean
   }>();
 
   const photo = computed(() => {
@@ -65,6 +69,14 @@
     }
   }
 
+  img.vip{
+    position: absolute;
+    width: 30px;
+    object-fit: contain;
+    bottom: -5px;
+    right: -5px;
+  }
+
   &__img{
     position: relative;
     width: 68px;
@@ -73,6 +85,11 @@
     border-radius: 22px;
     overflow: hidden;
     box-shadow: 0 0 10px rgba(254, 227, 185, 1);
+    &__outer{
+      position: relative;
+      width: 68px;
+      height: 68px;
+    }
     img{
       width: 100%;
       object-fit: cover;

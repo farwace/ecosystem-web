@@ -1,7 +1,7 @@
 <template>
   <div class="page-container">
     <div class="header">
-      <user-avatar :alarm="hasUnclaimedCompletedAchievement" :first-name="firstName" :avatar="avatar" @click="() => id && router.push({name: 'profile', params: {id: id}})"/>
+      <user-avatar :vip="!!subscription?.personalAccess" :alarm="hasUnclaimedCompletedAchievement" :first-name="firstName" :avatar="avatar" @click="() => id && router.push({name: 'profile', params: {id: id}})"/>
       <user-experience />
     </div>
 
@@ -63,7 +63,7 @@ import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfa
 import type {TDailyReward} from "@/modules/EventsModule/Types/TDailyRevard.ts";
 import {gameStore} from "@/stores/Game/gameStore.ts";
 
-const {id, firstName, avatar} = storeToRefs(ecosystemStore());
+const {id, firstName, avatar, subscription} = storeToRefs(ecosystemStore());
 const {inFavorites, inHomeScreen} = storeToRefs(bridgeStore());
 const {hasUnclaimedCompletedAchievement} = storeToRefs(achievementsStore());
 const router = useAnimatedRouter();

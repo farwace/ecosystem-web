@@ -11,6 +11,7 @@
         {{ experience }} <UiIcon class="small-icon" name="experience" />
       </div>
     </div>
+    <div v-if="description">{{ description }}</div>
     <div>
       <span class="btn-close" @click="$emit('close')">Хорошо</span>
     </div>
@@ -25,6 +26,7 @@ defineProps<{
   message?:string,
   coins?:number,
   experience?:number,
+  description?:string,
 }>();
 
 </script>

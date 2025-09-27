@@ -206,6 +206,17 @@ export class EcosystemProvider implements IEcosystemProvider{
             }
         });
 
+        this._reverbObserver$.pipe(
+            filter((message):message is TReverbMessage<any> => message.event === 'current_subscription'),
+        ).subscribe((message) => {
+            /*@ts-ignore*/
+            this.ecosystemStore.$patch({
+                subscription: message.data?.subscription ? message.data.subscription : undefined,
+                vip: !!message.data?.vip,
+                canUseTrialSubscription: !!message.data?.canUseTrialSubscription
+            });
+
+        });
 
         this._reverbObserver$.pipe(
             filter((message):message is TReverbMessage<any> => message.event === 'user_profile_change'),

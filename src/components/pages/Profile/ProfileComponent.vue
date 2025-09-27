@@ -6,7 +6,7 @@
     <profile-swiper :profile="profile"/>
     <div class="page-container">
       <div class="profile__name">
-        <div class="profile__name__value" :class="{vip: profile?.premium}">
+        <div class="profile__name__value" :class="{'vip-name': isPremium}">
           <template v-if="profile?.id == id">
             {{ firstName }}<UiIcon v-if="sex" :name="sex == 1 ? 'female' : 'male'" class="icon-sex"/>
           </template>
@@ -84,7 +84,7 @@ import {useAnimatedRouter} from "@/classes/utils/useAnimatedRouter.ts";
 import {filter, Subscription} from "rxjs";
 
 const router = useAnimatedRouter();
-const {id, firstName, sex} = storeToRefs(ecosystemStore());
+const {id, firstName, sex, subscription} = storeToRefs(ecosystemStore());
 
 const notificationProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
 const giftsProvider: IGiftsProvider | undefined = inject(GiftsProviderSymbol);
@@ -99,6 +99,10 @@ const props = defineProps<{
 
 const isSelfProfile = computed(() => {
   return id.value == props.profileId;
+})
+
+const isPremium = computed(() => {
+  return profile.value?.premium || (profile.value?.id == id.value && subscription?.value?.personalAccess)
 })
 
 const userProvider:IUserProvider | undefined = inject(UserProviderSymbol);
@@ -225,27 +229,10 @@ onBeforeUnmount(() => {
       position: relative;
       padding-right: 10px;
 
-      &.vip{
-        position: relative;
-        font-weight: bold;
-        background: linear-gradient(120deg, #FFD700, #FF8C00, #FFD700); // золотой градиент
-        background-size: 200% auto;
-        color: transparent;
-        background-clip: text;
-        -webkit-background-clip: text;
-        animation: shine 4s linear infinite;
-      }
     }
   }
 }
-@keyframes shine {
-  0% {
-    background-position: 200% center;
-  }
-  100% {
-    background-position: 0% center;
-  }
-}
+
 .online{
   display: inline-block;
   width: 8px;
