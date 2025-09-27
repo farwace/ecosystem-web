@@ -199,6 +199,7 @@ onMounted(() => {
   height: 12px;
 }
 .btn-buy{
+  text-align: center;
   margin-top: 10px;
   background-color: #FEE8C7;
   border-color: #F7D7AD;
