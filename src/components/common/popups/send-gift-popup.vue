@@ -84,7 +84,7 @@
 </template>
 <script lang="ts" setup>
 
-import {computed, inject, onMounted, ref} from "vue";
+import {computed, inject, onBeforeUnmount, onMounted, ref} from "vue";
 import {storeToRefs} from "pinia";
 import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore";
 import GiftsSkeleton from "@/components/common/popups/Gift/gifts-skeleton.vue";
@@ -102,6 +102,9 @@ import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfa
 import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
 import {prepareNumber} from "@/classes/utils/PrepareNumber.ts";
 import type {TGift} from "@/stores/Ecosystem/Types/TGift.ts";
+import type {IReverbProvider} from "@/modules/ReverbModule/Interfaces/IReverbProvider.ts";
+import {ReverbSymbol} from "@/modules/ReverbModule/symbols.ts";
+import {filter, type Subscription} from "rxjs";
 
 const props = defineProps<{
   userId: number | string,
@@ -120,6 +123,8 @@ const modules = [Pagination];
 const balanceProvider: IBalanceProvider | undefined = inject(BalanceProviderSymbol);
 const notificationsProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
 const selectedQuantity = ref<number>(1);
+const reverbProvider: IReverbProvider | undefined = inject(ReverbSymbol);
+let reverbSubscription: Subscription | undefined;
 
 function* chunks<T>(arr: T[], n: number): Generator<T[], void> {
   for (let i = 0; i < arr.length; i += n) {
@@ -183,9 +188,26 @@ const openDonutPopup = () => {
 
 onMounted(async () => {
   isLoading.value = true;
-  await giftsProvider?.getGiftList();
+  await giftsProvider?.getGiftList?.();
   isLoading.value = false;
+
+  const emitter = reverbProvider?.getReverbObserver$?.();
+  reverbSubscription = emitter?.pipe(
+      filter(message => message.event == 'current_subscription')
+  )?.subscribe?.(async () => {
+    isLoading.value = true;
+    giftList.value = [];
+    await giftsProvider?.getGiftList?.(true);
+    isLoading.value = false;
+  });
+
+});
+
+
+onBeforeUnmount(() => {
+  reverbSubscription?.unsubscribe?.();
 })
+
 </script>
 
 <style lang="scss" scoped>

@@ -25,8 +25,8 @@ export class GiftsProvider extends ApiProvider implements IGiftsProvider{
         return this._sendGiftResult$;
     }
 
-    getGiftList = async () => {
-        if(this.ecosystemStore.$state.giftList?.length || 0 > 0){
+    getGiftList = async (force = false) => {
+        if(this.ecosystemStore.$state.giftList?.length || 0 > 0 && !force){
             return this.ecosystemStore.$state.giftList;
         }
 

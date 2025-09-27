@@ -5,7 +5,7 @@ import type {TSendGiftResponse} from "@/modules/ApiModule/Types/TSendGiftRespons
 import type {Subject} from "rxjs";
 
 export interface IGiftsProvider  extends IModule{
-    getGiftList():Promise<TGift[]>;
+    getGiftList(force?: boolean):Promise<TGift[]>;
     openGiftsPopup(id: number | string, avatar?: string):void;
     sendGift(userId: number | string, giftId: number, count: number): Promise<TResponse<TSendGiftResponse>>;
     getEmitter$(): Subject<TSendGiftResponse>;
