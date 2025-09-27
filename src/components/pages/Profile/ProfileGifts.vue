@@ -27,7 +27,7 @@
         </div>
         <div>
           <span v-if="count">
-            Всего: <b>{{ count }}</b>
+            Всего: <b>{{ count }}</b> из <b>35</b>
           </span>
         </div>
       </div>

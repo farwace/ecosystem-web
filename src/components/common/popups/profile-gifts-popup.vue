@@ -11,7 +11,7 @@
         <div class="data">
           <div class="data__body">
             <div class="data__title">Общее количество подарков:</div>
-            <div class="data__value">{{ isLoading ? '&nbsp;' : (appliedGifts.length || 0) }}</div>
+            <div class="data__value">{{ isLoading ? '&nbsp;' : ((appliedGifts.length || 0) + ' из 35') }}</div>
           </div>
         </div>
       </div>
@@ -221,7 +221,7 @@ onMounted(() => {
   }
 }
 .title{
-  font-size: 22px;
+  font-size: 18px;
   line-height: 22px;
   font-weight: bold;
   text-align: center;
@@ -314,4 +314,18 @@ onMounted(() => {
     color: #939393;
   }
 }
+
+@media (min-width: 340px) {
+  .title{
+    font-size: 21px;
+  }
+}
+
+@media (min-width: 360px) {
+  .title{
+    font-size: 22px;
+  }
+}
+
+
 </style>
