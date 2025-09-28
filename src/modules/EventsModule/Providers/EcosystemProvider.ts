@@ -304,6 +304,17 @@ export class EcosystemProvider implements IEcosystemProvider{
             const rqkey = this.bridgeStore.$state.videoRewardAdvKey;
             this.reverbProvider.sendMessage('reverb-ouesrna', {rqkey});
         });
+
+        this._nativeAdsObserver$.pipe(
+            filter((message) => message?.type == 'show-warning')
+        ).subscribe((message) => {
+            if(message?.message && typeof message?.message === 'string'){
+                this.notificationsProvider.addNotification({
+                    type: 'warning',
+                    message: message.message,
+                })
+            }
+        });
     }
 
     private subscribeToBridgeEvents = () => {
@@ -350,6 +361,15 @@ export class EcosystemProvider implements IEcosystemProvider{
 
         });
 
+        this._bridgeObserver$.pipe(
+            /** @ts-ignore */
+            filter((message): message is any => message?.detail?.type === 'VKWebAppShowStoryBoxLoadFinish')
+        ).subscribe(message => {
+            const assignData = message?.detail?.data || {};
+            const dataToSend = Object.assign({}, assignData, {key: this.bridgeStore.$state.shareStoryKey});
+            this.userProvider.sendShareComplete(dataToSend);
+        })
+        
         // this._bridgeObserver$.pipe(
         //     filter((message):message is any => message.detail?.type === "VKWebAppGetClientVersionResult"),
         // ).subscribe(message => {

@@ -13,6 +13,7 @@ import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
 import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
 import type {TShopSubscription} from "@/modules/ApiModule/Types/TShopSubscription.ts";
 import type {TShopCoin} from "@/modules/ApiModule/Types/TShopCoin.ts";
+import type {TGetShareImageResponse} from "@/modules/ApiModule/Types/TGetShareImageResponse.ts";
 
 @injectable()
 export class StubEventsProvider implements IPlatformEvents{
@@ -149,4 +150,5 @@ export class StubEventsProvider implements IPlatformEvents{
     checkRewardNativeAdds = () => { console.log('>>> CHECK NATIVE ADS') }
     finishRewardAdds = () => {};
     showRewardAdds = async () => {return true;}
+    showStoryBox = async (data: TGetShareImageResponse) => {return;}
 }

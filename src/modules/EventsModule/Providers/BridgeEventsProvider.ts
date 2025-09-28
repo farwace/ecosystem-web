@@ -23,6 +23,7 @@ import type {TShopSubscription} from "@/modules/ApiModule/Types/TShopSubscriptio
 import type {TShopCoin} from "@/modules/ApiModule/Types/TShopCoin.ts";
 import {themeStore} from "@/stores/Theme/themeStore.ts";
 import type {IThemeStore} from "@/stores/Theme/IThemeStore.ts";
+import type {TGetShareImageResponse} from "@/modules/ApiModule/Types/TGetShareImageResponse.ts";
 
 @injectable()
 export class BridgeEventsProvider implements IPlatformEvents {
@@ -352,6 +353,17 @@ export class BridgeEventsProvider implements IPlatformEvents {
     finishRewardAdds = () => {
         this._nativeAdsEvent$.next({
             type: 'spin-reward-finish',
+        });
+    }
+
+    showStoryBox = async (data: TGetShareImageResponse) => {
+        return bridge.send('VKWebAppShowStoryBox', {
+            /* @ts-ignore */
+            attachment: data.attachment,
+            /* @ts-ignore */
+            background_type: data.background_type,
+            locked: data.locked,
+            blob: data.blob
         });
     }
 }

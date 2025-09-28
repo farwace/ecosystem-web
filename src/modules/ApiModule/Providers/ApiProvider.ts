@@ -40,7 +40,7 @@ export abstract class ApiProvider implements IApiProvider{
         }
     }
 
-    fetch = async (url: string, opt?: RequestInit, body?: any): Promise<TResponse<unknown>> => {
+    fetch = async (url: string, opt?: RequestInit, body?: any, errorCallback = (message?: string) => {}): Promise<TResponse<unknown>> => {
         const options: RequestInit = {
             method: "GET",
             cache: "no-cache",
@@ -60,9 +60,13 @@ export abstract class ApiProvider implements IApiProvider{
         }
 
         const res = await fetch(url, options);
+        const data = await res.json();
         if(res.status != 200){
+            if(data?.message){
+                errorCallback(data.message);
+            }
             throw new Error(res.status.toString());
         }
-        return await res.json();
+        return data;
     }
 }

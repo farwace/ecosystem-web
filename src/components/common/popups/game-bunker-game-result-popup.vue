@@ -6,8 +6,8 @@
     <div class="results__text">
       <div v-if="experience || coins">
         <div v-if="canShareResult" class="share-result" :class="{won: won}">
-          <div class="share-button">
-            <div class="btn">
+          <div class="share-button" :class="{'disabled':isLoading}">
+            <div class="btn" @click="shareStoryBox">
               <template v-if="!won">
                 Поделиться поражением
               </template>
@@ -19,7 +19,7 @@
             </div>
           </div>
         </div>
-        <div class="results__prize" :class="{won: won, 'can-share': canShareResult}">
+        <div class="results__prize" :class="{won: won, 'can-share': !!canShareResult}">
           <div>
             Награда:
           </div>
@@ -44,17 +44,28 @@
   </div>
 </template>
 <script lang="ts" setup>
-import {computed, ref} from "vue";
+import {computed, inject, ref} from "vue";
 import UiIcon from "@/components/common/icons/UiIcon.vue";
 import type {TUser} from "@/stores/Ecosystem/Types/TUser.ts";
+import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.ts";
+import {UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
+import {storeToRefs} from "pinia";
+import {bridgeStore} from "@/stores/Bridge/bridgeStore.ts";
+import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
+import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
 
-const canShareResult = ref<boolean>(false);
+const {shareStoryKey} = storeToRefs(bridgeStore());
+const userProvider: IUserProvider | undefined = inject(UserProviderSymbol);
+const bridgeProvider: IPlatformEvents | undefined = inject(PlatformEventsSymbol);
+
+const isLoading = ref<boolean>(false);
 
 const props = defineProps<{
   user?: TUser,
   won?: boolean,
   experience?: number,
   coins?: number,
+  canShareResult?: boolean
 }>();
 
 const emits = defineEmits(['close']);
@@ -82,6 +93,24 @@ const pictureSrc = computed(() => {
   }
 })
 
+const shareStoryBox = async () => {
+  if(isLoading.value){
+    return;
+  }
+  isLoading.value = true;
+  try {
+    const shareData = await userProvider?.getShareInfo?.(props.won ? 'won' : 'loose');
+    if(shareData?.data?.key){
+      shareStoryKey.value = shareData.data.key;
+      bridgeProvider?.showStoryBox?.(shareData.data);
+    }
+  }
+  catch (e: any){}
+  finally {
+    isLoading.value = false;
+  }
+}
+
 </script>
 <style lang="scss" scoped>
 
@@ -100,7 +129,14 @@ const pictureSrc = computed(() => {
   margin-top: 20px;
   display: flex;
   justify-content: center;
+
+  &.disabled{
+    pointer-events: none;
+    opacity: .9;
+  }
+
   .btn{
+    cursor: pointer;
     position: relative;
     text-align: center;
     display: flex;

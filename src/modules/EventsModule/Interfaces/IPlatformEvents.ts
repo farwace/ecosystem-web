@@ -4,6 +4,7 @@ import type {IModule} from "@/modules/IModule.ts";
 import type {TShopSubscription} from "@/modules/ApiModule/Types/TShopSubscription.ts";
 import type {TShopCoin} from "@/modules/ApiModule/Types/TShopCoin.ts";
 import type {RequestPropsMap} from "@vkontakte/vk-bridge/dist/types/src/types/data";
+import type {TGetShareImageResponse} from "@/modules/ApiModule/Types/TGetShareImageResponse.ts";
 
 export interface IPlatformEvents extends IModule{
     init: () => Promise<void>;
@@ -21,4 +22,5 @@ export interface IPlatformEvents extends IModule{
     checkRewardNativeAdds: () => void;
     showRewardAdds: () => Promise<boolean>;
     finishRewardAdds: () => void;
+    showStoryBox: (data: TGetShareImageResponse) => Promise<any>;
 }

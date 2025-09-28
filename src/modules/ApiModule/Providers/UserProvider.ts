@@ -12,6 +12,7 @@ import type {TUser} from "@/stores/Ecosystem/Types/TUser.ts";
 import type {TGift} from "@/stores/Ecosystem/Types/TGift.ts";
 import type {TRequestScopeResponse} from "@/modules/ApiModule/Types/TRequestScopeResponse.ts";
 import type {TInGameInfo} from "@/stores/Game/Types/TInGameInfo.ts";
+import type {TGetShareImageResponse} from "@/modules/ApiModule/Types/TGetShareImageResponse.ts";
 
 @injectable()
 export class UserProvider extends ApiProvider implements IUserProvider{
@@ -217,6 +218,25 @@ export class UserProvider extends ApiProvider implements IUserProvider{
             method: 'POST',
         }, {
             game
+        });
+    }
+
+    getShareInfo = async (type: "loose" | "won"): Promise<TResponse<TGetShareImageResponse>> => {
+        const errorCallback = (message?: string) => {
+            if(message && typeof message == 'string'){
+                this.platformEvents.getAdsEmitter()?.next?.({
+                    type: 'show-warning',
+                    message: message,
+                })
+            }
+        }
+        return await this.fetch(`${this.getApiEndpoint()}/share/image?type=${type}`, undefined, undefined, errorCallback) as unknown as Promise<TResponse<TGetShareImageResponse>>;
+    }
+    sendShareComplete = async (dataToSend: {[key:string]: any}): Promise<void> => {
+        await this.fetch(`${this.getApiEndpoint()}/share/complete`, {
+            method: 'POST',
+        }, {
+            ...dataToSend
         });
     }
 }

@@ -503,6 +503,9 @@ const showGameResultsPopup = (won: boolean, player?: TPlayer) => {
   //   class: 'game-bunker',
   //   won: won,
   //   player: player,
+  //   experience: 20,
+  //   coins: 85,
+  //   canShareResult: true
   // });
 }
 

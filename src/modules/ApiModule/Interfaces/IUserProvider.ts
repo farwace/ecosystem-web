@@ -6,6 +6,7 @@ import type {TUser} from "@/stores/Ecosystem/Types/TUser.ts";
 import type {TGift} from "@/stores/Ecosystem/Types/TGift.ts";
 import type {TRequestScopeResponse} from "@/modules/ApiModule/Types/TRequestScopeResponse.ts";
 import type {TInGameInfo} from "@/stores/Game/Types/TInGameInfo.ts";
+import type {TGetShareImageResponse} from "@/modules/ApiModule/Types/TGetShareImageResponse.ts";
 
 export interface IUserProvider  extends IModule{
     getUserInfo: () => Promise<void>;
@@ -23,4 +24,6 @@ export interface IUserProvider  extends IModule{
     queryAuthToken: (scope: string) => Promise<TResponse<TRequestScopeResponse>>;
     setAuthToken: (accessToken: string, scope: string, expires: number) => Promise<TResponse<boolean>>;
     sendGameStarted: (game: TInGameInfo) => Promise<void>;
+    getShareInfo: (type: "loose" | "won") => Promise<TResponse<TGetShareImageResponse>>;
+    sendShareComplete: (dataToSend: {[key: string]: any}) => Promise<void>;
 }
