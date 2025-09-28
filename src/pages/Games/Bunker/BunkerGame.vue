@@ -12,12 +12,19 @@
 import {useRoute} from "vue-router";
 import Bunker from "@/components/games/bunker/bunker.vue";
 import LoadingPage from "@/components/pages/LoadingPage.vue";
+import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
+import {inject, onMounted} from "vue";
+import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
 const route = useRoute();
 const neoRoom = !!route.query?.neo;
 const playersCount = route.query?.players as string;
 const isPrivateRoom = route.query?.private as string;
 const roomId = route.query?.room_id as string;
 
+const bridgeProvider: IPlatformEvents | undefined = inject(PlatformEventsSymbol);
+onMounted(() => {
+  bridgeProvider?.removeBottomBn?.();
+})
 
 </script>
 <style lang="scss" scoped>

@@ -11,7 +11,7 @@
     <ui-btn @click="createRoom">Создать комнату</ui-btn>
 
     <transition name="opacity">
-      <div class="spin" v-if="videoAdvAccepted">
+      <div class="spin" v-if="videoRewardAdvKey">
         <GetSpin @click="getSpinHasBeenClicked"/>
       </div>
     </transition>
@@ -28,10 +28,15 @@ import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfa
 import {inject} from "vue";
 import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
 import {useAnimatedRouter} from "@/classes/utils/useAnimatedRouter.ts";
+import type {IReverbProvider} from "@/modules/ReverbModule/Interfaces/IReverbProvider.ts";
+import {ReverbSymbol} from "@/modules/ReverbModule/symbols.ts";
+
+
+const {videoRewardAdvKey} = storeToRefs(bridgeStore());
+const router = useAnimatedRouter();
 
 const notificationsProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
-const {videoAdvAccepted} = storeToRefs(bridgeStore());
-const router = useAnimatedRouter();
+const reverbProvider: IReverbProvider | undefined = inject(ReverbSymbol);
 
 const createRoom = () => {
   notificationsProvider?.addPopup('create-bunker-room', 'game-bunker-create-room-popup', {
@@ -44,13 +49,27 @@ const startGame = () => {
   router.push({name: 'bunkerGame'})
 }
 
+const onSubmitRewardSpinner = () => {
+  const rqkey = videoRewardAdvKey.value;
+  reverbProvider?.sendMessage?.('reverb-oussrna', {rqkey});
+}
+
 const getSpinHasBeenClicked = () => {
-  notificationsProvider?.addPopup('reward-wheel', 'reward-wheel-popup', {
+  notificationsProvider?.addPopup('approve-show-reward', 'simple-submit-popup', {
     modal: true,
     darkBg: true,
-    noTitle: true,
-    noPaddings: true,
-  });
+    title: 'Получить бонусы',
+    middle: true,
+    message: 'Для получения награды будет воспроизведен рекламный ролик',
+    onSubmit: () => {onSubmitRewardSpinner()}
+  })
+
+  // notificationsProvider?.addPopup('reward-wheel', 'reward-wheel-popup', {
+  //   modal: true,
+  //   darkBg: true,
+  //   noTitle: true,
+  //   noPaddings: true,
+  // });
 }
 
 

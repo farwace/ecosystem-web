@@ -147,6 +147,18 @@ export class ReverbProvider implements IReverbProvider{
 
     }
 
+    sendMessage(event: string, data: {[key: string]: any}) {
+        try {
+            Console.log('>>> SEND MESSAGE TO REVERB BEFORE');
+            const dataToSend = Object.assign({}, this.getAuthData(), data)
+            this.privateChannel.whisper(event, dataToSend);
+            Console.log('>>> SEND MESSAGE TO REVERB AFTER');
+        }
+        catch (e){
+            Console.log('>>> SEND MESSAGE TO REVERB CATCH', e);
+        }
+    }
+
     getReverbObserver$(){
         return this._reverbObserver$;
     }

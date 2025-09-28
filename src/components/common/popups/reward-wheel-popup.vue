@@ -23,33 +23,44 @@
         </div>
       </div>
     </div>
-    <div class="reward-button">
+<!--    <div class="reward-button">
       <div class="btn" @click="onWatchAdAndSpin">
         <UiIcon name="gift" />
         Смотреть и вращать
       </div>
-    </div>
+    </div>-->
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import {inject, onMounted, ref} from "vue";
 import type { Reward } from "@/components/common/popups/RewardWheel/RewardWheel.vue";
 import RewardWheel from "@/components/common/popups/RewardWheel/RewardWheel.vue";
 import UiIcon from "@/components/common/icons/UiIcon.vue";
+import {Console} from "@/classes/utils/Console.ts";
+import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
+import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
 
-const isLoading = ref<boolean>(false);
+const bridgeProvider: IPlatformEvents | undefined = inject(PlatformEventsSymbol);
+const isLoading = ref<boolean>(true);
 
-const rewards: Reward[] = [
-  { id: 'coins5', label: '5', icon: 'coin' },
-  { id: 'coins15', label: '15', icon: 'low-money' },
-  { id: 'coins5-1', label: '5', icon: 'coin' },
-  { id: 'coins1000', label: '1000', icon: 'big-money' },
-  { id: 'coins10', label: '10', icon: 'coin' },
-  { id: 'coins-5-2', label: '5', icon: 'coin' },
-  { id: 'coins10-1', label: '10', icon: 'coin' },
-  { id: 'coins50', label: '50', icon: 'middle-money' },
-]
+const props = defineProps<{
+  rewards: Reward[],
+  resultId: string,
+}>();
+
+const emits = defineEmits(['close']);
+
+// const rewards: Reward[] = [
+//   { id: 'coins5', label: '5', icon: 'coin' },
+//   { id: 'coins15', label: '15', icon: 'low-money' },
+//   { id: 'coins5-1', label: '5', icon: 'coin' },
+//   { id: 'coins1000', label: '1000', icon: 'big-money' },
+//   { id: 'coins10', label: '10', icon: 'coin' },
+//   { id: 'coins-5-2', label: '5', icon: 'coin' },
+//   { id: 'coins10-1', label: '10', icon: 'coin' },
+//   { id: 'coins50', label: '50', icon: 'middle-money' },
+// ]
 // const rewards: Reward[] = [
 //   { id: 'coins10', label: '+10', icon: '🪙' },
 //   { id: 'flask', label: 'Эл-ка', icon: '🧪' },
@@ -64,26 +75,53 @@ const rewards: Reward[] = [
 const wheelRef = ref<InstanceType<typeof RewardWheel> | null>(null);
 async function onWatchAdAndSpin() {
   // Случайный выбор награды для теста
-  const randomIndex = Math.floor(Math.random() * rewards.length)
-  const resultId = rewards[randomIndex].id
+  // const randomIndex = Math.floor(Math.random() * rewards.length)
+  // const resultId = rewards[randomIndex].id
 
-  console.log('Выбранная награда:', rewards[randomIndex].label)
+  //Console.log('Выбранная награда:', props.rewards[randomIndex].label)
 
   //const resultId = 'star';
 
-  await wheelRef.value?.spinToId(resultId, {
+  // await wheelRef.value?.spinToId(resultId, {
+  //   spins: 15,
+  //   durationMs: 7000
+  // })
+
+  await wheelRef.value?.spinToId(props.resultId, {
     spins: 15,
     durationMs: 7000
   })
 }
 
+onMounted(() => {
+  setTimeout(async () => {
+    try {
+      const res = await bridgeProvider?.showRewardAdds?.();
+      if(res){
+        isLoading.value = false;
+        await onWatchAdAndSpin();
+      }
+      else{
+        emits('close');
+      }
+
+    }
+    catch (e){
+      emits('close');
+    }
+
+    // onWatchAdAndSpin
+  }, 1000);
+})
+
 function onStart() {
-  console.log('Колесо начало вращаться')
+  Console.log('Колесо начало вращаться')
 }
 
 function onFinished(payload: { index: number; reward: Reward }) {
-  console.log('Выпала награда:', payload.reward.label)
-  console.log('Ожидалось:', rewards[payload.index].label)
+  bridgeProvider?.finishRewardAdds?.();
+  Console.log('Выпала награда:', payload.reward.label)
+  //Console.log('Ожидалось:', rewards[payload.index].label)
 }
 </script>
 

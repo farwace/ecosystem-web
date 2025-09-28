@@ -8,6 +8,7 @@ import type {RequestPropsMap} from "@vkontakte/vk-bridge/dist/types/src/types/da
 export interface IPlatformEvents extends IModule{
     init: () => Promise<void>;
     getEmitter: () => Subject<VKBridgeEvent<keyof ReceiveDataMap>>;
+    getAdsEmitter: () => Subject<any>;
     setApplicationIsReady: () => Promise<any>;
     setApplicationLoadError: () => Promise<any>;
     buySubscription: (s: TShopSubscription) => Promise<any>;
@@ -15,4 +16,9 @@ export interface IPlatformEvents extends IModule{
     getAuthToken: (s: RequestPropsMap["VKWebAppGetAuthToken"]) => Promise<any>;
     isDesktop: () => boolean;
     inviteFriendToGame: (roomId: string, gameCode: string) => Promise<any>;
+    displayBottomBn: () => void;
+    removeBottomBn: () => void;
+    checkRewardNativeAdds: () => void;
+    showRewardAdds: () => Promise<boolean>;
+    finishRewardAdds: () => void;
 }

@@ -39,17 +39,21 @@ import type {IGameStore} from "@/stores/Game/IGameStore.ts";
 import {gameStore} from "@/stores/Game/gameStore.ts";
 import {GameProviderSymbol} from "@/modules/GameModule/symbols.ts";
 import type {IGameProvider} from "@/modules/GameModule/Interfaces/IGameProvider.ts";
+import type {IBridgeStore} from "@/stores/Bridge/IBridgeStore.ts";
+import {bridgeStore} from "@/stores/Bridge/bridgeStore.ts";
 
 @injectable()
 export class EcosystemProvider implements IEcosystemProvider{
 
     private _bridgeObserver$: Subject<VKBridgeEvent<keyof ReceiveDataMap>>;
+    private _nativeAdsObserver$: Subject<any>;
     private _reverbObserver$: Subject<TReverbMessage<unknown>>;
     private dailyMissionsStore: Store<'dailyMissions', IDailyMissionsStore>;
     private achievementsStore: Store<'achievements', IAchievementsStore>;
     private ecosystemStore: Store<'ecosystem', IEcosystemStore>;
     private themeStore: Store<'theme', IThemeStore>;
     private gameStore: Store<'game', IGameStore>;
+    private bridgeStore: Store<'bridge', IBridgeStore>;
 
     constructor(
         @inject(ReverbSymbol)
@@ -65,17 +69,21 @@ export class EcosystemProvider implements IEcosystemProvider{
     ) {
         this._reverbObserver$ = this.reverbProvider.getReverbObserver$();
         this._bridgeObserver$ = this.platformEventsProvider.getEmitter();
+        this._nativeAdsObserver$ = this.platformEventsProvider.getAdsEmitter();
+
         this.dailyMissionsStore = dailyMissionsStore();
         this.achievementsStore = achievementsStore();
         this.ecosystemStore = ecosystemStore();
         this.themeStore = themeStore();
         this.gameStore = gameStore();
+        this.bridgeStore = bridgeStore();
     }
 
     install(app: App, symbol: symbol) {
         app.provide(symbol, this);
         this.subscribeToEcosystemEvents();
         this.subscribeToBridgeEvents();
+        this.subscribeToNativeAdsEvents();
     }
 
     private subscribeToEcosystemEvents = () => {
@@ -209,6 +217,10 @@ export class EcosystemProvider implements IEcosystemProvider{
         this._reverbObserver$.pipe(
             filter((message):message is TReverbMessage<any> => message.event === 'current_subscription'),
         ).subscribe((message) => {
+            if(!!message.data?.vip){
+                this.platformEventsProvider?.removeBottomBn?.();
+            }
+
             /*@ts-ignore*/
             this.ecosystemStore.$patch({
                 subscription: message.data?.subscription ? message.data.subscription : undefined,
@@ -253,6 +265,35 @@ export class EcosystemProvider implements IEcosystemProvider{
             });
         })
 
+        // Бакенд принял инфу что есть реклама для просмотра, вернул ключ или может вренуть пустой ключ если что-то не так с валидацией
+        this._reverbObserver$.pipe(
+            filter((message):message is TReverbMessage<{ key: string }> => message.event === 'client-reverb-oulrna'),
+        ).subscribe((message) => {
+            this.bridgeStore.$patch({
+                videoRewardAdvKey: message.data?.key || '',
+            });
+            if(!message?.data?.key){
+                this.notificationsProvider.removePopup('reward-wheel');
+            }
+        });
+
+
+    }
+
+    private subscribeToNativeAdsEvents = () => {
+
+        this._nativeAdsObserver$.pipe(
+            filter((message) => message?.type == 'spin-reward-ready')
+        ).subscribe(() => {
+            this.reverbProvider.sendMessage('reverb-oulrna', {});
+        });
+
+        this._nativeAdsObserver$.pipe(
+            filter((message) => message?.type == 'spin-reward-finish')
+        ).subscribe(() => {
+            const rqkey = this.bridgeStore.$state.videoRewardAdvKey;
+            this.reverbProvider.sendMessage('reverb-ouesrna', {rqkey});
+        });
     }
 
     private subscribeToBridgeEvents = () => {

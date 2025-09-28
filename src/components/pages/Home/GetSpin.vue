@@ -32,7 +32,7 @@ import UiIcon from "@/components/common/icons/UiIcon.vue";
       background-color: #FFF6EC;
       color: #BC7D4D;
       display: inline-block;
-      padding: 2px 6px;
+      padding: 2px 6px 0;
       position: absolute;
       bottom: 0;
       left: 50%;

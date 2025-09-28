@@ -3,7 +3,7 @@ import type {IBridgeStore} from "@/stores/Bridge/IBridgeStore.ts";
 
 export const bridgeStore = defineStore('bridge', {
     state: ():IBridgeStore => ({
-        videoAdvAccepted: false,
+        videoRewardAdvKey: '',
         inFavorites: false,
         inHomeScreen: false,
     })

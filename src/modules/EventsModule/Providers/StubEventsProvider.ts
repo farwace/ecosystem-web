@@ -41,6 +41,9 @@ export class StubEventsProvider implements IPlatformEvents{
     getEmitter = ():Subject<VKBridgeEvent<keyof ReceiveDataMap>> => {
         return this._bridgeEvent$;
     }
+    getAdsEmitter = ():Subject<any> => {
+        return this._bridgeEvent$;
+    }
 
     async queryLaunchParams(){
         try {
@@ -140,4 +143,10 @@ export class StubEventsProvider implements IPlatformEvents{
     isDesktop = () => {
         return !!('ontouchstart' in window || navigator.maxTouchPoints);
     }
+
+    removeBottomBn = () => { console.log('>>> BNR REMOVE ') }
+    displayBottomBn = () => { console.log('>>> BNR DISPLAY') }
+    checkRewardNativeAdds = () => { console.log('>>> CHECK NATIVE ADS') }
+    finishRewardAdds = () => {};
+    showRewardAdds = async () => {return true;}
 }

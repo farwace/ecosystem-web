@@ -6,4 +6,5 @@ export interface IReverbProvider  extends IModule{
     getReverbObserver$(): Subject<TReverbMessage<unknown>>
     onCloseApp(): void;
     closeConnections():void;
+    sendMessage(event: string, dataToSend: {[key: string]: any}): void;
 }

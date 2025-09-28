@@ -50,18 +50,22 @@ import UserAvatar from "@/components/pages/Home/UserAvatar.vue";
 import UserExperience from "@/components/pages/Home/UserExperience.vue";
 import GameList from "@/components/pages/Home/GameList.vue";
 import MenuList from "@/components/pages/Home/MenuList.vue";
-import MenuItem from "@/components/pages/Home/MenuItem.vue";
 import UiIcon from "@/components/common/icons/UiIcon.vue";
 import {storeToRefs} from "pinia";
 import {bridgeStore} from "@/stores/Bridge/bridgeStore.ts";
 import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
 import {achievementsStore} from "@/stores/Achievements/achievementsStore.ts";
 import {useAnimatedRouter} from "@/classes/utils/useAnimatedRouter.ts";
-import {inject} from "vue";
+import {inject, onActivated, onMounted} from "vue";
 import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
 import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
 import type {TDailyReward} from "@/modules/EventsModule/Types/TDailyRevard.ts";
 import {gameStore} from "@/stores/Game/gameStore.ts";
+import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
+import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
+import {Console} from "@/classes/utils/Console.ts";
+import type {IReverbProvider} from "@/modules/ReverbModule/Interfaces/IReverbProvider.ts";
+import {ReverbSymbol} from "@/modules/ReverbModule/symbols.ts";
 
 const {id, firstName, avatar, subscription} = storeToRefs(ecosystemStore());
 const {inFavorites, inHomeScreen} = storeToRefs(bridgeStore());
@@ -69,8 +73,8 @@ const {hasUnclaimedCompletedAchievement} = storeToRefs(achievementsStore());
 const router = useAnimatedRouter();
 const {inGameRoom} = storeToRefs(gameStore());
 
-
-
+const reverbProvider: IReverbProvider | undefined = inject(ReverbSymbol);
+const bridgeProvider: IPlatformEvents | undefined = inject(PlatformEventsSymbol);
 const notificationsProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
 
 const returnToRoom = (roomId: string) => {
@@ -85,6 +89,10 @@ const addToFavorite = () => {
   alert('Добавить в избранное')
 }
 
+onMounted(() => {
+  bridgeProvider?.checkRewardNativeAdds?.()
+  bridgeProvider?.displayBottomBn?.();
+});
 
 </script>
 <style lang="scss" scoped>

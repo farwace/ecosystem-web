@@ -1,10 +1,17 @@
 import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents";
-import type {EGetLaunchParamsResponsePlatforms, ReceiveDataMap, VKBridgeEvent} from "@vkontakte/vk-bridge";
+import bridge, {
+    BannerAdLayoutType,
+    BannerAdLocation,
+    EAdsFormats,
+    type ReceiveDataMap,
+    type RequestPropsMap,
+    type VKBridgeEvent
+} from "@vkontakte/vk-bridge";
+
 import {Subject} from "rxjs";
 import type {Store} from "pinia";
 import type {IEcosystemStore} from "@/stores/Ecosystem/IEcosystemStore";
 import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore";
-import bridge from '@vkontakte/vk-bridge';
 import {Console} from "@/classes/utils/Console";
 import {calculateAge} from "@/classes/utils/CalculateAge";
 import {getAgeGroup} from "@/classes/utils/GetAgeGroup";
@@ -16,11 +23,11 @@ import type {TShopSubscription} from "@/modules/ApiModule/Types/TShopSubscriptio
 import type {TShopCoin} from "@/modules/ApiModule/Types/TShopCoin.ts";
 import {themeStore} from "@/stores/Theme/themeStore.ts";
 import type {IThemeStore} from "@/stores/Theme/IThemeStore.ts";
-import type {RequestPropsMap} from "@vkontakte/vk-bridge/dist/types/src/types/data";
 
 @injectable()
 export class BridgeEventsProvider implements IPlatformEvents {
     private _bridgeEvent$ = new Subject<VKBridgeEvent<keyof ReceiveDataMap>>();
+    private _nativeAdsEvent$ = new Subject();
     private ecosystemStore: Store<'ecosystem', IEcosystemStore>
     private themeStore: Store<'theme', IThemeStore>
     private arLaunchParams: any = undefined;
@@ -85,6 +92,10 @@ export class BridgeEventsProvider implements IPlatformEvents {
 
     getEmitter():Subject<VKBridgeEvent<keyof ReceiveDataMap>>{
         return this._bridgeEvent$;
+    }
+
+    getAdsEmitter():Subject<any>{
+        return this._nativeAdsEvent$;
     }
 
     async queryLaunchParams(){
@@ -281,5 +292,66 @@ export class BridgeEventsProvider implements IPlatformEvents {
         if(gameCode == 'bunker'){
             return 'Убежище'
         }
+    }
+
+    removeBottomBn = () => {
+        bridge.send('VKWebAppHideBannerAd');
+    }
+
+    displayBottomBn = () => {
+        if(!!this.ecosystemStore?.vip){
+            return;
+        }
+        if(import.meta.env.VITE_ENVELOP == 'preprod'){
+            return;
+        }
+        bridge.send('VKWebAppCheckBannerAd').then((data) => {
+            if(data.result){
+
+            }
+            else{
+                bridge.send('VKWebAppShowBannerAd', {
+                    banner_location: BannerAdLocation.BOTTOM,
+                    layout_type: BannerAdLayoutType.RESIZE
+                })
+            }
+        })
+    }
+
+    checkRewardNativeAdds = (): void => {
+        // bridge.send('VKWebAppCheckNativeAds', {
+        //     ad_format: 'interstitial',
+        // });
+        bridge.send('VKWebAppCheckNativeAds', {
+            ad_format: EAdsFormats.REWARD,
+            use_waterfall: false
+        }).then((r) => {
+            if(r.result){
+                this._nativeAdsEvent$.next({
+                    type: 'spin-reward-ready',
+                });
+            }
+        });
+    }
+
+    showRewardAdds = (): Promise<boolean> => {
+        return new Promise((resolve, reject) => {
+            bridge.send('VKWebAppShowNativeAds', {
+                ad_format: EAdsFormats.REWARD
+            }).then((data) => {
+                if(data.result){
+                    resolve(true)
+                }
+                else{
+                    reject()
+                }
+            }).catch(e => {reject()})
+        })
+    }
+
+    finishRewardAdds = () => {
+        this._nativeAdsEvent$.next({
+            type: 'spin-reward-finish',
+        });
     }
 }

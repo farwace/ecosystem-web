@@ -1,5 +1,5 @@
 export interface IBridgeStore {
-    videoAdvAccepted: boolean;
+    videoRewardAdvKey: string;
     inFavorites: boolean;
     inHomeScreen: boolean;
 }
