@@ -277,6 +277,16 @@ export class EcosystemProvider implements IEcosystemProvider{
             }
         });
 
+        // Бакенд сообщил что завершил цикл просмотра рекламы и отправил награду
+        this._reverbObserver$.pipe(
+            filter((message):message is TReverbMessage<{ key: string }> => message.event === 'client-reverb-ouesrna'),
+        ).subscribe((message) => {
+            setTimeout(() => {
+                this.platformEventsProvider?.checkRewardNativeAdds?.();
+            }, 2000)
+        });
+
+
 
     }
 
