@@ -56,7 +56,7 @@ import {bridgeStore} from "@/stores/Bridge/bridgeStore.ts";
 import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
 import {achievementsStore} from "@/stores/Achievements/achievementsStore.ts";
 import {useAnimatedRouter} from "@/classes/utils/useAnimatedRouter.ts";
-import {inject, onActivated, onMounted} from "vue";
+import {inject, onActivated, onMounted, watch} from "vue";
 import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
 import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
 import type {TDailyReward} from "@/modules/EventsModule/Types/TDailyRevard.ts";
@@ -90,9 +90,18 @@ const addToFavorite = () => {
 }
 
 onMounted(() => {
-  bridgeProvider?.checkRewardNativeAdds?.()
-  bridgeProvider?.displayBottomBn?.();
+  bridgeProvider?.checkRewardNativeAdds?.();
+  if(id.value > 0){
+    bridgeProvider?.displayBottomBn?.();
+  }
 });
+
+watch(id, (neoVal) => {
+  if(neoVal > 0){
+    //todo: проверять еще и на отображение онбординга
+    bridgeProvider?.displayBottomBn?.();
+  }
+})
 
 </script>
 <style lang="scss" scoped>
