@@ -172,7 +172,6 @@ onMounted(() => {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 5px;
     .avatar{
       flex-shrink: 0;
     }
@@ -258,6 +257,15 @@ onMounted(() => {
     }
   }
 }
+
+@media(min-width: 400px){
+  .gifts-items{
+    &__inner{
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    }
+  }
+}
+
 
 //.v-popper__popper.v-popper__popper--shown{
 //  z-index: 10002;

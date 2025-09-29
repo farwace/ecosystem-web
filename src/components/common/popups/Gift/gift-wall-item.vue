@@ -26,7 +26,9 @@ const props = defineProps<{
 .item{
   flex-shrink: 0;
   width: 75px;
-  max-width: calc(100% - 5px);
+  max-width: calc(100% - 2px);
+  margin-left: auto;
+  margin-right: auto;
   margin-bottom: 5px;
   &__body{
     max-width: 100%;
@@ -132,13 +134,17 @@ const props = defineProps<{
 
 @media(min-width: 400px){
   .item{
+    width: 80px;
     &__body{
       &__title{
+        padding-left: 1px;
+        padding-right: 1px;
         font-size: 9px;
       }
     }
   }
 }
+
 [theme=dark]{
   .item{
     &__body{
