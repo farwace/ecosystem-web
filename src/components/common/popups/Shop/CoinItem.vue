@@ -1,5 +1,5 @@
 <template>
-  <div class="item">
+  <div class="item" @click="openDonateBox(coin)">
     <div class="item__description">
       <div class="text" v-if="coin.description?.length > 0">
         <div class="absolute-marquee-text" v-marquee="'scroll'">
@@ -17,7 +17,7 @@
     <div class="item__old-price" v-if="(coin.oldPrice || 0) > 0">
       &nbsp;{{ prepareNumber(coin.oldPrice || 0) }}&nbsp;{{ PluralForm((coin.oldPrice || 0), 'голос', 'голоса', 'голосов') }}&nbsp;
     </div>
-    <div class="item__price" @click="openDonateBox(coin)">
+    <div class="item__price">
       {{ prepareNumber(coin.price) }} {{ PluralForm((coin.price || 0), 'голос', 'голоса', 'голосов') }}
     </div>
   </div>
