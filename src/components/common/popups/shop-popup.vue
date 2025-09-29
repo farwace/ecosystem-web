@@ -178,7 +178,7 @@ onMounted(() => {
 
     &__list{
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr;
       gap: 10px;
     }
   }
@@ -186,7 +186,7 @@ onMounted(() => {
     margin-bottom: 20px;
     &__list{
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
   }
@@ -200,5 +200,20 @@ onMounted(() => {
   font-size: 14px;
   line-height: 14px;
   white-space: pre-line;
+}
+
+@media(min-width: 360px){
+  .shop{
+    &__subscription{
+      &__list{
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    &__coins{
+      &__list{
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+    }
+  }
 }
 </style>

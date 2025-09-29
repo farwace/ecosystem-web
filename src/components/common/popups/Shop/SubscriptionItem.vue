@@ -156,7 +156,6 @@ const openSubscriptionBox = (s: TShopSubscription) => {
         font-size: 9px;
         line-height: 10px;
         font-weight: 500;
-        min-height: 72px;
       }
     }
   }
@@ -241,6 +240,7 @@ const openSubscriptionBox = (s: TShopSubscription) => {
         &__description{
           font-size: 11px;
           line-height: 12px;
+          min-height: 72px;
         }
       }
     }
