@@ -90,8 +90,8 @@ const addToFavorite = () => {
 }
 
 onMounted(() => {
-  bridgeProvider?.checkRewardNativeAdds?.();
   if(id.value > 0){
+    bridgeProvider?.checkRewardNativeAdds?.();
     bridgeProvider?.displayBottomBn?.();
   }
 });
@@ -100,6 +100,7 @@ watch(id, (neoVal) => {
   if(neoVal > 0){
     //todo: проверять еще и на отображение онбординга
     bridgeProvider?.displayBottomBn?.();
+    bridgeProvider?.checkRewardNativeAdds?.();
   }
 })
 
