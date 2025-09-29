@@ -22,5 +22,6 @@ export interface IPlatformEvents extends IModule{
     checkRewardNativeAdds: () => void;
     showRewardAdds: () => Promise<boolean>;
     finishRewardAdds: () => void;
+    startRewardAdds: (rqkey: string) => void;
     showStoryBox: (data: TGetShareImageResponse) => Promise<any>;
 }

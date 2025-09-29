@@ -299,6 +299,12 @@ export class EcosystemProvider implements IEcosystemProvider{
         });
 
         this._nativeAdsObserver$.pipe(
+            filter((message) => message?.type == 'spin-reward-start')
+        ).subscribe((message) => {
+            this.reverbProvider.sendMessage('reverb-oussrna', {rqkey: (message?.rqkey || '')});
+        });
+
+        this._nativeAdsObserver$.pipe(
             filter((message) => message?.type == 'spin-reward-finish')
         ).subscribe(() => {
             const rqkey = this.bridgeStore.$state.videoRewardAdvKey;

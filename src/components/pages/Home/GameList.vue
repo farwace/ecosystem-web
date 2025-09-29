@@ -28,15 +28,15 @@ import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfa
 import {inject} from "vue";
 import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
 import {useAnimatedRouter} from "@/classes/utils/useAnimatedRouter.ts";
-import type {IReverbProvider} from "@/modules/ReverbModule/Interfaces/IReverbProvider.ts";
-import {ReverbSymbol} from "@/modules/ReverbModule/symbols.ts";
+import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
+import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
 
 
 const {videoRewardAdvKey} = storeToRefs(bridgeStore());
 const router = useAnimatedRouter();
 
 const notificationsProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
-const reverbProvider: IReverbProvider | undefined = inject(ReverbSymbol);
+const bridgeProvider: IPlatformEvents | undefined = inject(PlatformEventsSymbol);
 
 const createRoom = () => {
   notificationsProvider?.addPopup('create-bunker-room', 'game-bunker-create-room-popup', {
@@ -51,7 +51,7 @@ const startGame = () => {
 
 const onSubmitRewardSpinner = () => {
   const rqkey = videoRewardAdvKey.value;
-  reverbProvider?.sendMessage?.('reverb-oussrna', {rqkey});
+  bridgeProvider?.startRewardAdds(rqkey);
 }
 
 const getSpinHasBeenClicked = () => {

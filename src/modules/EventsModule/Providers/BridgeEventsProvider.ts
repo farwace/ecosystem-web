@@ -350,6 +350,13 @@ export class BridgeEventsProvider implements IPlatformEvents {
         })
     }
 
+    startRewardAdds = (rqkey: string) => {
+        this._nativeAdsEvent$.next({
+            type: 'spin-reward-start',
+            rqkey: rqkey
+        });
+    }
+
     finishRewardAdds = () => {
         this._nativeAdsEvent$.next({
             type: 'spin-reward-finish',
