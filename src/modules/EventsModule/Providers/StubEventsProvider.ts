@@ -151,4 +151,5 @@ export class StubEventsProvider implements IPlatformEvents{
     finishRewardAdds = () => {};
     showRewardAdds = async () => {return true;}
     showStoryBox = async (data: TGetShareImageResponse) => {return;}
+    startRewardAdds = async () => {}
 }
