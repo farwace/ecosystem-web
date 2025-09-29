@@ -4,13 +4,14 @@
 
 <script setup lang="ts">
 
-import {ref, watchEffect} from "vue";
+import {nextTick, ref, watchEffect} from "vue";
 
 interface Props {
   name: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {});
+const emits = defineEmits(['loaded']);
 
 const icon = ref();
 
@@ -21,6 +22,8 @@ async function getIcon() {
     });
 
     icon.value = await iconsImport[`/src/assets/icons/${props.name}.svg`]();
+    await nextTick();
+    emits('loaded');
   } catch {
     console.error(`[icons] Icon '${props.name}' doesn't exist in 'assets/icons'`);
   }
@@ -28,5 +31,7 @@ async function getIcon() {
 
 await getIcon();
 
-watchEffect(getIcon);
+watchEffect(() => {
+  void getIcon();
+});
 </script>

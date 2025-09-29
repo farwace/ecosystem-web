@@ -2,8 +2,12 @@
   <div class="item" @click="openDonateBox(coin)">
     <div class="item__description">
       <div class="text" v-if="coin.description?.length > 0">
-        <div class="absolute-marquee-text" v-marquee="'scroll'">
-          <CoinText :text="coin.description" />
+        <div
+          class="absolute-marquee-text"
+          ref="descriptionMarqueeRef"
+          v-marquee="'scroll'"
+        >
+          <CoinText :text="coin.description" @icon-loaded="onDescriptionIconLoaded" />
         </div>
       </div>
     </div>
@@ -29,13 +33,21 @@ import {PluralForm} from "@/classes/utils/PluralForm.ts";
 import {prepareNumber} from "@/classes/utils/PrepareNumber.ts";
 import {vMarquee} from "@/classes/directives/marquee.ts";
 import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
-import {inject} from "vue";
+import {inject, ref} from "vue";
 import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
 
 const platformEventsProvider: IPlatformEvents | undefined = inject(PlatformEventsSymbol);
 const props = defineProps<{
   coin: TShopCoin,
 }>();
+
+type MarqueeElement = HTMLElement & { __marqueeApply?: () => void };
+
+const descriptionMarqueeRef = ref<MarqueeElement | null>(null);
+
+const onDescriptionIconLoaded = () => {
+  descriptionMarqueeRef.value?.__marqueeApply?.();
+};
 
 const openDonateBox = (coin: TShopCoin) => {
   platformEventsProvider?.buyMoney(coin);

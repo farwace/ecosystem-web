@@ -2,7 +2,7 @@
   <span>
     <template v-for="(part, index) in parsed" :key="index">
       <template v-if="part === '__COIN__'">
-        <UiIcon class="inline-icon" name="coin" />
+        <UiIcon class="inline-icon" name="coin" @loaded="emit('icon-loaded')" />
       </template>
       <template v-else>
         {{ part }}
@@ -18,6 +18,8 @@ import UiIcon from '@/components/common/icons/UiIcon.vue'
 const props = defineProps<{
   text?: string
 }>()
+
+const emit = defineEmits<{(e: 'icon-loaded'): void}>()
 
 const parsed = computed(() => {
   return props.text
