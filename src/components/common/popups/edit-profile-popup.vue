@@ -290,6 +290,8 @@ const toggleEdit = async (field: 'name' | 'animal' | 'sex' | 'age') => {
 
     &__value {
       flex: 1;
+      min-width: 88px;
+      overflow: hidden;
     }
 
     .item__static {
