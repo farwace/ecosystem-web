@@ -27,6 +27,7 @@ const props = defineProps<{
   roomId?: string,
   playersCount?: string,
   isPrivateRoom?: string,
+  bots?: string,
 }>();
 
 const client: {instance?: Client | null} = {
@@ -87,7 +88,7 @@ async function findOrCreateBunkerRoom(forceCreate = false): Promise<Room> {
   const joinOptions = {authString: (authString.value || '').replace('Bearer ', '')};
 
   if(forceCreate){
-    return await client.instance!.create("bunker_game", Object.assign({}, joinOptions, {isPrivate: !(props.isPrivateRoom == '0'), playersCount: (props.playersCount || 8)}));
+    return await client.instance!.create("bunker_game", Object.assign({}, joinOptions, {isPrivate: !(props.isPrivateRoom == '0'), useBots: !(props.bots == '0'), playersCount: (props.playersCount || 8)}));
   }
 
   const availableRooms = allRooms?.filter?.(r => r.metadata?.canJoin === true && r.name === "bunker_game");

@@ -4,7 +4,12 @@
       <UiIcon name="burger"/>
     </div>
     <div class="settings__menu" :class="{open: isOpen}">
-      <div class="item-players" v-if="host">
+      <div class="item item-toggle" v-if="host" @click.prevent="$emit('bots')">
+        <div>Спавн ботов</div>
+        <UIPassiveToggle :value="withBots"/>
+        <div>{{ withBots ? 'Вкл' : 'Выкл' }}</div>
+      </div>
+      <div class="item item-players" v-if="host">
         Игроки
         <bunker-players-count-toggle :players-count="playersCount || 8" @minus="emit('minus')" @plus="emit('plus')" />
       </div>
@@ -19,14 +24,16 @@ import UiIcon from "@/components/common/icons/UiIcon.vue";
 import {ref} from "vue";
 import {ClickOutside} from "@/classes/directives/clickOutside.ts";
 import BunkerPlayersCountToggle from "@/components/games/bunker/components/BunkerPlayersCountToggle.vue";
+import UIPassiveToggle from "@/components/games/bunker/components/UIPassiveToggle.vue";
 const isOpen = ref<boolean>(false);
 const vClickOutside = ClickOutside;
 
-const emit = defineEmits(['settings', 'rules', 'leave', 'minus', 'plus']);
+const emit = defineEmits(['settings', 'rules', 'leave', 'minus', 'plus', 'bots']);
 
 const props = defineProps<{
   playersCount?: number,
   host?: boolean,
+  withBots?: boolean,
 }>();
 
 const onSettingsClick = () => {
@@ -72,8 +79,16 @@ const onLeaveClick = () => {
       display: flex;
       flex-wrap: nowrap;
       gap: 10px;
-
     }
+
+    .item-toggle{
+      padding: 4px 8px;
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 10px;
+      align-items: center;
+    }
+
 
     &.open{
       display: block;

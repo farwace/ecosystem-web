@@ -4,11 +4,13 @@
       <BunkerSettingsBurger
           :host="hostId == id"
           :players-count="playersCount"
+          :withBots="useBots"
           @leave="onLeaveClick"
           @rules="onRulesClick"
           @settings="onSettingsClick"
           @minus="onPlayersMinusClick"
           @plus="onPlayersPlusClick"
+          @bots="onPlayerToggleBotsClick"
       />
     </div>
 
@@ -166,6 +168,7 @@ const currentSpeakerId = ref<number | string>();
 const gameStage = ref<TGameStage>();
 const hostId = ref<number>();
 const isPrivateRoom = ref<boolean>();
+const useBots = ref<boolean>();
 const minPlayers = ref<number>();
 const maxPlayers = ref<number>();
 const playersCount = ref<number>();
@@ -241,6 +244,9 @@ const initializeGame = () => {
 
   unbindCallbacks.push($(props.room.state).listen("isPrivateRoom", (currentValue, previousValue) => {
     isPrivateRoom.value = currentValue;
+  }));
+  unbindCallbacks.push($(props.room.state).listen("useBots", (currentValue, previousValue) => {
+    useBots.value = currentValue;
   }));
   unbindCallbacks.push($(props.room.state).listen("canAbstainThisRound", (currentValue, previousValue) => {
     canAbstainThisRound.value = currentValue;
@@ -766,6 +772,12 @@ const onPlayersPlusClick = () => {
     props.room?.send('changePlayersCount', 'add');
   }
 }
+const onPlayerToggleBotsClick = () => {
+  if(hostId.value == id.value){
+    props.room?.send('toggleUseBotsValue');
+  }
+}
+
 
 const setGameStubs = () => {
   currentSpeakerId.value = 1;

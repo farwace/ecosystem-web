@@ -1,7 +1,7 @@
 <template>
   <div class="game">
     <suspense>
-      <Bunker :neoRoom="neoRoom" :players-count="playersCount" :is-private-room="isPrivateRoom" :room-id="roomId"/>
+      <Bunker :neoRoom="neoRoom" :players-count="playersCount" :is-private-room="isPrivateRoom" :room-id="roomId" :bots="useBots"/>
       <template #fallback>
         <LoadingPage />
       </template>
@@ -20,6 +20,7 @@ const neoRoom = !!route.query?.neo;
 const playersCount = route.query?.players as string;
 const isPrivateRoom = route.query?.private as string;
 const roomId = route.query?.room_id as string;
+const useBots = route.query?.bots as string;
 
 const bridgeProvider: IPlatformEvents | undefined = inject(PlatformEventsSymbol);
 onMounted(() => {

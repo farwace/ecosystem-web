@@ -12,6 +12,16 @@
     </div>
     <div class="item">
       <div class="title">
+        <label for="toggle-use-bots">
+          Подключение ботов:
+        </label>
+      </div>
+      <div class="value inline">
+        <UIToggle field-id="toggle-use-bots" v-model="useBots"/> <label for="toggle-use-bots">{{ useBots ? 'Выкл' : 'Вкл' }}</label>
+      </div>
+    </div>
+    <div class="item">
+      <div class="title">
         Количество игроков:
       </div>
       <div class="value">
@@ -40,6 +50,7 @@ const notificationsProvider: INotificationsProvider | undefined = inject(Notific
 const router = useAnimatedRouter();
 
 const isPrivate = ref<boolean>();
+const useBots = ref<boolean>();
 const playersCount = ref<number>();
 
 const emits = defineEmits(['close']);
@@ -71,7 +82,7 @@ const onPlayersPlus = () => {
 
 const createRoom = () => {
   emits('close');
-  router.push({name: 'bunkerGame', query: {neo: 1, players: (playersCount.value || 8), private: isPrivate.value ? 1 : 0}});
+  router.push({name: 'bunkerGame', query: {neo: 1, players: (playersCount.value || 8), private: isPrivate.value ? 1 : 0, bots: !useBots.value ? 1 : 0}});
 }
 
 onMounted(() => {

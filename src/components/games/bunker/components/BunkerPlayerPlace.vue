@@ -288,10 +288,11 @@ const handleClick = () => {
   left: 0;
   width: 100%;
   height: 100%;
+  text-wrap: nowrap;
   &.scroll{
-    -webkit-animation: scroll 12s infinite linear;
-    -moz-animation: scroll 12s infinite linear;
-    animation: scroll 12s infinite linear;
+    -webkit-animation: scroll var(--marquee-duration) infinite linear;
+    -moz-animation: scroll var(--marquee-duration) infinite linear;
+    animation: scroll var(--marquee-duration) infinite linear;
   }
 }
 
