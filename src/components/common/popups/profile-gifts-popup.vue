@@ -28,7 +28,7 @@
             </template>
           </div>
 
-          <div class="gifts-items__delimiter" v-if="(gifts?.length || 0) > 0">
+          <div class="gifts-items__delimiter" v-if="(notAppliedGifts?.length || 0) > 0">
             Не получены:
           </div>
           <div class="gifts-items__inner">
