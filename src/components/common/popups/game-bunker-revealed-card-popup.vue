@@ -70,6 +70,22 @@ onMounted(() => {
     display: flex;
     justify-content: center;
     margin-top: 5px;
+    padding-bottom: 5px;
+    ::v-deep(.avatar){
+      min-width: 100px;
+      .avatar__img__outer{
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .avatar__name{
+        background-color: rgba(50, 29, 2, 0.4);
+        border-radius: 5px;
+        border: 2px solid #E5CC9F;
+        color: #F5D8B6!important;
+        font-weight: 500;
+        box-shadow: 0 0 0 2px rgba(50, 29, 2, 0.4);
+      }
+    }
   }
 }
 

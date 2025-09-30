@@ -1,6 +1,6 @@
 <template>
   <div class="avatar" :class="{alarm: alarm, 'no-padding': onlyPhoto}">
-    <div class="avatar__img__outer">
+    <div class="avatar__img__outer" :class="{small: avatarSmall}">
       <div class="avatar__img" :class="{small: avatarSmall}">
         <img :src="photo" alt="">
       </div>
@@ -89,6 +89,9 @@
       position: relative;
       width: 68px;
       height: 68px;
+      &.small{
+        height: 48px;
+      }
     }
     img{
       width: 100%;

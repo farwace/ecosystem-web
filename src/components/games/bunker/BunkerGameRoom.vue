@@ -5,6 +5,7 @@
           :host="hostId == id"
           :players-count="playersCount"
           :withBots="useBots"
+          :isPrivateRoom="isPrivateRoom"
           @leave="onLeaveClick"
           @rules="onRulesClick"
           @settings="onSettingsClick"
@@ -561,6 +562,8 @@ const showRevealedCardPopup = (playerId: number, card: Card) => {
       noBackground: true,
       noPaddings: true,
       noScroll: true,
+      darkBg: true,
+      backdropBlur: true,
       class: 'game-bunker',
       player: player,
       card: card,

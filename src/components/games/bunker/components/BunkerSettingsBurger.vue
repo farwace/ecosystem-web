@@ -4,7 +4,7 @@
       <UiIcon name="burger"/>
     </div>
     <div class="settings__menu" :class="{open: isOpen}">
-      <div class="item item-toggle" v-if="host" @click.prevent="$emit('bots')">
+      <div class="item item-toggle" v-if="host && !isPrivateRoom" @click.prevent="$emit('bots')">
         <div>Спавн ботов</div>
         <UIPassiveToggle :value="withBots"/>
         <div>{{ withBots ? 'Вкл' : 'Выкл' }}</div>
@@ -34,6 +34,7 @@ const props = defineProps<{
   playersCount?: number,
   host?: boolean,
   withBots?: boolean,
+  isPrivateRoom?: boolean,
 }>();
 
 const onSettingsClick = () => {

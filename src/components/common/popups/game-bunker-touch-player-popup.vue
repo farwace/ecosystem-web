@@ -124,6 +124,8 @@ const showCardPopup = (card: any) => {
     modal: true,
     small: true,
     noTitle: true,
+    darkBg: true,
+    backdropBlur: true,
     noBackground: true,
     noPaddings: true,
     noScroll: true,
