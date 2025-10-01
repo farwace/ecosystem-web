@@ -37,6 +37,49 @@ const client: {instance?: Client | null} = {
 const room = shallowRef<Room>();
 const error = ref<string>();
 
+const hasAuthPayload = (value?: string | null): value is string => {
+  return Boolean(value?.replace(/^Bearer\s+/i, '').trim());
+};
+
+let authStringReadyPromise: Promise<string> | undefined;
+const waitForAuthString = (): Promise<string> => {
+  if (hasAuthPayload(authString.value)) {
+    return Promise.resolve(authString.value);
+  }
+
+  if (!authStringReadyPromise) {
+    authStringReadyPromise = new Promise<string>((resolve) => {
+      let timeoutId: number | undefined;
+      let stop = () => {};
+      const finalize = (value: string) => {
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
+        stop();
+        authStringReadyPromise = undefined;
+        resolve(value);
+      };
+
+      stop = watch(authString, (value) => {
+        if (hasAuthPayload(value)) {
+          finalize(value);
+        }
+      }, {immediate: true});
+
+      timeoutId = window.setTimeout(() => {
+        finalize('');
+      }, 5000);
+    });
+  }
+
+  return authStringReadyPromise;
+};
+
+const getJoinOptions = async () => {
+  const auth = await waitForAuthString();
+  return {authString: auth.replace(/^Bearer\s+/i, '')};
+};
+
 const handleRoomLeave = (code: any) => {
   if(code != 1000){
     notificationsProvider?.addPopup('game-bunker-disconnect', 'simple-popup', {
@@ -85,7 +128,7 @@ async function findOrCreateBunkerRoom(forceCreate = false): Promise<Room> {
   lobby?.removeAllListeners?.();
   lobby?.leave?.();
 
-  const joinOptions = {authString: (authString.value || '').replace('Bearer ', '')};
+  const joinOptions = await getJoinOptions();
 
   if(forceCreate){
     return await client.instance!.create("bunker_game", Object.assign({}, joinOptions, {isPrivate: !(props.isPrivateRoom == '0'), useBots: !(props.bots == '0'), playersCount: (props.playersCount || 8)}));
@@ -114,7 +157,7 @@ if(props.roomId){
     lobby?.removeAllListeners?.();
     lobby?.leave?.();
 
-    const joinOptions = {authString: (authString.value || '').replace('Bearer ', '')};
+    const joinOptions = await getJoinOptions();
     const targetRoom = allRooms?.find?.((availableRoom) => availableRoom.name == "bunker_game" && availableRoom.metadata?.customId == props.roomId);
 
     if(targetRoom){
