@@ -7,6 +7,7 @@ import {gameStore} from "@/stores/Game/gameStore.ts";
 import {UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
 import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.ts";
 import type {TInGameInfo} from "@/stores/Game/Types/TInGameInfo.ts";
+import {Console} from "@/classes/utils/Console.ts";
 
 
 @injectable()
@@ -63,9 +64,9 @@ export class GameProvider implements IGameProvider {
         }
 
         if(obParameters?.['game'] == 'bunker' && obParameters?.['room']){
-            console.log('>>> CHANGE FRAGMENT >>>');
-            console.log({name: 'bunkerGame', query: {"room_id": obParameters['room']}});
-            console.log('<<< CHANGE FRAGMENT <<<');
+            Console.log('>>> CHANGE FRAGMENT >>>');
+            Console.log({name: 'bunkerGame', query: {"room_id": obParameters['room']}});
+            Console.log('<<< CHANGE FRAGMENT <<<');
             try {
                 await this.animatedRouter?.push?.({name: 'bunkerGame', query: {"room_id": obParameters['room']}});
             }
