@@ -77,7 +77,7 @@
       </div>
     </div>
 
-    <div class="bunker__controls">
+    <div class="bunker__controls" v-if="!isSpectator">
       <bunker-lobby-buttons
           v-if="status == 'waiting' || status == 'starting'"
           :max-height="freeAreaHeight"
@@ -97,6 +97,11 @@
           @sendCard="onSendCard"
           ref="bunkerUserCardsComponentRef"
       />
+    </div>
+    <div class="bunker__controls" v-else>
+      <div class="bunker__controls__spectator">
+        Вы наблюдаете за игрой
+      </div>
     </div>
 
     <div class="bunker__private" v-if="status == 'waiting'">
@@ -642,7 +647,13 @@ const topText = computed(() => {
       return data;
     }
     if(!currentPlayer.value?.isReady){
-      data.text = 'Нажмите готов';
+      if(isSpectator.value){
+        data.text = 'Все места заняты'
+      }
+      else{
+        data.text = 'Нажмите готов';
+      }
+
       return data;
     }
     data.text = 'Ожидание, пока игроки нажмут готов';
@@ -836,6 +847,16 @@ const setGameStubs = () => {
 
 }
 
+const isSpectator = computed(() => {
+  let spec = true;
+  Object.keys(places.value || {}).forEach(key => {
+    if(places.value?.[key] == id.value && id.value > 0) {
+      spec = false;
+    }
+  });
+  return spec;
+})
+
 watch(currentSpeakerId, (neoVal) => {
   if(currentPlayer.value?.id == currentSpeakerId.value){
     canSendCard.value = true;
@@ -937,6 +958,13 @@ onBeforeUnmount(() => {
     bottom: 40px;
     display: flex;
     flex-direction: row;
+
+    &__spectator{
+      padding: 0 40px;
+      margin-bottom: 28px;
+      text-align: center;
+      width: 100%;
+    }
   }
 
   &__cards-help{
