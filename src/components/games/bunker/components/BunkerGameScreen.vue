@@ -2,7 +2,7 @@
   <div class="screen">
     <div class="screen__inner" @click="onScreenClick">
       <div v-if="(timer || 0) > 0">
-        <div>
+        <div :class="{fire: fire}">
           {{ normalizedTimer }}
         </div>
       </div>
@@ -20,6 +20,7 @@
 <script lang="ts" setup>
 import {computed} from "vue";
 import type {TGameStage, TRoomStatus, TScenario} from "@/components/games/bunker/types.ts";
+import {PreparedTimerString} from "@/classes/utils/PreparedTimerString.ts";
 
 const props = defineProps<{
   maxHeight: number,
@@ -30,6 +31,8 @@ const props = defineProps<{
   stage?: TGameStage,
   round?: number,
   roomStatus?: TRoomStatus,
+  fire?: boolean,
+  iAmSpeak?: boolean,
 }>();
 
 const emits = defineEmits(['showScenario']);
@@ -82,13 +85,14 @@ const normalizedTimer = computed(() => {
   if(!props.timer) {
     return '';
   }
-
-  const minutes = Math.floor(((props.timer || 0) / 60));
-  const seconds = (props.timer || 0) % 60;
-  const paddedMinutes = (minutes < 10 ? '0' : '') + minutes.toString();
-  const paddedSeconds = (seconds < 10 ? '0' : '') + seconds.toString();
-
-  return `${paddedMinutes}:${paddedSeconds}`;
+  let time = props.timer;
+  if(props.iAmSpeak){
+    time -= 6;
+    if(time < 0){
+      time = 0;
+    }
+  }
+  return PreparedTimerString(time);
 
 });
 
@@ -128,6 +132,11 @@ const normalizedTimer = computed(() => {
 
     .small{
       font-size: 12px;
+    }
+
+    .fire{
+      transition: color .3s ease-out;
+      color: #ff1d1d;
     }
   }
 

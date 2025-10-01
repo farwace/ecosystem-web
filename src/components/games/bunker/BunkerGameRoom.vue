@@ -25,6 +25,8 @@
           :stage="gameStage"
           :room-status="status"
           :round="currentRound"
+          :i-am-speak="currentSpeakerId == id"
+          :fire="currentSpeakerId == id && (cardRevealTimeRemaining || 0) >= 0 && (cardRevealTimeRemaining || 0) < 6"
           @show-scenario="showScenarioModal()"
       />
     </div>
@@ -55,6 +57,9 @@
       </div>
       <transition name="opacity">
         <div class="bunker__cards-help" v-if="currentSpeakerId == id && (cardRevealTimeRemaining || 0) > 1 && (cardRevealTimeRemaining || 0) < 12">
+          <div class="bunker__cards-help__blink" v-if="(cardRevealTimeRemaining || 0) < 6">
+            Выберите карту!
+          </div>
           <vue3-lottie :animationLink="isTouchDevide ? '/assets/lottie/send-card-help-mobile.json' : '/assets/lottie/send-card-help-desktop.json'" :height="180" :width="180" :auto-play="true" :loop="true"/>
         </div>
       </transition>
@@ -940,6 +945,14 @@ onBeforeUnmount(() => {
     left: 50%;
     z-index: 2;
     transform: translateX(-50%);
+
+    &__blink{
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      animation: blink 1s infinite;
+      color: #ff1d1d;
+    }
   }
 
   &__places{
@@ -983,5 +996,9 @@ onBeforeUnmount(() => {
     left: 15px;
   }
 }
+
+@keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+@-moz-keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+@-webkit-keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
 
 </style>
