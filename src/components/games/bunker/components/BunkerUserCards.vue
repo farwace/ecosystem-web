@@ -14,7 +14,7 @@
                                                 dragging: rIsDragging && rDraggedCardIndex === index
                                               }"
           :style                          =     "{
-                                                  left: `${index * rDynamicStep}px`,
+                                                  left: `${rPreviewPadding + index * (rDynamicStep || 0)}px`,
                                                   zIndex: (rLockedHoveredIndex !== null ? rLockedHoveredIndex === index : rHoveredIndex === index) ? 10 : index
                                                 }"
           @mouseenter                     =   "!rIsDragging && rLockedHoveredIndex === null && (rHoveredIndex = index)"
@@ -27,6 +27,7 @@
             :card         =   "card"
             :max-height   =   "maxHeight"
             :is-male      =   "!!isMale"
+            @picture-load =   "fUpdateCardsDistance"
         />
       </div>
     </div>
@@ -60,6 +61,8 @@ const rStartTouchIndex            =   ref<number | null>(null);
 const rHoveredIndex               =   ref<number | null>(null);
 const rCardsListRef               =   ref<HTMLElement | null>(null);
 const rDynamicStep                =   ref(0);
+const rCardWidth                  =   ref(100);
+const rPreviewPadding             =   ref(0);
 
 // Новые переменные для вертикального свайпа
 const rIsDragging                 =   ref(false);
@@ -74,6 +77,10 @@ const rLockedHoveredIndex         =   ref<number | null>(null);
 let   lInitialIndex               =   0;
 let   lStartX                     =   0;
 
+const CARD_ACTIVE_SCALE           =   1.4; // Keep in sync with .card-wrapper.active scale
+const ACTIVE_SCALE_TO_BASE_DELTA  =   CARD_ACTIVE_SCALE - 1;
+const MIN_CARD_STEP               =   30;
+const MAX_CARD_STEP               =   100;
 
 // Константы для настройки поведения свайпа
 const DISMISS_THRESHOLD           =   120; // Расстояние, после которого карточка отправляется
@@ -257,12 +264,14 @@ const fHandleCardTouchMove        =   (event: TouchEvent) => {
 
                                             if (deltaY < 0) {
                                               // Движение вверх
-                                              scale = Math.max(0.8, 1.5 - (dragDistance / DISMISS_THRESHOLD) * 0.7);
+                                              const progress = Math.min(1, dragDistance / DISMISS_THRESHOLD);
+                                              const maxDrop = CARD_ACTIVE_SCALE - 0.8;
+                                              scale = Math.max(0.8, CARD_ACTIVE_SCALE - progress * maxDrop);
                                               translateY = deltaY - 20;
                                             } else {
                                               // Движение вниз (возврат)
                                               const returnProgress = Math.min(1, dragDistance / 50);
-                                              scale = 1.5 - (0.5 * returnProgress);
+                                              scale = CARD_ACTIVE_SCALE - (ACTIVE_SCALE_TO_BASE_DELTA * returnProgress);
                                               translateY = -20 + (20 * returnProgress);
                                             }
 
@@ -320,16 +329,44 @@ const fOnClickCardWrapper         =   (index: number, $event: MouseEvent | Touch
                                     }
 
 const fUpdateCardsDistance        =   () => {
-                                        if (!rCardsListRef.value || (cAvailableCards.value?.length || 0) < 2) {
-                                          rDynamicStep.value = 0;
-                                          return;
-                                        }
-                                        const containerWidth = rCardsListRef.value.offsetWidth;
-                                        const totalCards = cAvailableCards.value?.length || 0;
-                                        const cardWidth = 100; // Примерная ширина карточки
-                                        const idealStep = (containerWidth - cardWidth) / (totalCards - 1);
-                                        // Минимальный отступ: 30, максимальный: 100
-                                        rDynamicStep.value = Math.max(30, Math.min(idealStep, 100));
+                                        nextTick(() => {
+                                          const listEl = rCardsListRef.value;
+                                          const totalCards = cAvailableCards.value?.length || 0;
+
+                                          if (!listEl || !totalCards) {
+                                            rDynamicStep.value = 0;
+                                            rPreviewPadding.value = 0;
+                                            return;
+                                          }
+
+                                          const sampleCard = listEl.querySelector?.('.card-wrapper') as HTMLElement | null;
+
+                                          if (sampleCard) {
+                                            const rect = sampleCard.getBoundingClientRect();
+
+                                            if (rect.width) {
+                                              rCardWidth.value = rect.width;
+                                              rPreviewPadding.value = Math.ceil((rect.width * (CARD_ACTIVE_SCALE - 1)) / 2);
+                                            }
+                                          }
+
+                                          if (totalCards < 2) {
+                                            rDynamicStep.value = 0;
+                                            return;
+                                          }
+
+                                          const containerWidth = listEl.clientWidth || listEl.offsetWidth;
+                                          const availableWidth = containerWidth - rCardWidth.value - (rPreviewPadding.value * 2);
+                                          const safeAvailableWidth = Math.max(0, availableWidth);
+                                          const idealStep = safeAvailableWidth / (totalCards - 1);
+
+                                          if (idealStep < MIN_CARD_STEP) {
+                                            rDynamicStep.value = idealStep;
+                                            return;
+                                          }
+
+                                          rDynamicStep.value = Math.max(MIN_CARD_STEP, Math.min(idealStep, MAX_CARD_STEP));
+                                        });
                                       };
 
 const fClearAllDragStyles          =   () => {
@@ -411,7 +448,7 @@ onUnmounted(() => {
   will-change: transform;
 
   &.active {
-    transform: scale(1.5) translateY(-20px);
+    transform: scale(1.4) translateY(-20px);
     z-index: 999;
   }
 
