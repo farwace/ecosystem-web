@@ -1,5 +1,10 @@
 <template>
   <div class="edit-profile">
+
+    <div class="edit-profile__title">
+      Редактировать профиль
+    </div>
+
     <div :class="{ 'profile-loading': isLoading }">
       <div class="item">
         <div class="item__title">Имя:</div>
@@ -226,6 +231,14 @@ const toggleEdit = async (field: 'name' | 'animal' | 'sex' | 'age') => {
 
 <style lang="scss" scoped>
 .edit-profile {
+
+  padding: 20px;
+
+  &__title{
+    margin-bottom: 25px;
+    font-size: 18px;
+  }
+
   .animal {
     width: 40px;
     height: 40px;

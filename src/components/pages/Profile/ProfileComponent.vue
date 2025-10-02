@@ -118,8 +118,9 @@ profile.value = (await userProvider?.getProfile(props.profileId as unknown as nu
 const editProfileModal = () => {
   notificationProvider?.addPopup?.('edit-profile', 'edit-profile-popup', {
     modal: true,
-    title: "Редактировать профиль",
-    darkBg: true
+    noTitle: true,
+    darkBg: true,
+    noPaddings: true,
   })
 }
 
