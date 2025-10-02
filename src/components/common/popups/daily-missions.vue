@@ -31,8 +31,13 @@
                 <div>
                   Доступно с премиум доступом
                 </div>
-                <div v-if="canUseTrialSubscription" class="btn-buy" @click="balanceProvider?.openDonutPopup()">
-                  Попробовать бесплатно <UiIcon class="target-icon" name="target-blank" />
+                <div class="btn-buy" @click="balanceProvider?.openDonutPopup()">
+                  <template v-if="canUseTrialSubscription" >
+                    Попробовать бесплатно <UiIcon class="target-icon" name="target-blank" />
+                  </template>
+                  <template v-else>
+                    В магазин <UiIcon class="target-icon" name="target-blank" />
+                  </template>
                 </div>
               </div>
             </template>
