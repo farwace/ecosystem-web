@@ -30,18 +30,18 @@
         <microphone-icon color="#939393" volume-color="#7eba70" :place="place" :volume="volume" />
       </div>
     </transition>
-    <div class="place__vote" v-if="canVote && !isVoted && gameStage == 'voting' && !player?.isEliminated && !!player?.id && !isSelf">
+    <div class="place__vote" v-if="!spectatorMode && canVote && !isVoted && gameStage == 'voting' && !player?.isEliminated && !!player?.id && !isSelf">
       <BunkerButton class="small" :class="{'is-self': isSelf}" @click.prevent.stop="$emit('vote')">
         Голосовать
       </BunkerButton>
     </div>
-    <div class="place__vote" v-if="canVote && !isVoted && gameStage == 'voting' && !player?.isEliminated && !!player?.id && isSelf && !!canAbstainThisRound">
+    <div class="place__vote" v-if="!spectatorMode && canVote && !isVoted && gameStage == 'voting' && !player?.isEliminated && !!player?.id && isSelf && !!canAbstainThisRound">
       <BunkerButton class="small" :class="{'is-self': isSelf}" @click.prevent.stop="$emit('vote')">
         Воздержаться
       </BunkerButton>
     </div>
 
-    <div class="place__vote__results" v-if="gameStage == 'voting' && (isVoted || !!eliminated) && voteResults && player?.id">
+    <div class="place__vote__results" v-if="gameStage == 'voting' && (isVoted || !!eliminated || !!spectatorMode) && voteResults && player?.id">
       <div class="result-item" v-for="result in voteResults" :key="`player-${player?.id}-results`">
         {{ result }}
       </div>
@@ -71,7 +71,8 @@ const props = defineProps<{
   voteResults?: string[],
   canVote?: boolean,
   eliminated?: boolean,
-  volume: number
+  volume: number,
+  spectatorMode?: boolean
 }>();
 
 const emit = defineEmits(['touch-player', 'touch-place', 'vote']);

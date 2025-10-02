@@ -46,6 +46,7 @@
           :can-vote="!currentPlayer?.isEliminated"
           :eliminated="!!currentPlayer?.isEliminated"
           :volumes="volumes"
+          :spectator-mode="isSpectator"
           @touch-player="onTouchPlayer($event)"
           @touch-place="onTouchPlace($event)"
           @vote="sendVote"

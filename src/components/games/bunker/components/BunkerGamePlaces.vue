@@ -21,6 +21,7 @@
           :can-abstain-this-round="canAbstainThisRound"
           :can-vote="!!canVote"
           :eliminated="eliminated"
+          :spectator-mode="spectatorMode"
           @touch-place="onTouchPlace(place)"
           @touch-player="onTouchPlayer(playerId.toString())"
           @vote="$emit('vote', playerId == id ? 0 : playerId)"
@@ -47,6 +48,7 @@ const props = defineProps<{
   canVote?: boolean,
   eliminated?: boolean,
   volumes?: {[p: string]: number},
+  spectatorMode?: boolean,
 }>();
 
 const {id} = storeToRefs(ecosystemStore());
