@@ -249,11 +249,6 @@ watch(isHidden, (neoVal) => {
 
 const isMicrophoneSupports = () => {
   return true;
-  return !(platform?.value == 'mobile_iphone' &&
-      clientInfo.value.platform == 'ios' &&
-      clientInfo.value.app == 'vkclient' //&&
-      //!VersionComparator.isGreater(clientInfo.value.version, '8.147.0') //todo: указать версию, с которой не крашится приложение ВК на айфонах
-  );
 }
 
 onMounted(() => {

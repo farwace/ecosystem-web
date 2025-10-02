@@ -204,6 +204,7 @@ const voteResults = ref<{[key:string]: string[]}>();
 const canISpeak = ref<boolean>(false);
 const isMicrophoneOn = ref<boolean>(false);
 const volumes = ref<Record<string, number>>({});
+const voiceStatus = ref<Record<string, boolean>>({});
 
 const attachVoiceChat = ref<boolean>(false);
 const router = useAnimatedRouter();
@@ -396,6 +397,7 @@ const initializeGame = () => {
       }
     });
 
+    voiceStatus.value = message?.voiceStatus || {};
     Console.log('>>> VoiceChat.vue CAN I SPEAK', canISpeak.value);
   });
 
@@ -868,6 +870,16 @@ const isSpectator = computed(() => {
 watch(currentSpeakerId, (neoVal) => {
   if(currentPlayer.value?.id == currentSpeakerId.value){
     canSendCard.value = true;
+  }
+});
+
+watch(currentPlayer, (neoVal) => {
+  if(neoVal?.id){
+    Object.keys(voiceStatus.value).forEach((playerId, val) => {
+      if(neoVal?.id == (+playerId)) {
+        canISpeak.value = !!voiceStatus.value[playerId];
+      }
+    })
   }
 });
 
