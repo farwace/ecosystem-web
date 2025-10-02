@@ -6,6 +6,8 @@
           :players-count="playersCount"
           :withBots="useBots"
           :isPrivateRoom="isPrivateRoom"
+          :canRepairMicrophone="canRepairMicrophone"
+          @repairMicrophone="tryRepairMicrophone"
           @leave="onLeaveClick"
           @rules="onRulesClick"
           @settings="onSettingsClick"
@@ -73,6 +75,7 @@
             :live-kit-token="liveKitToken"
             :live-kit-room-name="liveKitRoomName"
             :can-i-speak="canISpeak"
+            ref="voiceChatRef"
             @volumesUpdate="onVolumesUpdate"
         />
       </div>
@@ -160,6 +163,8 @@ const VoiceChat = defineAsyncComponent(() =>
 );
 
 let gameResultsPopupSubscriber: Subscription | undefined;
+const voiceChatRef = ref<any>();
+const canRepairMicrophone = ref<boolean>(false);
 
 const props = defineProps<{
   room: Room
@@ -380,6 +385,7 @@ const initializeGame = () => {
     if(message.token){
       liveKitToken.value = message.token;
       attachVoiceChat.value = true;
+      canRepairMicrophone.value = true;
     }
 
   });
@@ -673,6 +679,15 @@ const topText = computed(() => {
   data.text = undefined;
   return data;
 });
+
+const tryRepairMicrophone = () => {
+  voiceChatRef.value?.repairAudio?.();
+  canRepairMicrophone.value = false;
+
+  setTimeout(() => {
+    canRepairMicrophone.value = true;
+  }, 2000);
+}
 
 const retryVoiceConnection = () => {
   requestVoiceToken();
@@ -1051,6 +1066,12 @@ onBeforeUnmount(() => {
     position: absolute;
     bottom: 40px;
     left: 15px;
+  }
+
+  .repair-microphone{
+    position: relative;
+    z-index: 2;
+    cursor: pointer;
   }
 }
 

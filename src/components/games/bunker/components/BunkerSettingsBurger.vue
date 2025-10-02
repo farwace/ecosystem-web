@@ -13,6 +13,11 @@
         Игроки
         <bunker-players-count-toggle :players-count="playersCount || 8" @minus="emit('minus')" @plus="emit('plus')" />
       </div>
+      <transition name="opacity">
+        <div v-if="canRepairMicrophone" class="item" @click="tryRepairMicrophone">
+          Починить голосовой чат
+        </div>
+      </transition>
 <!--      <div class="item" @click="onSettingsClick">Настройки</div>-->
 <!--      <div class="item" @click="onRulesClick">Правила игры</div>-->
       <div class="item" @click="onLeaveClick">Выйти</div>
@@ -28,13 +33,14 @@ import UIPassiveToggle from "@/components/games/bunker/components/UIPassiveToggl
 const isOpen = ref<boolean>(false);
 const vClickOutside = ClickOutside;
 
-const emit = defineEmits(['settings', 'rules', 'leave', 'minus', 'plus', 'bots']);
+const emit = defineEmits(['settings', 'rules', 'leave', 'minus', 'plus', 'bots', 'repairMicrophone']);
 
 const props = defineProps<{
   playersCount?: number,
   host?: boolean,
   withBots?: boolean,
   isPrivateRoom?: boolean,
+  canRepairMicrophone?: boolean,
 }>();
 
 const onSettingsClick = () => {
@@ -47,6 +53,11 @@ const onRulesClick = () => {
 }
 const onLeaveClick = () => {
   emit('leave');
+  isOpen.value = false;
+}
+
+const tryRepairMicrophone = () => {
+  emit('repairMicrophone');
   isOpen.value = false;
 }
 

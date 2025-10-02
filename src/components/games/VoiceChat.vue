@@ -5,7 +5,8 @@
         <div class="btn-content"><span>🚫</span><span>Микрофон недоступен</span></div>
       </template>
       <template v-else>
-        <div class="btn-content" v-if="isMicEnabled"><span>🎤</span><span>Микрофон включён</span></div>
+        <div class="btn-content" v-if="isConnecting"><span>⏳</span><span>Подключе ние…</span></div>
+        <div class="btn-content" v-else-if="isMicEnabled"><span>🎤</span><span>Микрофон включён</span></div>
         <div class="btn-content" v-else><span>🔇</span><span>Микрофон выключен</span></div>
       </template>
     </BunkerButton>
@@ -53,6 +54,7 @@ const emit = defineEmits<{
 }>();
 
 const isMicEnabled = ref(false);
+const isConnecting = ref(false);
 let room: Room | null = null;
 let localAudioTrack: LocalAudioTrack | null = null;
 const audioContainer = ref<HTMLDivElement | null>(null);
@@ -67,6 +69,47 @@ let emitTimer: number | null = null;
 // список <audio> элементов для remote
 const remoteAudioElements: HTMLAudioElement[] = [];
 
+const volumeMonitorDisposers = new Map<string, () => void>();
+let connectPromise: Promise<void> | null = null;
+let repairPromise: Promise<void> | null = null;
+
+function emitVolumesNow(force = false) {
+  let changed = force;
+  const out: Record<string, number> = {};
+
+  for (const [id, val] of Object.entries(volumes)) {
+    const prev = prevVolumes[id] ?? -1;
+    out[id] = val;
+    if (!changed && Math.abs(val - prev) > minDiff) {
+      changed = true;
+    }
+  }
+
+  if (!changed) return;
+
+  emit("volumesUpdate", out);
+  Object.assign(prevVolumes, out);
+}
+
+function startVolumeMonitor(track: MediaStreamTrack, identity: string) {
+  stopVolumeMonitor(identity);
+  const dispose = monitorVolume(track, identity);
+  volumeMonitorDisposers.set(identity, dispose);
+}
+
+function stopVolumeMonitor(identity: string) {
+  const dispose = volumeMonitorDisposers.get(identity);
+  if (dispose) {
+    dispose();
+    volumeMonitorDisposers.delete(identity);
+  }
+}
+
+function stopAllVolumeMonitors() {
+  volumeMonitorDisposers.forEach((dispose) => dispose());
+  volumeMonitorDisposers.clear();
+}
+
 function monitorVolume(track: MediaStreamTrack, identity: string) {
   const audioCtx = new AudioContext();
   const stream = new MediaStream([track]);
@@ -77,7 +120,11 @@ function monitorVolume(track: MediaStreamTrack, identity: string) {
 
   const dataArray = new Uint8Array(analyser.frequencyBinCount);
 
+  let rafId: number | null = null;
+  let disposed = false;
+
   function update() {
+    if (disposed) return;
     analyser.getByteTimeDomainData(dataArray);
 
     let sumSquares = 0;
@@ -91,66 +138,102 @@ function monitorVolume(track: MediaStreamTrack, identity: string) {
 
     volumes[identity] = amplified;
 
-    requestAnimationFrame(update);
+    rafId = requestAnimationFrame(update);
   }
 
   update();
+
+  return () => {
+    disposed = true;
+    if (rafId !== null) cancelAnimationFrame(rafId);
+    try {
+      source.disconnect();
+      analyser.disconnect();
+    } catch (e) {
+      Console.error(">>> VoiceChat.vue >>> Ошибка остановки мониторинга громкости", e);
+    }
+    audioCtx.close().catch(() => undefined);
+  };
 }
 
 async function connectToRoom() {
   if (!props.liveKitToken || !props.liveKitRoomName) return;
+  if (room) return;
+  if (connectPromise) {
+    await connectPromise;
+    return;
+  }
 
-  room = new Room();
+  isConnecting.value = true;
 
-  room.on(RoomEvent.TrackSubscribed, (track: RemoteTrack, pub, participant: RemoteParticipant) => {
-    if (track.kind === "audio") {
-      const audioEl = track.attach() as HTMLAudioElement;
-      audioEl.autoplay = true;
-      audioEl.controls = false;
-      audioContainer.value?.appendChild(audioEl);
+  connectPromise = (async () => {
+    const newRoom = new Room();
 
-      remoteAudioElements.push(audioEl);
+    newRoom.on(RoomEvent.TrackSubscribed, (track: RemoteTrack, pub, participant: RemoteParticipant) => {
+      if (track.kind === "audio") {
+        const audioEl = track.attach() as HTMLAudioElement;
+        audioEl.autoplay = true;
+        audioEl.controls = false;
+        audioContainer.value?.appendChild(audioEl);
 
-      addParticipant(participant);
-      monitorVolume(track.mediaStreamTrack, participant.identity);
-    }
-  });
+        remoteAudioElements.push(audioEl);
 
-  room.on(RoomEvent.TrackUnsubscribed, (track: RemoteTrack, pub, participant: RemoteParticipant) => {
-    track.detach().forEach((el) => {
-      const idx = remoteAudioElements.indexOf(el as HTMLAudioElement);
-      if (idx !== -1) remoteAudioElements.splice(idx, 1);
-      el.remove();
-    });
-    removeParticipant(participant.identity);
-  });
-
-  room.on(RoomEvent.ParticipantDisconnected, (participant) => {
-    removeParticipant(participant.identity);
-  });
-
-  await room.connect(import.meta.env.VITE_LIVEKIT_URL, props.liveKitToken);
-
-  addParticipant(room.localParticipant);
-
-  // 🔁 эмит 20 раз/сек
-  emitTimer = window.setInterval(() => {
-    let changed = false;
-    const out: Record<string, number> = {};
-
-    for (const [id, val] of Object.entries(volumes)) {
-      const prev = prevVolumes[id] ?? -1;
-      out[id] = val;
-      if (Math.abs(val - prev) > minDiff) {
-        changed = true;
+        addParticipant(participant);
+        startVolumeMonitor(track.mediaStreamTrack, participant.identity);
       }
+    });
+
+    newRoom.on(RoomEvent.TrackUnsubscribed, (track: RemoteTrack, pub, participant: RemoteParticipant) => {
+      track.detach().forEach((el) => {
+        const idx = remoteAudioElements.indexOf(el as HTMLAudioElement);
+        if (idx !== -1) remoteAudioElements.splice(idx, 1);
+        el.remove();
+      });
+      stopVolumeMonitor(participant.identity);
+      removeParticipant(participant.identity);
+    });
+
+    newRoom.on(RoomEvent.ParticipantDisconnected, (participant) => {
+      stopVolumeMonitor(participant.identity);
+      removeParticipant(participant.identity);
+    });
+
+    newRoom.on(RoomEvent.Disconnected, () => {
+      disconnectFromRoom({ clearLocalTrack: false, disconnectRoom: false }).catch((e) => {
+        Console.error(">>> VoiceChat.vue >>> Ошибка очистки после дисконнекта", e);
+      });
+    });
+
+    try {
+      await newRoom.connect(import.meta.env.VITE_LIVEKIT_URL, props.liveKitToken);
+    } catch (error) {
+      Console.error(">>> VoiceChat.vue >>> Ошибка подключения к LiveKit", error);
+      throw error;
     }
 
-    if (changed) {
-      emit("volumesUpdate", out);
-      Object.assign(prevVolumes, out);
+    room = newRoom;
+
+    addParticipant(newRoom.localParticipant);
+
+    // 🔁 эмит 20 раз/сек
+    emitTimer = window.setInterval(() => {
+      emitVolumesNow();
+    }, 50);
+
+    if (props.canISpeak && !isHidden.value) {
+      await enableMicrophone();
     }
-  }, 50);
+    isConnecting.value = false;
+  })();
+
+  try {
+    await connectPromise;
+  } finally {
+    connectPromise = null;
+    if (!room) {
+      isConnecting.value = false;
+    }
+  }
 }
 
 function addParticipant(p: Participant) {
@@ -161,8 +244,10 @@ function addParticipant(p: Participant) {
 }
 
 function removeParticipant(identity: string) {
+  stopVolumeMonitor(identity);
   delete volumes[identity];
   delete prevVolumes[identity];
+  emitVolumesNow(true);
 }
 
 async function enableMicrophone(manually = false) {
@@ -182,11 +267,12 @@ async function enableMicrophone(manually = false) {
       const track = stream.getTracks()[0];
       localAudioTrack = new LocalAudioTrack(track);
       await room.localParticipant.publishTrack(localAudioTrack);
-
-      monitorVolume(track, room.localParticipant.identity);
     }
     if (localAudioTrack.isMuted) {
       await localAudioTrack.unmute();
+    }
+    if (localAudioTrack.mediaStreamTrack) {
+      startVolumeMonitor(localAudioTrack.mediaStreamTrack, room.localParticipant.identity);
     }
     isMicEnabled.value = true;
   } catch (e: any) {
@@ -204,6 +290,10 @@ async function disableMicrophone() {
   if (!localAudioTrack.isMuted) {
     await localAudioTrack.mute();
   }
+  stopVolumeMonitor(room.localParticipant.identity);
+  volumes[room.localParticipant.identity] = 0;
+  delete prevVolumes[room.localParticipant.identity];
+  emitVolumesNow(true);
   isMicEnabled.value = false;
 }
 
@@ -231,6 +321,66 @@ const unmuteAll = () => {
   remoteAudioElements.forEach((el) => (el.muted = false));
 };
 
+async function disconnectFromRoom(options: { clearLocalTrack?: boolean; disconnectRoom?: boolean } = {}) {
+  const { clearLocalTrack = true, disconnectRoom = true } = options;
+
+  if (emitTimer) {
+    clearInterval(emitTimer);
+    emitTimer = null;
+  }
+
+  stopAllVolumeMonitors();
+
+  Object.keys(volumes).forEach((id) => delete volumes[id]);
+  Object.keys(prevVolumes).forEach((id) => delete prevVolumes[id]);
+  emitVolumesNow(true);
+
+  remoteAudioElements.splice(0, remoteAudioElements.length).forEach((el) => {
+    el.srcObject = null;
+    el.remove();
+  });
+
+  if (room && disconnectRoom) {
+    try {
+      room.removeAllListeners();
+      await room.disconnect();
+    } catch (e) {
+      Console.error(">>> VoiceChat.vue >>> Ошибка при отключении от LiveKit", e);
+    }
+  }
+
+  room = null;
+  isConnecting.value = false;
+
+  if (clearLocalTrack && localAudioTrack) {
+    try {
+      localAudioTrack.stop();
+    } catch (e) {
+      Console.error(">>> VoiceChat.vue >>> Ошибка остановки локального трека", e);
+    }
+    localAudioTrack = null;
+  }
+
+  isMicEnabled.value = false;
+}
+
+async function repairAudio() {
+  if (repairPromise) {
+    return repairPromise;
+  }
+
+  repairPromise = (async () => {
+    await disconnectFromRoom();
+    await connectToRoom();
+  })();
+
+  try {
+    await repairPromise;
+  } finally {
+    repairPromise = null;
+  }
+}
+
 watch(() => props.canISpeak, async (canISpeak) => {
   if (canISpeak) {
     await enableMicrophone();
@@ -256,11 +406,13 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  room?.disconnect();
-  localAudioTrack?.stop();
-  localAudioTrack = null;
-  if (emitTimer) clearInterval(emitTimer);
-  remoteAudioElements.splice(0, remoteAudioElements.length);
+  disconnectFromRoom().catch((e) => {
+    Console.error(">>> VoiceChat.vue >>> Ошибка очистки при размонтировании", e);
+  });
+});
+
+defineExpose({
+  repairAudio,
 });
 </script>
 
