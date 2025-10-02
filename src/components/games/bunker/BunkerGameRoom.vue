@@ -954,11 +954,12 @@ onMounted(() => {
     if(!message?.data?.senderId){
       return;
     }
-    if(message?.data?.room_id != customId.value){
+
+    if(message.data.senderId == id.value){
       return;
     }
 
-    if(Object.keys(players.value || {}).indexOf(message.data.senderId) < 0){
+    if(Object.keys(players.value || {}).indexOf(message.data.senderId.toString()) < 0){
       return;
     }
 
