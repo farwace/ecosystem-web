@@ -26,7 +26,7 @@
           :room-status="status"
           :round="currentRound"
           :i-am-speak="currentSpeakerId == id"
-          :fire="currentSpeakerId == id && (cardRevealTimeRemaining || 0) >= 0 && (cardRevealTimeRemaining || 0) < 6"
+          :fire="currentSpeakerId == id && (cardRevealTimeRemaining || 0) > 0 && (cardRevealTimeRemaining || 0) < 6"
           @show-scenario="showScenarioModal()"
       />
     </div>
@@ -476,8 +476,8 @@ const initializeGame = () => {
     notificationsProvider?.removePopup?.('game-bunker-revealed-card-popup');
   });
 
-  props.room?.onMessage?.('votingResults', (message: {votes: any, eliminatedPlayerId: any, round: any}) => {
-    showEliminatedPlayerPopup(!!message.eliminatedPlayerId, players.value?.[message.eliminatedPlayerId]);
+  props.room?.onMessage?.('votingResults', (message: {votes: any, eliminatedPlayerId: any, round: any, eliminateType?: string | null}) => {
+    showEliminatedPlayerPopup(!!message.eliminatedPlayerId, players.value?.[message.eliminatedPlayerId], message.eliminateType);
     Console.log('>>> VOTING RESULTS', message);
   });
 
@@ -489,7 +489,7 @@ const initializeGame = () => {
   });
 
 }
-const showEliminatedPlayerPopup = (isEliminated: boolean, player?: TPlayer) => {
+const showEliminatedPlayerPopup = (isEliminated: boolean, player?: TPlayer, eliminateType?: string | null) => {
   notificationsProvider?.addPopup('player-eliminated-popup', 'game-bunker-player-eliminated-popup', {
     darkBg: true,
     modal: true,
@@ -499,6 +499,7 @@ const showEliminatedPlayerPopup = (isEliminated: boolean, player?: TPlayer) => {
     noPaddings: true,
     noBackground: true,
     class: 'game-bunker',
+    eliminateType: eliminateType || '',
     eliminated: isEliminated,
     player: player,
   });

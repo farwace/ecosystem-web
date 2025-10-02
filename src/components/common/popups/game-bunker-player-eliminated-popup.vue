@@ -10,7 +10,7 @@
         </div>
       </div>
       <template v-if="eliminated">
-        Игрок {{ CutString(player?.name || '', 15) }}<br/>{{ !!player?.isMale ? ' был изгнан ' : ' была изгнана '}} по результатам голосования...
+        Игрок {{ CutString(player?.name || '', 15) }}<br/>{{ !!player?.isMale ? ' был изгнан ' : ' была изгнана '}} {{ eliminateReason }}
       </template>
     </div>
   </div>
@@ -23,7 +23,7 @@ import {CutString} from "@/classes/utils/CutString.ts";
 const props = defineProps<{
   player?: TPlayer,
   eliminated?: boolean,
-
+  eliminateType?: string,
 }>();
 
 const emits = defineEmits(['close']);
@@ -43,6 +43,17 @@ const pictureSrc = computed(() => {
       return '/assets/img/games/bunker/female-eliminated.png';
     }
   }
+})
+
+const eliminateReason = computed(() => {
+  let reason = 'по результатам голосования...';
+  if(props.eliminateType == 'random'){
+    reason = 'случайным образом...'
+  }
+  if(props.eliminateType == 'controversialVoting'){
+    reason = 'по неопределенным причинам...'
+  }
+  return reason;
 })
 
 </script>
