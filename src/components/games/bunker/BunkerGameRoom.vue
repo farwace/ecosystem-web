@@ -966,6 +966,10 @@ onMounted(() => {
     if(message?.data?.senderId && message?.data?.receiverId && message?.data?.quantity && message?.data?.gift?.code){
       const key = `${message.data.senderId}-${message.data.receiverId}-${message.data.quantity}-${message.data.gift.code}-${new Date()}`;
       notificationsProvider?.addBigGift?.(key, message.data);
+      notificationsProvider?.addNotification({
+        type: "game-info",
+        message: 'Получен подарок ' + message.data.gift.name + ' x' + message.data.quantity + ' от ' + message.data.senderName,
+      });
     }
   });
 
