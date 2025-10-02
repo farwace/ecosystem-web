@@ -206,7 +206,7 @@ defineExpose({ spinTo, spinToId, spinning })
   border-left: 14px solid transparent;
   border-right: 14px solid transparent;
   border-bottom: 24px solid #f0a06a;
-  transform: translateX(-50%) rotate(180deg);
+  transform: translateX(-50%) rotate(180deg) translateZ(1px);
   z-index: 4;
   filter: drop-shadow(0 2px 0 rgba(0,0,0,.08));
   border-radius: 2px;
