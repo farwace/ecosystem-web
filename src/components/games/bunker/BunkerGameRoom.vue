@@ -579,7 +579,9 @@ const showRevealedCardPopup = (playerId: number, card: Card) => {
       class: 'game-bunker',
       player: player,
       card: card,
-      maxHeight: 200
+      maxHeight: 200,
+      modeAuto: true,
+      finishSpeakCallback: () => {sendFinishSpeak();}
     })
   }
 }

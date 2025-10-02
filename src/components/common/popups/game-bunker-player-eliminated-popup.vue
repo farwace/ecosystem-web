@@ -51,7 +51,7 @@ const eliminateReason = computed(() => {
     reason = 'случайным образом...'
   }
   if(props.eliminateType == 'controversialVoting'){
-    reason = 'по неопределенным причинам...'
+    reason = 'из-за неопределенности игроков...'
   }
   return reason;
 })

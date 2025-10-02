@@ -18,6 +18,13 @@
     <div class="pp-revealed-card__player" v-if="player && !noPlayer">
       <UserAvatar :first-name="player.name" :avatar="player.avatar" small avatar-small/>
     </div>
+    <div class="pp-revealed-card__finish" v-if="modeAuto && finishSpeakCallback && id && id == player?.id">
+      <transition name="opacity">
+        <BunkerButton v-if="canFinishSpeak" class="finish" @click="() => finishSpeakCallback?.()">
+          Договорил <UiIcon class="inline-icon microphone-off" name="microphone-off"/>
+        </BunkerButton>
+      </transition>
+    </div>
   </div>
 </template>
 
@@ -27,16 +34,25 @@ import type {Card} from "@/components/games/bunker/schemas/schemas/Card.ts";
 import {ref, onMounted, computed} from "vue";
 import BunkerCard from "@/components/games/bunker/components/BunkerCard.vue";
 import UserAvatar from "@/components/pages/Home/UserAvatar.vue";
+import UiIcon from "@/components/common/icons/UiIcon.vue";
+import BunkerButton from "@/components/games/bunker/components/BunkerButton.vue";
+import {storeToRefs} from "pinia";
+import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
+
+const {id} = storeToRefs(ecosystemStore());
 
 const props = defineProps<{
   card: Card,
   player?: TPlayer,
   maxHeight: number,
   noPlayer?: boolean,
+  modeAuto?: boolean,
+  finishSpeakCallback?: () => void,
 }>();
 
 const isReady = ref<boolean>(false);
 const isFlipped = ref<boolean>(false);
+const canFinishSpeak = ref<boolean>(false);
 
 const onCardLoad = () => {
   isReady.value = true;
@@ -51,6 +67,10 @@ onMounted(() => {
   setTimeout(() => {
     isFlipped.value = true;
   }, 500);
+
+  setTimeout(() => {
+    canFinishSpeak.value = true;
+  }, 3000)
 });
 
 </script>
@@ -84,6 +104,22 @@ onMounted(() => {
         color: #F5D8B6!important;
         font-weight: 500;
         box-shadow: 0 0 0 2px rgba(50, 29, 2, 0.4);
+      }
+    }
+  }
+
+  &__finish{
+    display: flex;
+    justify-content: center;
+    min-height: 38px;
+    margin-top: 5px;
+
+    .finish{
+      background-color: #95501B;
+      box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
+
+      .microphone-off{
+        margin-top: 0;
       }
     }
   }
