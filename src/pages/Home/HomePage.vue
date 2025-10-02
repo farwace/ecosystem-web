@@ -56,16 +56,10 @@ import {bridgeStore} from "@/stores/Bridge/bridgeStore.ts";
 import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
 import {achievementsStore} from "@/stores/Achievements/achievementsStore.ts";
 import {useAnimatedRouter} from "@/classes/utils/useAnimatedRouter.ts";
-import {inject, onActivated, onMounted, watch} from "vue";
-import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
-import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
-import type {TDailyReward} from "@/modules/EventsModule/Types/TDailyRevard.ts";
+import {inject, onMounted, watch} from "vue";
 import {gameStore} from "@/stores/Game/gameStore.ts";
 import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
 import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
-import {Console} from "@/classes/utils/Console.ts";
-import type {IReverbProvider} from "@/modules/ReverbModule/Interfaces/IReverbProvider.ts";
-import {ReverbSymbol} from "@/modules/ReverbModule/symbols.ts";
 
 const {id, firstName, avatar, subscription} = storeToRefs(ecosystemStore());
 const {inFavorites, inHomeScreen} = storeToRefs(bridgeStore());
@@ -73,9 +67,7 @@ const {hasUnclaimedCompletedAchievement} = storeToRefs(achievementsStore());
 const router = useAnimatedRouter();
 const {inGameRoom} = storeToRefs(gameStore());
 
-const reverbProvider: IReverbProvider | undefined = inject(ReverbSymbol);
 const bridgeProvider: IPlatformEvents | undefined = inject(PlatformEventsSymbol);
-const notificationsProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
 
 const returnToRoom = (roomId: string) => {
   router.push({name: 'bunkerGame', query: {"room_id": roomId}});

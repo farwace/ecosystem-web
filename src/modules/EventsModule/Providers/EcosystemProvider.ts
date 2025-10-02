@@ -47,6 +47,7 @@ export class EcosystemProvider implements IEcosystemProvider{
 
     private _bridgeObserver$: Subject<VKBridgeEvent<keyof ReceiveDataMap>>;
     private _nativeAdsObserver$: Subject<any>;
+    private _gameEmitter$: Subject<any>;
     private _reverbObserver$: Subject<TReverbMessage<unknown>>;
     private dailyMissionsStore: Store<'dailyMissions', IDailyMissionsStore>;
     private achievementsStore: Store<'achievements', IAchievementsStore>;
@@ -70,6 +71,7 @@ export class EcosystemProvider implements IEcosystemProvider{
         this._reverbObserver$ = this.reverbProvider.getReverbObserver$();
         this._bridgeObserver$ = this.platformEventsProvider.getEmitter();
         this._nativeAdsObserver$ = this.platformEventsProvider.getAdsEmitter();
+        this._gameEmitter$ = this.gameProvider.getGameEmitter$();
 
         this.dailyMissionsStore = dailyMissionsStore();
         this.achievementsStore = achievementsStore();
@@ -286,7 +288,11 @@ export class EcosystemProvider implements IEcosystemProvider{
             }, 2000)
         });
 
-
+        this._reverbObserver$.pipe(
+            filter((message): message is TReverbMessage<any> => message.event === 'show_game_results_popup'),
+        ).subscribe((message) => {
+            this._gameEmitter$.next(message);
+        });
 
     }
 

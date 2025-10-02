@@ -1,5 +1,6 @@
 import type {IModule} from "@/modules/IModule.ts";
 import type {TInGameInfo} from "@/stores/Game/Types/TInGameInfo.ts";
+import type {Subject} from "rxjs";
 
 export interface IGameProvider extends IModule {
     removeInGame: () => void;
@@ -7,4 +8,5 @@ export interface IGameProvider extends IModule {
     sendGameStarted: (game: TInGameInfo) => Promise<void>;
     navigateToGame: (location: string) => Promise<void>;
     setRouter: (router: any) => void;
+    getGameEmitter$: () => Subject<any>;
 }

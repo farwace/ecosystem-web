@@ -151,11 +151,15 @@ import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
 import {CutString} from "@/classes/utils/CutString.ts";
 import type {IGameProvider} from "@/modules/GameModule/Interfaces/IGameProvider.ts";
 import {GameProviderSymbol} from "@/modules/GameModule/symbols.ts";
+import {filter} from "rxjs";
+import type { Subscription } from "rxjs";
+import type {TReverbMessage} from "@/modules/ReverbModule/Types/TReverbMessage.ts";
 
 const VoiceChat = defineAsyncComponent(() =>
     import ('./../VoiceChat.vue')
 );
 
+let gameResultsPopupSubscriber: Subscription | undefined;
 
 const props = defineProps<{
   room: Room
@@ -906,6 +910,14 @@ onMounted(() => {
     isTouchDevide.value = false;
   }
 
+  let emitter = gameProvider?.getGameEmitter$?.();
+  gameResultsPopupSubscriber = emitter?.pipe?.(
+      filter((message): message is TReverbMessage<any> => message.event === 'show_game_results_popup'),
+  )?.subscribe?.((message) => {
+    if(message?.data?.componentName && message?.data?.code == 'bunker' && message?.data?.roomId == customId.value){
+      notificationsProvider?.addPopup?.(message?.data?.key, message?.data?.componentName, message?.data?.ppData);
+    }
+  });
 });
 
 onBeforeUnmount(() => {
@@ -913,6 +925,7 @@ onBeforeUnmount(() => {
   for(let i = 0; i < unbindCallbacks.length; i++){
     unbindCallbacks?.[i]?.();
   }
+  gameResultsPopupSubscriber?.unsubscribe?.();
   props.room.removeAllListeners();
   props.room.leave();
 });

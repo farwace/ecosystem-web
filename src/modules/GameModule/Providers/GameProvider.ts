@@ -8,18 +8,25 @@ import {UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
 import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.ts";
 import type {TInGameInfo} from "@/stores/Game/Types/TInGameInfo.ts";
 import {Console} from "@/classes/utils/Console.ts";
+import {Subject} from "rxjs";
 
 
 @injectable()
 export class GameProvider implements IGameProvider {
     protected readonly gameStore: Store<'game', IGameStore>;
     protected animatedRouter: any;
+    protected _gameEmitter$: Subject<any>;
 
     constructor(
         @inject(UserProviderSymbol)
         private userProvider: IUserProvider,
     ) {
         this.gameStore = gameStore();
+        this._gameEmitter$ = new Subject();
+    }
+
+    getGameEmitter$ = () => {
+        return this._gameEmitter$;
     }
 
     setRouter = (router: any) => {
