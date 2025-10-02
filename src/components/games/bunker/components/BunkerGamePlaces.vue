@@ -74,10 +74,17 @@ const onTouchPlayer = (playerId: string) => {
 
 :deep(.place){
 
+  &.speaker{
+    .place__circle{
+      border-color: #48a002;
+      border-width: 4px;
+    }
+  }
+
   &:nth-child(odd){
     left: 0;
     &.speaker{
-      left: 15px;
+      left: 20px;
     }
     .place__action{
       right: -10px;
@@ -101,7 +108,7 @@ const onTouchPlayer = (playerId: string) => {
     margin-left: auto;
     right: 0;
     &.speaker{
-      right: 15px;
+      right: 20px;
     }
     .place__action{
       left: -10px;
