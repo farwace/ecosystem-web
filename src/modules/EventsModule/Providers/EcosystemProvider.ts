@@ -288,8 +288,14 @@ export class EcosystemProvider implements IEcosystemProvider{
             }, 2000)
         });
 
+        const gameEvents = [
+            'show_game_results_popup',
+            'receive_gift',
+            'someone_receive_gift'
+        ];
+
         this._reverbObserver$.pipe(
-            filter((message): message is TReverbMessage<any> => message.event === 'show_game_results_popup'),
+            filter((message): message is TReverbMessage<any> => gameEvents.indexOf(message.event) > -1),
         ).subscribe((message) => {
             this._gameEmitter$.next(message);
         });

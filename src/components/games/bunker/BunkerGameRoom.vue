@@ -163,6 +163,9 @@ const VoiceChat = defineAsyncComponent(() =>
 );
 
 let gameResultsPopupSubscriber: Subscription | undefined;
+let gameReceiveGiftSubscriber: Subscription | undefined;
+let gameSomeoneReceiveGiftSubscriber: Subscription | undefined; //todo: отображать всем в комнате, что кто-то получил подарок
+
 const voiceChatRef = ref<any>();
 const canRepairMicrophone = ref<boolean>(false);
 
@@ -945,6 +948,26 @@ onMounted(() => {
       notificationsProvider?.addPopup?.(message?.data?.key, message?.data?.componentName, message?.data?.ppData);
     }
   });
+  gameReceiveGiftSubscriber = emitter?.pipe?.(
+      filter((message): message is TReverbMessage<any> => message.event === 'receive_gift'),
+  )?.subscribe?.((message) => {
+    if(!message?.data?.senderId){
+      return;
+    }
+    if(message?.data?.room_id != customId.value){
+      return;
+    }
+
+    if(Object.keys(players.value || {}).indexOf(message.data.senderId) < 0){
+      return;
+    }
+
+    if(message?.data?.senderId && message?.data?.receiverId && message?.data?.quantity && message?.data?.gift?.code){
+      const key = `${message.data.senderId}-${message.data.receiverId}-${message.data.quantity}-${message.data.gift.code}-${new Date()}`;
+      notificationsProvider?.addBigGift?.(key, message.data);
+    }
+  });
+
 });
 
 onBeforeUnmount(() => {
@@ -953,6 +976,7 @@ onBeforeUnmount(() => {
     unbindCallbacks?.[i]?.();
   }
   gameResultsPopupSubscriber?.unsubscribe?.();
+  gameReceiveGiftSubscriber?.unsubscribe?.();
   props.room.removeAllListeners();
   props.room.leave();
 });
