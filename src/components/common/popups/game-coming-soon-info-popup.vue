@@ -11,7 +11,7 @@
     <div class="game__data">
       <div class="game__content coming-soon" :class="[''+code]" v-html="gameContent" v-if="gameContent"></div>
     </div>
-    <div class="game__button" v-if="showVoteButton" @click="voteForGame">
+    <div class="game__button will-play" v-if="showVoteButton" @click="voteForGame">
       Буду играть!
     </div>
     <div class="game__button completed" @click="updateNotificationPermissions" v-if="showVoteResultButton">
@@ -93,23 +93,6 @@ const updateNotificationPermissions = () => {
 
 </script>
 <style scoped lang="scss">
-[theme="dark"]{
-  .title{
-    color: #939393;
-    background-color: #222222;
-    border-color: #363738;
-  }
-
-  .game{
-    &.loading{
-      &:before{
-        background-color: rgba(255, 255, 255, 0.1);
-      }
-    }
-  }
-}
-
-
 .game{
   position: relative;
   padding: 0 15px 40px;
@@ -197,7 +180,7 @@ const updateNotificationPermissions = () => {
     font-weight: bold;
 
     &.completed{
-      opacity: .7;
+      opacity: .68;
     }
   }
 }
@@ -246,5 +229,28 @@ const updateNotificationPermissions = () => {
     }
   }
 }
+[theme="dark"]{
+  .title{
+    color: #939393;
+    background-color: #222222;
+    border-color: #363738;
+  }
 
+  .game{
+    &.loading{
+      &:before{
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+    }
+
+    &__button{
+      &.will-play{
+        background-color: #DE6431;
+        border-color: #b65228;
+        color: #FFF6E9;
+      }
+    }
+  }
+
+}
 </style>
