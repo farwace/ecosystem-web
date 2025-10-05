@@ -20,6 +20,7 @@ export interface IPlatformEvents extends IModule{
     displayBottomBn: () => void;
     removeBottomBn: () => void;
     checkRewardNativeAdds: () => void;
+    allowNotifications: () => void;
     showRewardAdds: () => Promise<boolean>;
     finishRewardAdds: () => void;
     startRewardAdds: (rqkey: string) => void;

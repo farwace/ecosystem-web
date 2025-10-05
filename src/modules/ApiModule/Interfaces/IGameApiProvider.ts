@@ -4,4 +4,5 @@ import type {TGetGameInfo} from "@/modules/ApiModule/Types/TGetGameInfo.ts";
 
 export interface IGameApiProvider  extends IModule{
     getGameInfo(code: string):Promise<TResponse<TGetGameInfo>>;
+    voteForGame(code:string):Promise<TResponse<boolean>>;
 }

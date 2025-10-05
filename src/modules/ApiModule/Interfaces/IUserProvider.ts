@@ -26,4 +26,5 @@ export interface IUserProvider  extends IModule{
     sendGameStarted: (game: TInGameInfo) => Promise<void>;
     getShareInfo: (type: "loose" | "won") => Promise<TResponse<TGetShareImageResponse>>;
     sendShareComplete: (dataToSend: {[key: string]: any}) => Promise<void>;
+    sendAllowNotifications: () => Promise<void>;
 }

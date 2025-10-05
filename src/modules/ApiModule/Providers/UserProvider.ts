@@ -239,4 +239,11 @@ export class UserProvider extends ApiProvider implements IUserProvider{
             ...dataToSend
         });
     }
+
+    sendAllowNotifications = async (): Promise<void> => {
+        await this.fetch(`${this.getApiEndpoint()}/user/allow-notifications`, {
+            method: 'POST',
+        });
+    }
+
 }

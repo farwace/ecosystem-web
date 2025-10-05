@@ -44,7 +44,7 @@
       </div>
     </div>
 
-    <div class="item callback">
+    <div class="item callback" @click="onGameClick('callback')">
       <div class="item__title">
         У меня есть идея получше!
       </div>
@@ -74,6 +74,48 @@ const onGameClick = (name: string) => {
 
     });
     //router.push({name: 'bunkerLobby'});
+    return;
+  }
+
+  if(name === 'callback'){
+    notificationsProvider?.addPopup(`game-coming-soon-info-popup-${name}`, 'game-coming-soon-info-popup', {
+      darkBg: true,
+      noTitle: true,
+      noPaddings: true,
+      code: 'callback',
+      contentTitle: 'Предложи идею'
+    });
+    return;
+  }
+
+  if(name === 'quiz'){
+    notificationsProvider?.addPopup(`game-coming-soon-info-popup-${name}`, 'game-coming-soon-info-popup', {
+      darkBg: true,
+      noTitle: true,
+      noPaddings: true,
+      code: 'quiz',
+      contentTitle: 'Сила знаний'
+    });
+    return;
+  }
+  if(name === 'voice'){
+    notificationsProvider?.addPopup(`game-coming-soon-info-popup-${name}`, 'game-coming-soon-info-popup', {
+      darkBg: true,
+      noTitle: true,
+      noPaddings: true,
+      code: 'voice',
+      contentTitle: 'Голосовые комнаты'
+    });
+    return;
+  }
+  if(name === 'draw'){
+    notificationsProvider?.addPopup(`game-coming-soon-info-popup-${name}`, 'game-coming-soon-info-popup', {
+      darkBg: true,
+      noTitle: true,
+      noPaddings: true,
+      code: 'draw',
+      contentTitle: 'Угадай-ка'
+    });
     return;
   }
 

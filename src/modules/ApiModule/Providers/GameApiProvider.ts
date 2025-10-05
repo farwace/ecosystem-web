@@ -18,4 +18,9 @@ export class GameApiProvider extends ApiProvider implements IGameApiProvider{
         return await this.fetch(`${this.getApiEndpoint()}/games/${code}/info`) as unknown as TResponse<TGetGameInfo>;
     }
 
+    async voteForGame(code: string): Promise<TResponse<boolean>> {
+        return await this.fetch(`${this.getApiEndpoint()}/games/${code}/vote`, {
+            method: 'POST'
+        }) as unknown as TResponse<boolean>
+    }
 }

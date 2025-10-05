@@ -387,7 +387,13 @@ export class EcosystemProvider implements IEcosystemProvider{
             const dataToSend = Object.assign({}, assignData, {key: this.bridgeStore.$state.shareStoryKey});
             this.userProvider.sendShareComplete(dataToSend);
         })
-        
+
+        this._bridgeObserver$.pipe(
+            filter((message):message is VKBridgeEvent<'VKWebAppAllowNotifications'> => message?.detail?.type === 'VKWebAppAllowNotificationsResult')
+        ).subscribe(message => {
+            this.userProvider.sendAllowNotifications()
+        })
+
         // this._bridgeObserver$.pipe(
         //     filter((message):message is any => message.detail?.type === "VKWebAppGetClientVersionResult"),
         // ).subscribe(message => {

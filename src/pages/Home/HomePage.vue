@@ -112,6 +112,7 @@ watch(id, (neoVal) => {
 
 .game-items{
   margin-top: 20px;
+  margin-bottom: 40px;
 }
 /*.game-list{
   margin-top: 20px;

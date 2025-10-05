@@ -373,4 +373,8 @@ export class BridgeEventsProvider implements IPlatformEvents {
             blob: data.blob
         });
     }
+
+    allowNotifications = () => {
+        bridge.send('VKWebAppAllowNotifications');
+    }
 }
