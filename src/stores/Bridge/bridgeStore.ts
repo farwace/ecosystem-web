@@ -5,7 +5,9 @@ export const bridgeStore = defineStore('bridge', {
     state: ():IBridgeStore => ({
         videoRewardAdvKey: '',
         shareStoryKey: '',
-        inFavorites: false,
-        inHomeScreen: false,
+        inFavorites: true,
+        inHomeScreen: true,
+        inRecommended: true,
+        notificationsEnabled: true,
     })
 })

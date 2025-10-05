@@ -1,10 +1,10 @@
 <template>
-  <div class="rounded-box">
+  <div class="rounded-box" :class="{'only-start': onlyStart}">
     <div class="start-game" @click="startGame">
       Играть
     </div>
 
-    <ui-btn @click="createRoom">Создать комнату</ui-btn>
+    <ui-btn v-if="!onlyStart" @click="createRoom">Создать комнату</ui-btn>
 
   </div>
 </template>
@@ -20,6 +20,10 @@ const router = useAnimatedRouter();
 const notificationsProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
 
 const emits = defineEmits(["start"]);
+
+defineProps<{
+  onlyStart?: boolean;
+}>()
 
 const createRoom = () => {
   notificationsProvider?.addPopup('create-bunker-room', 'game-bunker-create-room-popup', {
@@ -48,6 +52,10 @@ const startGame = () => {
   display: flex;
   flex-direction: column;
   gap: 15px;
+
+  &.only-start{
+    border: none;
+  }
 }
 
 .game-name{

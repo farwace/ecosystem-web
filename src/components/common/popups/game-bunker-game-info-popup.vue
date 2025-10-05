@@ -12,6 +12,9 @@
       <bunker-start-game-buttons @start="$emit('close')"/>
 
       <div class="game__content" v-html="gameContent" v-if="gameContent"></div>
+      <div v-if="gameContent">
+        <bunker-start-game-buttons only-start @start="$emit('close')"/>
+      </div>
     </div>
   </div>
 </template>
@@ -21,6 +24,7 @@ import {inject, onMounted, ref} from "vue";
 import BunkerStartGameButtons from "@/pages/Games/Bunker/BunkerStartGameButtons.vue";
 import type {IGameApiProvider} from "@/modules/ApiModule/Interfaces/IGameApiProvider.ts";
 import {GameApiProviderSymbol} from "@/modules/ApiModule/symbols.ts";
+import BunkerButton from "@/components/games/bunker/components/BunkerButton.vue";
 const isLoading = ref<boolean>(false);
 
 const gameApi: IGameApiProvider | undefined  = inject(GameApiProviderSymbol);

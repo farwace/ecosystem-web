@@ -23,6 +23,8 @@ export interface IPlatformEvents extends IModule{
     allowNotifications: () => void;
     showRewardAdds: () => Promise<boolean>;
     finishRewardAdds: () => void;
+    addToFavorite: () => void;
+    addToRecommended: () => void;
     startRewardAdds: (rqkey: string) => void;
     showStoryBox: (data: TGetShareImageResponse) => Promise<any>;
 }

@@ -20,8 +20,12 @@
 <!--    <div class="settings-block">
       <MenuItem @click="openSettings" icon="settings">Настройки</MenuItem>
     </div>-->
-    <div class="add-to-block" v-if="!inFavorites && !inHomeScreen && false">
-      <div @click="addToFavorite" class="add-to-favorite" v-if="!inFavorites">
+    <div class="add-to-block" v-if="shouldShowAddToBlock">
+      <div @click="addToRecommended" class="add-to-favorite" v-if="!inRecommended">
+        <ui-icon class="favorite-icon" name="star"/>
+        <span>Рекомендовать</span>
+      </div>
+      <div @click="addToFavorite" class="add-to-favorite" v-if="!inFavorites && !!inRecommended">
         <ui-icon class="favorite-icon" name="star"/>
         <span>Добавить в<br/>избранное</span>
       </div>
@@ -59,14 +63,14 @@ import {bridgeStore} from "@/stores/Bridge/bridgeStore.ts";
 import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
 import {achievementsStore} from "@/stores/Achievements/achievementsStore.ts";
 import {useAnimatedRouter} from "@/classes/utils/useAnimatedRouter.ts";
-import {inject, onMounted, watch} from "vue";
+import {computed, inject, onMounted, watch} from "vue";
 import {gameStore} from "@/stores/Game/gameStore.ts";
 import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
 import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
 import GameItems from "@/components/pages/Home/GameItems.vue";
 
 const {id, firstName, avatar, subscription} = storeToRefs(ecosystemStore());
-const {inFavorites, inHomeScreen} = storeToRefs(bridgeStore());
+const {inFavorites, inHomeScreen, inRecommended, notificationsEnabled} = storeToRefs(bridgeStore());
 const {hasUnclaimedCompletedAchievement} = storeToRefs(achievementsStore());
 const router = useAnimatedRouter();
 const {inGameRoom} = storeToRefs(gameStore());
@@ -78,8 +82,16 @@ const returnToRoom = (roomId: string) => {
 }
 
 const addToFavorite = () => {
-  alert('Добавить в избранное')
+  bridgeProvider?.addToFavorite();
 }
+const addToRecommended = () => {
+  bridgeProvider?.addToRecommended();
+}
+
+
+const shouldShowAddToBlock = computed(() => {
+  return !inRecommended.value || !inFavorites.value;
+})
 
 onMounted(() => {
   if(id.value > 0){
@@ -112,7 +124,7 @@ watch(id, (neoVal) => {
 
 .game-items{
   margin-top: 20px;
-  margin-bottom: 40px;
+  margin-bottom: 100px;
 }
 /*.game-list{
   margin-top: 20px;
@@ -136,7 +148,7 @@ watch(id, (neoVal) => {
 .add-to-block{
   position: fixed;
   bottom: 35px;
-  right: 15px;
+  left: 15px;
 }
 .add-to-favorite{
   display: flex;

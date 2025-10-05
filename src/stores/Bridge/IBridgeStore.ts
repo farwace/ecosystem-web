@@ -3,4 +3,6 @@ export interface IBridgeStore {
     shareStoryKey: string;
     inFavorites: boolean;
     inHomeScreen: boolean;
+    inRecommended: boolean;
+    notificationsEnabled: boolean;
 }

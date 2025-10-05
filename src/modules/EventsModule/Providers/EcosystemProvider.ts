@@ -394,6 +394,23 @@ export class EcosystemProvider implements IEcosystemProvider{
             this.userProvider.sendAllowNotifications()
         })
 
+        this._bridgeObserver$.pipe(
+            filter((message):message is VKBridgeEvent<'VKWebAppRecommend'> => message?.detail?.type === 'VKWebAppRecommendResult')
+        ).subscribe(message => {
+            this.bridgeStore.$patch({
+                inRecommended: true,
+            })
+        });
+
+        this._bridgeObserver$.pipe(
+            filter((message):message is VKBridgeEvent<'VKWebAppAddToFavorites'> => message?.detail?.type === 'VKWebAppAddToFavoritesResult')
+        ).subscribe(message => {
+            this.bridgeStore.$patch({
+                inFavorites: true,
+            })
+        });
+
+
         // this._bridgeObserver$.pipe(
         //     filter((message):message is any => message.detail?.type === "VKWebAppGetClientVersionResult"),
         // ).subscribe(message => {

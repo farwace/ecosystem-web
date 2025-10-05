@@ -24,13 +24,16 @@ import type {TShopCoin} from "@/modules/ApiModule/Types/TShopCoin.ts";
 import {themeStore} from "@/stores/Theme/themeStore.ts";
 import type {IThemeStore} from "@/stores/Theme/IThemeStore.ts";
 import type {TGetShareImageResponse} from "@/modules/ApiModule/Types/TGetShareImageResponse.ts";
+import type {IBridgeStore} from "@/stores/Bridge/IBridgeStore.ts";
+import {bridgeStore} from "@/stores/Bridge/bridgeStore.ts";
 
 @injectable()
 export class BridgeEventsProvider implements IPlatformEvents {
     private _bridgeEvent$ = new Subject<VKBridgeEvent<keyof ReceiveDataMap>>();
     private _nativeAdsEvent$ = new Subject();
-    private ecosystemStore: Store<'ecosystem', IEcosystemStore>
-    private themeStore: Store<'theme', IThemeStore>
+    private ecosystemStore: Store<'ecosystem', IEcosystemStore>;
+    private themeStore: Store<'theme', IThemeStore>;
+    private bridgeStore: Store<'bridge', IBridgeStore>;
     private arLaunchParams: any = undefined;
     private _isDesktop = false;
 
@@ -43,6 +46,7 @@ export class BridgeEventsProvider implements IPlatformEvents {
         });
         this.ecosystemStore = ecosystemStore();
         this.themeStore = themeStore();
+        this.bridgeStore = bridgeStore();
         this.arLaunchParams = window?.location?.search?.slice?.(1)?.split?.('&')?.map?.(e => e?.split?.('='));
     }
 
@@ -150,6 +154,16 @@ export class BridgeEventsProvider implements IPlatformEvents {
             }
             this.loadClientVersion();
 
+            //console.log('>>> LAUNCH PARAMS', launchParams);
+            const recommended = (("vk_is_recommended" in launchParams) && launchParams?.vk_is_recommended == 1);
+            const favorite = (("vk_is_favorite" in launchParams) && launchParams?.vk_is_favorite == 1);
+            const notificationsEnabled = (("vk_are_notifications_enabled" in launchParams) && launchParams?.vk_are_notifications_enabled == 1);
+
+            this.bridgeStore.$patch({
+                inRecommended: recommended,
+                inFavorites: favorite,
+                notificationsEnabled: notificationsEnabled,
+            });
         }
         catch (e) {
             Console.log('<<<>>> Launch Params Error <<<>>>');
@@ -377,4 +391,13 @@ export class BridgeEventsProvider implements IPlatformEvents {
     allowNotifications = () => {
         bridge.send('VKWebAppAllowNotifications');
     }
+
+    addToFavorite = () => {
+        bridge.send('VKWebAppAddToFavorites');
+    }
+
+    addToRecommended = () => {
+        bridge.send('VKWebAppRecommend');
+    }
+
 }
