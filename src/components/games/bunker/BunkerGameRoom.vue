@@ -799,7 +799,11 @@ const onLeaveClick = () => {
   }
 }
 const onRulesClick = () => {
-  //todo: открывать попап с правилами игры
+  notificationsProvider?.addPopup('game-bunker-game-rules-popup', 'game-bunker-game-rules-popup', {
+    darkBg: true,
+    noTitle: true,
+    noPaddings: true,
+  });
 }
 
 

@@ -5,13 +5,17 @@
       <user-experience />
     </div>
 
-    <div class="game-list">
-      <game-list />
-    </div>
-
     <div class="btn-list">
       <menu-list />
     </div>
+
+    <div class="game-items">
+      <game-items />
+    </div>
+
+<!--    <div class="game-list">
+      <game-list />
+    </div>-->
 
 <!--    <div class="settings-block">
       <MenuItem @click="openSettings" icon="settings">Настройки</MenuItem>
@@ -48,7 +52,6 @@
 
 import UserAvatar from "@/components/pages/Home/UserAvatar.vue";
 import UserExperience from "@/components/pages/Home/UserExperience.vue";
-import GameList from "@/components/pages/Home/GameList.vue";
 import MenuList from "@/components/pages/Home/MenuList.vue";
 import UiIcon from "@/components/common/icons/UiIcon.vue";
 import {storeToRefs} from "pinia";
@@ -60,6 +63,7 @@ import {inject, onMounted, watch} from "vue";
 import {gameStore} from "@/stores/Game/gameStore.ts";
 import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
 import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
+import GameItems from "@/components/pages/Home/GameItems.vue";
 
 const {id, firstName, avatar, subscription} = storeToRefs(ecosystemStore());
 const {inFavorites, inHomeScreen} = storeToRefs(bridgeStore());
@@ -71,10 +75,6 @@ const bridgeProvider: IPlatformEvents | undefined = inject(PlatformEventsSymbol)
 
 const returnToRoom = (roomId: string) => {
   router.push({name: 'bunkerGame', query: {"room_id": roomId}});
-}
-
-const openSettings = () => {
-
 }
 
 const addToFavorite = () => {
@@ -90,7 +90,7 @@ onMounted(() => {
 
 watch(id, (neoVal) => {
   if(neoVal > 0){
-    //todo: проверять еще и на отображение онбординга
+    //todo: проверять еще и на отображение онбординга - если отображается онбординг - не вызывать displayBottomBn
     bridgeProvider?.displayBottomBn?.();
     bridgeProvider?.checkRewardNativeAdds?.();
   }
@@ -110,16 +110,20 @@ watch(id, (neoVal) => {
   gap: 15px;
 }
 
-.game-list{
+.game-items{
   margin-top: 20px;
 }
+/*.game-list{
+  margin-top: 20px;
+}*/
 
 .btn-list{
   display: flex;
   flex-wrap: nowrap;
   gap: 15px;
   justify-content: space-between;
-  margin-top: 25px;
+  margin-top: -25px;
+  align-items: end;
 }
 
 .settings-block{

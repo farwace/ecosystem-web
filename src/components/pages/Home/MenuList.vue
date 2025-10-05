@@ -1,10 +1,11 @@
 <template>
   <menu-item :class="{unread: hasUnclaimedCompletedMission}" @click="openMissions" icon="checklist">Задания</menu-item>
   <menu-item @click="openRating" icon="rating">Рейтинг</menu-item>
-  <div style="width: 45px;"></div>
-  <div style="width: 45px;"></div>
-<!--  <menu-item @click="openFriends" icon="friends">Друзья</menu-item>
-  <menu-item @click="openMessages" icon="message">Сообщения</menu-item>-->
+  <menu-item @click="openFriends" icon="friends">Друзья</menu-item>
+
+  <VideoRewardAdv />
+
+<!--  <menu-item @click="openMessages" icon="message">Сообщения</menu-item>-->
 </template>
 <script setup lang="ts">
 import MenuItem from "@/components/pages/Home/MenuItem.vue";
@@ -13,6 +14,7 @@ import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
 import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
 import {storeToRefs} from "pinia";
 import {dailyMissionsStore} from "@/stores/DailyMissions/dailyMissionsStore.ts";
+import VideoRewardAdv from "@/components/pages/Home/VideoRewardAdv.vue";
 const notificationsProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
 const { hasUnclaimedCompletedMission } = storeToRefs(dailyMissionsStore());
 

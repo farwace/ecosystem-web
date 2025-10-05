@@ -6,7 +6,12 @@ import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformE
 import {EcosystemSymbol, PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
 import {Container} from "inversify";
 import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.ts";
-import {BalanceProviderSymbol, GiftsProviderSymbol, UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
+import {
+    BalanceProviderSymbol,
+    GameApiProviderSymbol,
+    GiftsProviderSymbol,
+    UserProviderSymbol
+} from "@/modules/ApiModule/symbols.ts";
 import {UserProvider} from "@/modules/ApiModule/Providers/UserProvider.ts";
 import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
 import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
@@ -24,6 +29,8 @@ import {BalanceProvider} from "@/modules/ApiModule/Providers/BalanceProvider.ts"
 import {GameProviderSymbol} from "@/modules/GameModule/symbols.ts";
 import {GameProvider} from "@/modules/GameModule/Providers/GameProvider.ts";
 import type {IGameProvider} from "@/modules/GameModule/Interfaces/IGameProvider.ts";
+import type {IGameApiProvider} from "@/modules/ApiModule/Interfaces/IGameApiProvider.ts";
+import {GameApiProvider} from "@/modules/ApiModule/Providers/GameApiProvider.ts";
 
 export const AppBuilder = () => {
     return {
@@ -53,6 +60,10 @@ export const AppBuilder = () => {
             container.bind<IGiftsProvider>(GiftsProviderSymbol).to(GiftsProvider).inSingletonScope();
             const giftsProvider = container.get<IGiftsProvider>(GiftsProviderSymbol);
             giftsProvider.install($app, GiftsProviderSymbol);
+
+            container.bind<IGameApiProvider>(GameApiProviderSymbol).to(GameApiProvider).inSingletonScope();
+            const gameApiProvider = container.get<IGameApiProvider>(GameApiProviderSymbol);
+            gameApiProvider.install($app, GameApiProviderSymbol);
 
             container.bind<IBalanceProvider>(BalanceProviderSymbol).to(BalanceProvider).inSingletonScope();
             const balanceProvider = container.get<IBalanceProvider>(BalanceProviderSymbol);

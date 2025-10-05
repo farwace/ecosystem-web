@@ -13,7 +13,9 @@ import UiIcon from "@/components/common/icons/UiIcon.vue";
   .bonus{
     position: relative;
     padding-bottom: 18px;
-    cursor: pointer;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
     &__spinner{
       width: 80px;
       height: 80px;
@@ -25,18 +27,18 @@ import UiIcon from "@/components/common/icons/UiIcon.vue";
       font-weight: 600;
       text-align: center;
       border-radius: 100px;
-      cursor: pointer;
       border-width: 2px;
       border-style: solid;
       border-color: #FBE4CD;
       background-color: #FFF6EC;
       color: #BC7D4D;
       display: inline-block;
-      padding: 2px 6px 0;
+      padding: 2px 8px 0;
       position: absolute;
       bottom: 0;
       left: 50%;
       transform: translateX(-50%);
+      text-transform: uppercase;
     }
   }
 

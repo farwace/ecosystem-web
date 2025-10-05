@@ -19,7 +19,7 @@
         </div>
       </transition>
 <!--      <div class="item" @click="onSettingsClick">Настройки</div>-->
-<!--      <div class="item" @click="onRulesClick">Правила игры</div>-->
+      <div class="item" @click="onRulesClick">Правила игры</div>
       <div class="item" @click="onLeaveClick">Выйти</div>
     </div>
   </div>
@@ -79,6 +79,7 @@ const tryRepairMicrophone = () => {
 
     .item{
       padding: 4px 8px;
+      margin: 4px 0;
       cursor: pointer;
       transition: background-color .2s ease-out;
       &:hover{

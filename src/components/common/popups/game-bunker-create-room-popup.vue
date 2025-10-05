@@ -53,6 +53,10 @@ const isPrivate = ref<boolean>();
 const useBots = ref<boolean>();
 const playersCount = ref<number>();
 
+const props = defineProps<{
+  onGameStart?: () => void;
+}>();
+
 const emits = defineEmits(['close']);
 
 const onPlayersMinus = () => {
@@ -81,6 +85,7 @@ const onPlayersPlus = () => {
 }
 
 const createRoom = () => {
+  props?.onGameStart?.();
   emits('close');
   router.push({name: 'bunkerGame', query: {neo: 1, players: (playersCount.value || 8), private: isPrivate.value ? 1 : 0, bots: !useBots.value ? 1 : 0}});
 }

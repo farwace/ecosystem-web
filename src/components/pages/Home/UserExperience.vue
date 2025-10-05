@@ -1,14 +1,5 @@
 <template>
   <div class="exp">
-    <div class="exp__balance exp__item" @click="openBuyMoneyModal">
-      <div>
-        <UiIcon class="exp__icon" name="coin" />
-      </div>
-      <span class="exp__value">
-        {{ strBalance }}
-      </span>
-
-    </div>
     <div class="exp__level exp__item">
       <div>
         <UiIcon class="exp__icon" name="experience" />
@@ -28,6 +19,15 @@
           </div>
         </div>
       </div>
+    </div>
+    <div class="exp__balance exp__item" @click="openBuyMoneyModal">
+      <div>
+        <UiIcon class="exp__icon" name="coin" />
+      </div>
+      <span class="exp__value">
+        {{ strBalance }}
+      </span>
+
     </div>
   </div>
 </template>
@@ -84,14 +84,14 @@
   }
 
   &__balance{
-    margin-top: auto;
+    margin-bottom: auto;
     cursor: pointer;
     .exp__value{
       margin-top: -4px;
     }
   }
   &__level{
-    margin-bottom: auto;
+    margin-top: auto;
 
     &__desc{
       margin-top: -8px;

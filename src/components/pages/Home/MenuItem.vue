@@ -22,6 +22,8 @@ const props = defineProps<{icon: string}>();
   font-size: 12px;
   font-weight: 600;
   flex-grow: 1;
+  max-width: 60px;
+
   &.unread{
     &:after{
       position: absolute;
@@ -30,7 +32,7 @@ const props = defineProps<{icon: string}>();
       content: '';
       background: #ff9090;
       border-radius: 100%;
-      right: 5px;
+      right: 0;
       top: -7px;
       border: 2px solid #FFF6E9;
     }
