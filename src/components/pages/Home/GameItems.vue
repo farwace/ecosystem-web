@@ -184,6 +184,10 @@ const onGameClick = (name: string) => {
   .game-items__list {
     .item{
       border-color: #939393;
+      transition: background-color .3s ease-out;
+      &:hover{
+        background-color: #424242;
+      }
     }
   }
 }
