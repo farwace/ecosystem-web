@@ -155,4 +155,5 @@ export class StubEventsProvider implements IPlatformEvents{
     allowNotifications =  () => {}
     addToFavorite =  () => {}
     addToRecommended =  () => {}
+    showSlidesSheet =  (slides: any[]) => {}
 }

@@ -195,6 +195,27 @@ export class BridgeEventsProvider implements IPlatformEvents {
         //         noPaddings: true,
         //     })
         // }
+
+        bridge.send('VKWebAppStorageGet', {
+            keys: [
+                'OnBoardingBunkerShown'
+            ]
+        }).then((res) => {
+            console.log('>>> OnBoardingBunkerShown', res)
+            res.keys.forEach(data => {
+                if(data.key == 'OnBoardingBunkerShown' && data.value != '1'){
+                    this._nativeAdsEvent$.next({
+                        type: 'show-onboarding'
+                    });
+
+                    bridge.send('VKWebAppStorageSet', {
+                        key: 'OnBoardingBunkerShown',
+                        value:'1'
+                    })
+                }
+            })
+        });
+
         return bridge.send('VKWebAppInit');
     }
 
@@ -398,6 +419,12 @@ export class BridgeEventsProvider implements IPlatformEvents {
 
     addToRecommended = () => {
         bridge.send('VKWebAppRecommend');
+    }
+
+    showSlidesSheet = (slides: any[]) => {
+        bridge.send('VKWebAppShowSlidesSheet', {
+            slides: slides
+        })
     }
 
 }

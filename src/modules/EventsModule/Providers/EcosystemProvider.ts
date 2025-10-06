@@ -33,7 +33,7 @@ import type {
 } from "@vkontakte/vk-bridge";
 import {themeStore} from "@/stores/Theme/themeStore.ts";
 import type {IThemeStore} from "@/stores/Theme/IThemeStore.ts";
-import {UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
+import {GameApiProviderSymbol, UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
 import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.ts";
 import type {IGameStore} from "@/stores/Game/IGameStore.ts";
 import {gameStore} from "@/stores/Game/gameStore.ts";
@@ -41,6 +41,7 @@ import {GameProviderSymbol} from "@/modules/GameModule/symbols.ts";
 import type {IGameProvider} from "@/modules/GameModule/Interfaces/IGameProvider.ts";
 import type {IBridgeStore} from "@/stores/Bridge/IBridgeStore.ts";
 import {bridgeStore} from "@/stores/Bridge/bridgeStore.ts";
+import type {IGameApiProvider} from "@/modules/ApiModule/Interfaces/IGameApiProvider.ts";
 
 @injectable()
 export class EcosystemProvider implements IEcosystemProvider{
@@ -67,6 +68,8 @@ export class EcosystemProvider implements IEcosystemProvider{
         private userProvider: IUserProvider,
         @inject(GameProviderSymbol)
         private gameProvider: IGameProvider,
+        @inject(GameApiProviderSymbol)
+        private gameApiProvider: IGameApiProvider,
     ) {
         this._reverbObserver$ = this.reverbProvider.getReverbObserver$();
         this._bridgeObserver$ = this.platformEventsProvider.getEmitter();
@@ -333,6 +336,17 @@ export class EcosystemProvider implements IEcosystemProvider{
                 })
             }
         });
+
+        this._nativeAdsObserver$.pipe(
+            filter((message) => message?.type == 'show-onboarding')
+        ).subscribe(async(message) => {
+            console.log('>>> SHOW_ONBOARDING')
+            const res = await this.gameApiProvider?.loadOnBoarding?.('onboarding');
+            if((res?.data?.length || 0)> 0) {
+                this.platformEventsProvider?.showSlidesSheet?.(res?.data || []);
+            }
+        });
+
     }
 
     private subscribeToBridgeEvents = () => {
