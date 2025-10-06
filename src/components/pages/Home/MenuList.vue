@@ -1,7 +1,7 @@
 <template>
   <menu-item :class="{unread: hasUnclaimedCompletedMission}" @click="openMissions" icon="checklist">Задания</menu-item>
   <menu-item @click="openRating" icon="rating">Рейтинг</menu-item>
-  <menu-item @click="openFriends" icon="friends">Друзья</menu-item>
+<!--  <menu-item @click="openFriends" icon="friends">Друзья</menu-item>-->
 
   <VideoRewardAdv />
 
@@ -15,10 +15,6 @@ import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfa
 import {storeToRefs} from "pinia";
 import {dailyMissionsStore} from "@/stores/DailyMissions/dailyMissionsStore.ts";
 import VideoRewardAdv from "@/components/pages/Home/VideoRewardAdv.vue";
-import type {IGameApiProvider} from "@/modules/ApiModule/Interfaces/IGameApiProvider.ts";
-import {GameApiProviderSymbol} from "@/modules/ApiModule/symbols.ts";
-import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
-import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
 const notificationsProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
 const { hasUnclaimedCompletedMission } = storeToRefs(dailyMissionsStore());
 
@@ -39,18 +35,13 @@ const openRating = () => {
   })
 }
 
-
-const gameApi: IGameApiProvider | undefined = inject(GameApiProviderSymbol);
-const bridgeProvider: IPlatformEvents | undefined = inject(PlatformEventsSymbol);
 const openFriends = async () => {
-  const res = await gameApi?.loadOnBoarding?.('onboarding');
-  if((res?.data?.length || 0)> 0) {
-    bridgeProvider?.showSlidesSheet?.(res?.data || []);
-  }
-  // notificationsProvider?.addPopup('friends', 'simple-popup', {
-  //   title: 'Друзья',
-  //   darkBg: true,
-  // })
+  notificationsProvider?.addPopup('friends', 'friends-popup', {
+    noTitle:true,
+    darkBg: true,
+    modal: false,
+    noPaddings: true,
+  })
 }
 
 const openMessages = () => {

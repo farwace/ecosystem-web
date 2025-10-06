@@ -246,4 +246,8 @@ export class UserProvider extends ApiProvider implements IUserProvider{
         });
     }
 
+    queryFriends = async (): Promise<TResponse<TUser[]>> => {
+        return await this.fetch(`${this.getApiEndpoint()}/friends/list`) as unknown as TResponse<TUser[]>;
+    }
+
 }

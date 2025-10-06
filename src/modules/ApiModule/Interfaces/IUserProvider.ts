@@ -27,4 +27,5 @@ export interface IUserProvider  extends IModule{
     getShareInfo: (type: "loose" | "won") => Promise<TResponse<TGetShareImageResponse>>;
     sendShareComplete: (dataToSend: {[key: string]: any}) => Promise<void>;
     sendAllowNotifications: () => Promise<void>;
+    queryFriends: () => Promise<TResponse<TUser[]>>;
 }
