@@ -28,4 +28,5 @@ export interface IPlatformEvents extends IModule{
     showSlidesSheet: (slides: any[]) => void;
     startRewardAdds: (rqkey: string) => void;
     showStoryBox: (data: TGetShareImageResponse) => Promise<any>;
+    checkAchievement: (achievementCode: string) => void;
 }

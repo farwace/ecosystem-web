@@ -4,6 +4,7 @@ interface ImportMetaEnv {
     readonly VITE_API_ENDPOINT: string
     readonly VITE_VK_APP_URL: string
     readonly VITE_VK_APP_ID: number
+    readonly VITE_VK_GROUP_ID: string
     readonly VITE_API_VERSION:string
     readonly VITE_ENVELOP: "development" | 'preprod' | string
     readonly VITE_VK_USER_ID: string

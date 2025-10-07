@@ -424,6 +424,14 @@ export class EcosystemProvider implements IEcosystemProvider{
             })
         });
 
+        this._bridgeObserver$.pipe(
+            filter((message):message is VKBridgeEvent<'VKWebAppJoinGroup'> => message?.detail?.type === 'VKWebAppJoinGroupResult')
+        ).subscribe(message => {
+            this.userProvider.checkGroupSubscription()
+        });
+
+
+
 
         // this._bridgeObserver$.pipe(
         //     filter((message):message is any => message.detail?.type === "VKWebAppGetClientVersionResult"),

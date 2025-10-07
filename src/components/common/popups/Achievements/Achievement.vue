@@ -47,7 +47,9 @@
             <template v-if="achievement.experience && achievement.experience > 0">
               <UiIcon name="experience" class="inline-icon"/> {{ achievement.experience }}
             </template>
-
+            <template v-if="achievement.code == 'group_subscriber'">
+              <div class="small-button" @click="$emit('check')">Проверить</div>
+            </template>
           </div>
         </div>
       </template>
@@ -58,6 +60,7 @@
 import type {TUserAchievement} from "@/stores/Achievements/Types/TUserAchievement.ts";
 import {Dropdown as VDropdown, vTooltip} from "floating-vue";
 import UiIcon from "@/components/common/icons/UiIcon.vue";
+
 defineOptions({
   components: {
     VDropdown,
@@ -72,7 +75,7 @@ const props = defineProps<{
   outerContainer?: HTMLElement
 }>();
 
-const emits = defineEmits(['receive']);
+const emits = defineEmits(['receive', 'check']);
 
 const tryReceive = () => {
   if(!props.achievement.received && props.achievement.completed){
@@ -136,6 +139,16 @@ const tryReceive = () => {
     font-size: 12px;
     text-align: center;
   }
+}
+
+.small-button{
+  cursor: pointer;
+  padding: 4px 5px;
+  border-radius: 100px;
+  border: 1px solid #BC7D4D;
+  font-size: 10px;
+  line-height: 1;
+  margin-top: 5px;
 }
 
 @-webkit-keyframes blink-achievement-notify {

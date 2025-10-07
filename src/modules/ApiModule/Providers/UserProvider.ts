@@ -250,4 +250,9 @@ export class UserProvider extends ApiProvider implements IUserProvider{
         return await this.fetch(`${this.getApiEndpoint()}/friends/list`) as unknown as TResponse<TUser[]>;
     }
 
+    checkGroupSubscription = () => {
+        this.fetch(`${this.getApiEndpoint()}/user/check-join-group`, {
+            method: 'POST'
+        });
+    }
 }

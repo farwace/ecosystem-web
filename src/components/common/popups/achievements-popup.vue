@@ -33,6 +33,7 @@
           <template v-if="id == props.id">
             <template v-for="achievement in achievementList">
               <achievement
+                  @check="checkAchievement(achievement)"
                   @receive="receiveAchievement(achievement)"
                   :outer-container="sectionBody?.[key]"
                   :achievement="achievement"
@@ -61,12 +62,15 @@ import Achievement from "@/components/common/popups/Achievements/Achievement.vue
 import type {TUserAchievement} from "@/stores/Achievements/Types/TUserAchievement.ts";
 import {UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
 import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.ts";
+import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
+import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
 
 const isLoading = ref<boolean>(false);
 
 const {achievementList, achievementSections} = storeToRefs(achievementsStore());
 const {id} = storeToRefs(ecosystemStore());
 const userProvider: IUserProvider | undefined = inject(UserProviderSymbol);
+const bridgeProvider: IPlatformEvents | undefined = inject(PlatformEventsSymbol);
 const sectionBody = ref<HTMLDivElement[]>();
 
 const props = defineProps<{
@@ -96,6 +100,10 @@ const availableSections = computed(() => {
   }
 });
 
+
+const checkAchievement = (achievement: TUserAchievement) => {
+  bridgeProvider?.checkAchievement?.(achievement.code);
+}
 
 const receiveAchievement = async (achievement: TUserAchievement) => {
   if(isLoading.value) return;

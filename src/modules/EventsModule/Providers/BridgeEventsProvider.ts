@@ -427,4 +427,12 @@ export class BridgeEventsProvider implements IPlatformEvents {
         })
     }
 
+    checkAchievement = (achievementCode: string) => {
+        if(achievementCode == 'group_subscriber'){
+            bridge.send('VKWebAppJoinGroup', {
+                group_id: parseInt(import.meta.env.VITE_VK_GROUP_ID)
+            })
+        }
+    }
+
 }

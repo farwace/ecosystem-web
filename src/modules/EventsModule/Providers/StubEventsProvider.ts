@@ -156,4 +156,5 @@ export class StubEventsProvider implements IPlatformEvents{
     addToFavorite =  () => {}
     addToRecommended =  () => {}
     showSlidesSheet =  (slides: any[]) => {}
+    checkAchievement =  (achievementCode: string) => {}
 }
