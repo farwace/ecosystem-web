@@ -220,9 +220,6 @@ async function connectToRoom() {
       emitVolumesNow();
     }, 50);
 
-    if (props.canISpeak && !isHidden.value) {
-      await enableMicrophone();
-    }
     isConnecting.value = false;
   })();
 
