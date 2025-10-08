@@ -10,6 +10,9 @@
     </div>
     <div class="game__data">
       <div class="game__content coming-soon" :class="[''+code]" v-html="gameContent" v-if="gameContent"></div>
+      <div v-if="code == 'callback'">
+        <img class="suggest-img" src="/assets/img/games/home/suggest-callback.png" alt="Предложи идею">
+      </div>
     </div>
     <div class="game__button will-play" v-if="showVoteButton" @click="voteForGame">
       Буду играть!
@@ -162,6 +165,13 @@ const updateNotificationPermissions = () => {
       }
     }
 
+  }
+
+  &__data{
+    .suggest-img{
+      margin: 20px auto;
+      max-width: 40%;
+    }
   }
 
   &__button{
