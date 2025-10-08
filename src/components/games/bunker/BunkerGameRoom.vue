@@ -497,7 +497,6 @@ const initializeGame = () => {
   });
 
   props.room?.onMessage?.('gameFinished', (message: any) => {
-    //todo: отображение модального окна с результатами и предложением выложить историю или просмотреть рекламу за двойную награду
     Console.log('>>> GAME FINISHED', message);
     const isWon = !!message?.results?.filter?.((obInfo: any ) => obInfo?.playerId == id.value)?.[0]?.isWinner;
     //showGameResultsPopup(isWon, currentPlayer.value);
@@ -737,7 +736,7 @@ const onTouchPlace = (place: string | number) => {
       darkBg: true,
       class: 'game-bunker',
       placeNumber: (+place+1),
-      inviteFriendCallback: () => {inviteFriend()}, //todo: пригласить друзей в игровую комнату
+      inviteFriendCallback: () => {inviteFriend()},
       changePlaceCallback: () => {requestChangePlace(place)}
     });
   }

@@ -129,7 +129,6 @@ export class StubEventsProvider implements IPlatformEvents{
     }
 
     buyMoney = async (item: TShopCoin) => {
-        //todo: вызвать метод на покупку монет!
         alert('Вызывать метод на покупку монет!')
     }
 

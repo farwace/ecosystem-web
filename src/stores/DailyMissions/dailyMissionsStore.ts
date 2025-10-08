@@ -15,7 +15,7 @@ export const dailyMissionsStore = defineStore('dailyMissions', {
             return state.dailyMissionList.some((m: TDailyMission) =>
                 m.completed &&
                 !m.received &&
-                (m.personalAccess && ecosystemStore().$state.subscription?.personalAccess || !m.personalAccess) //todo: Тестирование что красная точка горит если есть премиум, и не горит если премиума нет
+                (m.personalAccess && ecosystemStore().$state.subscription?.personalAccess || !m.personalAccess)
             );
         }
     }
