@@ -11,9 +11,16 @@
     <div class="game__data">
       <bunker-start-game-buttons @start="$emit('close')"/>
 
-      <div class="game__content" v-html="gameContent" v-if="gameContent"></div>
-      <div v-if="gameContent">
-        <bunker-start-game-buttons only-start @start="$emit('close')"/>
+      <div class="game__content" v-if="gameContent">
+        <span class="show-more" v-show="!additionalInfoShown" @click="additionalInfoShown = !additionalInfoShown">Подробнее об игре <ui-icon name="chevron-right" class="inline-icon"/></span>
+        <SlideDown :expanded="!!additionalInfoShown" :duration="450" easing="ease-in" :opacity="true">
+          <div class="content">
+            <div v-html="gameContent"></div>
+            <div>
+              <bunker-start-game-buttons only-start @start="$emit('close')"/>
+            </div>
+          </div>
+        </SlideDown>
       </div>
     </div>
   </div>
@@ -25,12 +32,15 @@ import BunkerStartGameButtons from "@/pages/Games/Bunker/BunkerStartGameButtons.
 import type {IGameApiProvider} from "@/modules/ApiModule/Interfaces/IGameApiProvider.ts";
 import {GameApiProviderSymbol} from "@/modules/ApiModule/symbols.ts";
 import BunkerButton from "@/components/games/bunker/components/BunkerButton.vue";
+import UiIcon from "@/components/common/icons/UiIcon.vue";
+import SlideDown from "@/components/common/ui/SlideDown.vue";
 const isLoading = ref<boolean>(false);
 
 const gameApi: IGameApiProvider | undefined  = inject(GameApiProviderSymbol);
 
 const emit = defineEmits(['close']);
 const gameContent = ref<string>();
+const additionalInfoShown = ref<boolean>(false);
 
 onMounted(() => {
   gameApi?.getGameInfo?.('bunker')?.then((res) => {
@@ -111,6 +121,22 @@ onMounted(() => {
 
   &__content{
     margin-top: 20px;
+
+    .show-more{
+      cursor: pointer;
+      svg{
+        margin-bottom: -2px;
+      }
+    }
+    .content{
+      transition: all .3s ease-out;
+      &.hidden{
+        opacity: 0;
+        height: 1px;
+        overflow: hidden;
+      }
+    }
+
     :deep(p){
       margin-bottom: 10px;
     }
@@ -120,6 +146,5 @@ onMounted(() => {
 
   }
 }
-
 
 </style>
