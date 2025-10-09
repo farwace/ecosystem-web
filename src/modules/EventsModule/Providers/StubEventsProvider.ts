@@ -42,7 +42,7 @@ export class StubEventsProvider implements IPlatformEvents{
     getEmitter = ():Subject<VKBridgeEvent<keyof ReceiveDataMap>> => {
         return this._bridgeEvent$;
     }
-    getAdsEmitter = ():Subject<any> => {
+    getEcosystemEmitter = ():Subject<any> => {
         return this._bridgeEvent$;
     }
 
@@ -137,16 +137,16 @@ export class StubEventsProvider implements IPlatformEvents{
     }
 
     inviteFriendToGame = async (roomId: string, gameCode: string) => {
-        console.log('>>> INVITE FRIEND TO GAME >>>', roomId, gameCode);
+        Console.log('>>> INVITE FRIEND TO GAME >>>', roomId, gameCode);
     }
 
     isDesktop = () => {
         return !!('ontouchstart' in window || navigator.maxTouchPoints);
     }
 
-    removeBottomBn = () => { console.log('>>> BNR REMOVE ') }
-    displayBottomBn = () => { console.log('>>> BNR DISPLAY') }
-    checkRewardNativeAdds = () => { console.log('>>> CHECK NATIVE ADS') }
+    removeBottomBn = () => { Console.log('>>> BNR REMOVE ') }
+    displayBottomBn = () => { Console.log('>>> BNR DISPLAY') }
+    checkRewardNativeAdds = () => { Console.log('>>> CHECK NATIVE ADS') }
     finishRewardAdds = () => {};
     showRewardAdds = async () => {return true;}
     showStoryBox = async (data: TGetShareImageResponse) => {return;}
@@ -156,4 +156,5 @@ export class StubEventsProvider implements IPlatformEvents{
     addToRecommended =  () => {}
     showSlidesSheet =  (slides: any[]) => {}
     checkAchievement =  (achievementCode: string) => {}
+    queryFriends =  async () => {return []}
 }

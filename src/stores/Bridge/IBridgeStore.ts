@@ -5,4 +5,5 @@ export interface IBridgeStore {
     inHomeScreen: boolean;
     inRecommended: boolean;
     notificationsEnabled: boolean;
+    accessToken: string;
 }

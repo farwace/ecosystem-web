@@ -9,7 +9,7 @@ import type {TGetShareImageResponse} from "@/modules/ApiModule/Types/TGetShareIm
 export interface IPlatformEvents extends IModule{
     init: () => Promise<void>;
     getEmitter: () => Subject<VKBridgeEvent<keyof ReceiveDataMap>>;
-    getAdsEmitter: () => Subject<any>;
+    getEcosystemEmitter: () => Subject<any>;
     setApplicationIsReady: () => Promise<any>;
     setApplicationLoadError: () => Promise<any>;
     buySubscription: (s: TShopSubscription) => Promise<any>;
@@ -29,4 +29,5 @@ export interface IPlatformEvents extends IModule{
     startRewardAdds: (rqkey: string) => void;
     showStoryBox: (data: TGetShareImageResponse) => Promise<any>;
     checkAchievement: (achievementCode: string) => void;
+    queryFriends: (accessToken: string) => Promise<number[]>;
 }

@@ -9,5 +9,6 @@ export const bridgeStore = defineStore('bridge', {
         inHomeScreen: true,
         inRecommended: true,
         notificationsEnabled: true,
+        accessToken: '',
     })
 })

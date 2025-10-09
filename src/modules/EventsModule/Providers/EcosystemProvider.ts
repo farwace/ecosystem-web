@@ -42,12 +42,13 @@ import type {IGameProvider} from "@/modules/GameModule/Interfaces/IGameProvider.
 import type {IBridgeStore} from "@/stores/Bridge/IBridgeStore.ts";
 import {bridgeStore} from "@/stores/Bridge/bridgeStore.ts";
 import type {IGameApiProvider} from "@/modules/ApiModule/Interfaces/IGameApiProvider.ts";
+import {Console} from "@/classes/utils/Console.ts";
 
 @injectable()
 export class EcosystemProvider implements IEcosystemProvider{
 
     private _bridgeObserver$: Subject<VKBridgeEvent<keyof ReceiveDataMap>>;
-    private _nativeAdsObserver$: Subject<any>;
+    private _nativeEcosystemObserver$: Subject<any>;
     private _gameEmitter$: Subject<any>;
     private _reverbObserver$: Subject<TReverbMessage<unknown>>;
     private dailyMissionsStore: Store<'dailyMissions', IDailyMissionsStore>;
@@ -73,7 +74,7 @@ export class EcosystemProvider implements IEcosystemProvider{
     ) {
         this._reverbObserver$ = this.reverbProvider.getReverbObserver$();
         this._bridgeObserver$ = this.platformEventsProvider.getEmitter();
-        this._nativeAdsObserver$ = this.platformEventsProvider.getAdsEmitter();
+        this._nativeEcosystemObserver$ = this.platformEventsProvider.getEcosystemEmitter();
         this._gameEmitter$ = this.gameProvider.getGameEmitter$();
 
         this.dailyMissionsStore = dailyMissionsStore();
@@ -88,7 +89,7 @@ export class EcosystemProvider implements IEcosystemProvider{
         app.provide(symbol, this);
         this.subscribeToEcosystemEvents();
         this.subscribeToBridgeEvents();
-        this.subscribeToNativeAdsEvents();
+        this.subscribeToNativeEcosystemEvents();
     }
 
     private subscribeToEcosystemEvents = () => {
@@ -305,28 +306,28 @@ export class EcosystemProvider implements IEcosystemProvider{
 
     }
 
-    private subscribeToNativeAdsEvents = () => {
+    private subscribeToNativeEcosystemEvents = () => {
 
-        this._nativeAdsObserver$.pipe(
+        this._nativeEcosystemObserver$.pipe(
             filter((message) => message?.type == 'spin-reward-ready')
         ).subscribe(() => {
             this.reverbProvider.sendMessage('reverb-oulrna', {});
         });
 
-        this._nativeAdsObserver$.pipe(
+        this._nativeEcosystemObserver$.pipe(
             filter((message) => message?.type == 'spin-reward-start')
         ).subscribe((message) => {
             this.reverbProvider.sendMessage('reverb-oussrna', {rqkey: (message?.rqkey || '')});
         });
 
-        this._nativeAdsObserver$.pipe(
+        this._nativeEcosystemObserver$.pipe(
             filter((message) => message?.type == 'spin-reward-finish')
         ).subscribe(() => {
             const rqkey = this.bridgeStore.$state.videoRewardAdvKey;
             this.reverbProvider.sendMessage('reverb-ouesrna', {rqkey});
         });
 
-        this._nativeAdsObserver$.pipe(
+        this._nativeEcosystemObserver$.pipe(
             filter((message) => message?.type == 'show-warning')
         ).subscribe((message) => {
             if(message?.message && typeof message?.message === 'string'){
@@ -337,14 +338,21 @@ export class EcosystemProvider implements IEcosystemProvider{
             }
         });
 
-        this._nativeAdsObserver$.pipe(
+        this._nativeEcosystemObserver$.pipe(
             filter((message) => message?.type == 'show-onboarding')
         ).subscribe(async(message) => {
-            console.log('>>> SHOW_ONBOARDING')
+            Console.log('>>> SHOW_ONBOARDING')
             const res = await this.gameApiProvider?.loadOnBoarding?.('onboarding');
             if((res?.data?.length || 0)> 0) {
                 this.platformEventsProvider?.showSlidesSheet?.(res?.data || []);
             }
+        });
+
+        this._nativeEcosystemObserver$.pipe(
+            filter((message) => message?.type == 'should-query-update-friends')
+        ).subscribe(async(message) => {
+            const arFriendIds = await this.platformEventsProvider.queryFriends(this.bridgeStore.$state.accessToken);
+            await this.userProvider.updateFriendIds(arFriendIds);
         });
 
     }

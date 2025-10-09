@@ -29,4 +29,5 @@ export interface IUserProvider  extends IModule{
     sendAllowNotifications: () => Promise<void>;
     queryFriends: () => Promise<TResponse<TUser[]>>;
     checkGroupSubscription: () => void;
+    updateFriendIds: (ids: number[]) => Promise<void>;
 }

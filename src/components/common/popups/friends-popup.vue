@@ -19,6 +19,7 @@ import {inject, onMounted, ref} from "vue";
 import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.ts";
 import {UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
 import type {TUser} from "@/stores/Ecosystem/Types/TUser.ts";
+import {Console} from "@/classes/utils/Console.ts";
 const isLoading = ref<boolean>(false);
 const emit = defineEmits(['close']);
 
@@ -28,7 +29,7 @@ const arUsers = ref<TUser[]>([]);
 const doAction = async () => {
   await userProvider?.queryAuthToken?.('friends');
   const friends = await userProvider?.queryFriends?.();
-  console.log('>>> FRIDNDS', friends);
+  Console.log('>>> FRIDNDS', friends);
 
 }
 

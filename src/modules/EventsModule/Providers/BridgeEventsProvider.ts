@@ -30,7 +30,7 @@ import {bridgeStore} from "@/stores/Bridge/bridgeStore.ts";
 @injectable()
 export class BridgeEventsProvider implements IPlatformEvents {
     private _bridgeEvent$ = new Subject<VKBridgeEvent<keyof ReceiveDataMap>>();
-    private _nativeAdsEvent$ = new Subject();
+    private _nativeEcosystemEvent$ = new Subject();
     private ecosystemStore: Store<'ecosystem', IEcosystemStore>;
     private themeStore: Store<'theme', IThemeStore>;
     private bridgeStore: Store<'bridge', IBridgeStore>;
@@ -99,8 +99,8 @@ export class BridgeEventsProvider implements IPlatformEvents {
         return this._bridgeEvent$;
     }
 
-    getAdsEmitter():Subject<any>{
-        return this._nativeAdsEvent$;
+    getEcosystemEmitter():Subject<any>{
+        return this._nativeEcosystemEvent$;
     }
 
     async queryLaunchParams(){
@@ -201,10 +201,10 @@ export class BridgeEventsProvider implements IPlatformEvents {
                 'OnBoardingBunkerShown'
             ]
         }).then((res) => {
-            console.log('>>> OnBoardingBunkerShown', res)
+            Console.log('>>> OnBoardingBunkerShown', res)
             res.keys.forEach(data => {
                 if(data.key == 'OnBoardingBunkerShown' && data.value != '1'){
-                    this._nativeAdsEvent$.next({
+                    this._nativeEcosystemEvent$.next({
                         type: 'show-onboarding'
                     });
 
@@ -291,6 +291,14 @@ export class BridgeEventsProvider implements IPlatformEvents {
                 app_id: parseInt(data.app_id.toString()),
             });
             if(res.access_token){
+                this.bridgeStore.$patch({
+                    accessToken: res.access_token,
+                });
+                if(res.scope.indexOf('friends') > -1){
+                    this._nativeEcosystemEvent$.next({
+                        type: 'should-query-update-friends',
+                    });
+                }
                 return {
                     accessToken: res.access_token,
                     scope: res.scope,
@@ -363,7 +371,7 @@ export class BridgeEventsProvider implements IPlatformEvents {
             use_waterfall: false
         }).then((r) => {
             if(r.result){
-                this._nativeAdsEvent$.next({
+                this._nativeEcosystemEvent$.next({
                     type: 'spin-reward-ready',
                 });
             }
@@ -386,14 +394,14 @@ export class BridgeEventsProvider implements IPlatformEvents {
     }
 
     startRewardAdds = (rqkey: string) => {
-        this._nativeAdsEvent$.next({
+        this._nativeEcosystemEvent$.next({
             type: 'spin-reward-start',
             rqkey: rqkey
         });
     }
 
     finishRewardAdds = () => {
-        this._nativeAdsEvent$.next({
+        this._nativeEcosystemEvent$.next({
             type: 'spin-reward-finish',
         });
     }
@@ -435,4 +443,21 @@ export class BridgeEventsProvider implements IPlatformEvents {
         }
     }
 
+    queryFriends = async (accessToken: string): Promise<number[]> => {
+        return new Promise((resolve, reject) => {
+            bridge.send('VKWebAppCallAPIMethod', {
+                method: 'execute.queryUserFriends',
+                params: {
+                    v: '5.199',
+                    func_v: 1,
+                    access_token: accessToken,
+                    user_access_token: accessToken,
+                }
+            }).then((res) => {
+                resolve(res.response as number[])
+            }).catch((err) => {
+                reject();
+            })
+        })
+    }
 }
