@@ -6,4 +6,5 @@ export interface IBridgeStore {
     inRecommended: boolean;
     notificationsEnabled: boolean;
     accessToken: string;
+    scope: string;
 }

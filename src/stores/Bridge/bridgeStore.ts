@@ -10,5 +10,6 @@ export const bridgeStore = defineStore('bridge', {
         inRecommended: true,
         notificationsEnabled: true,
         accessToken: '',
+        scope: '',
     })
 })

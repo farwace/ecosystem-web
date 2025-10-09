@@ -293,6 +293,7 @@ export class BridgeEventsProvider implements IPlatformEvents {
             if(res.access_token){
                 this.bridgeStore.$patch({
                     accessToken: res.access_token,
+                    scope: res.scope
                 });
                 if(res.scope.indexOf('friends') > -1){
                     this._nativeEcosystemEvent$.next({

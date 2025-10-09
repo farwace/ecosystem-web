@@ -9,12 +9,15 @@
       </div>
     </div>
     <div class="friends__items">
-      <div style="padding: 40px 0" @click="openProfile(user.id)" :style="getItemStyleVars(index)" v-for="(user, index) in arFriends" :key="`user-${user.id}-${index}`">
+      <div @click="openProfile(user.id)" :style="getItemStyleVars(index)" v-for="(user, index) in arFriends" :key="`user-${user.id}-${index}`">
         <TopUserItem :stub="isLoading" :position="+index+1" :user="user"/>
       </div>
       <div ref="onLoadingRef" v-show="arFriends.length > 0 && !isLoading && !!hasMore">
-        Загрузка
+        &nbsp;&nbsp;&nbsp;
       </div>
+    </div>
+    <div v-if="!isLoading && arFriends.length < 1">
+      Здесь пока никого нет
     </div>
   </div>
 </template>
@@ -28,10 +31,12 @@ import TopUserItem from "@/components/common/popups/Popularity/TopUserItem.vue";
 import {useAnimatedRouter} from "@/classes/utils/useAnimatedRouter.ts";
 import {storeToRefs} from "pinia";
 import {themeStore} from "@/stores/Theme/themeStore.ts";
+import {bridgeStore} from "@/stores/Bridge/bridgeStore.ts";
 const isLoading = ref<boolean>(false);
 const emit = defineEmits(['close']);
 
 const {isDark} = storeToRefs(themeStore());
+const {accessToken, scope} = storeToRefs(bridgeStore());
 
 const router = useAnimatedRouter();
 const userProvider: IUserProvider | undefined = inject(UserProviderSymbol);
@@ -75,7 +80,10 @@ const openProfile  = (id: number) => {
 
 const doAction = async () => {
   isLoading.value = true;
-  await userProvider?.queryAuthToken?.('friends');
+  if(!accessToken.value || scope.value.indexOf('friends') < 0){
+    await userProvider?.queryAuthToken?.('friends');
+  }
+
   const friends = await userProvider?.queryFriends?.(page.value);
   if(friends?.data && (friends?.data?.length || 0) > 0){
     arFriends.value = friends.data;
