@@ -1,7 +1,7 @@
 <template>
   <menu-item :class="{unread: hasUnclaimedCompletedMission}" @click="openMissions" icon="checklist">Задания</menu-item>
   <menu-item @click="openRating" icon="rating">Рейтинг</menu-item>
-<!--  <menu-item @click="openFriends" icon="friends">Друзья</menu-item>-->
+  <menu-item @click="openFriends" icon="friends">Друзья</menu-item>
 
   <VideoRewardAdv />
 

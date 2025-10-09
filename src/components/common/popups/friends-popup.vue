@@ -9,32 +9,149 @@
       </div>
     </div>
     <div class="friends__items">
-      {{ arUsers.length }}
+      <div style="padding: 40px 0" @click="openProfile(user.id)" :style="getItemStyleVars(index)" v-for="(user, index) in arFriends" :key="`user-${user.id}-${index}`">
+        <TopUserItem :stub="isLoading" :position="+index+1" :user="user"/>
+      </div>
+      <div ref="onLoadingRef" v-show="arFriends.length > 0 && !isLoading && !!hasMore">
+        Загрузка
+      </div>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
 
-import {inject, onMounted, ref} from "vue";
+import {computed, inject, onBeforeUnmount, onMounted, ref, watch} from "vue";
 import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.ts";
 import {UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
 import type {TUser} from "@/stores/Ecosystem/Types/TUser.ts";
-import {Console} from "@/classes/utils/Console.ts";
+import TopUserItem from "@/components/common/popups/Popularity/TopUserItem.vue";
+import {useAnimatedRouter} from "@/classes/utils/useAnimatedRouter.ts";
+import {storeToRefs} from "pinia";
+import {themeStore} from "@/stores/Theme/themeStore.ts";
 const isLoading = ref<boolean>(false);
 const emit = defineEmits(['close']);
 
+const {isDark} = storeToRefs(themeStore());
+
+const router = useAnimatedRouter();
 const userProvider: IUserProvider | undefined = inject(UserProviderSymbol);
-const arUsers = ref<TUser[]>([]);
+const arFriends = ref<TUser[]>([]);
+const page = ref<number>(1);
+const hasMore = ref<boolean>(true);
+const isMoreLoading = ref<boolean>(false);
+const onLoadingRef = ref<HTMLDivElement | null>(null);
+let loadingObserver: IntersectionObserver | null = null;
+
+const arStyles = computed(() => {
+  if(isDark.value){
+    return [
+      ['#292928', '#32302e'],
+      ['#323232', '#414142'],
+    ]
+  }
+  return [
+    ['#FFF9EF', '#EDC0A3'],
+    ['#ECF7F8', '#C9D1D4'],
+    ['#FFE9DC', '#EBBFA0'],
+    ['#FBF7D2', '#F5D19E'],
+  ]
+});
+
+const getItemStyleVars = (index: number) => {
+  const style = arStyles.value[index % arStyles.value.length];
+  return {
+    '--card-bg': style[0],
+    '--card-border': style[1],
+  }
+}
+
+
+const openProfile  = (id: number) => {
+  emit('close', () => {
+    router.push({name: 'profile', params: {id}});
+  });
+}
+
 
 const doAction = async () => {
+  isLoading.value = true;
   await userProvider?.queryAuthToken?.('friends');
-  const friends = await userProvider?.queryFriends?.();
-  Console.log('>>> FRIDNDS', friends);
+  const friends = await userProvider?.queryFriends?.(page.value);
+  if(friends?.data && (friends?.data?.length || 0) > 0){
+    arFriends.value = friends.data;
+  }
+  isLoading.value = false;
+}
 
+const loadMore = async () => {
+  if(!hasMore.value || isMoreLoading.value){
+    return;
+  }
+  isMoreLoading.value = true;
+  try{
+    const nextPage = page.value + 1;
+    const friends = await userProvider?.queryFriends?.(nextPage);
+    if(friends?.data && (friends?.data?.length || 0) > 0){
+      page.value = nextPage;
+      friends.data.forEach((friend) => {
+        arFriends.value.push(friend);
+      });
+    }
+    else{
+      hasMore.value = false;
+      loadingObserver?.disconnect();
+      loadingObserver = null;
+    }
+  }
+  finally {
+    isMoreLoading.value = false;
+  }
+}
+
+const setupLoadingObserver = () => {
+  if(typeof window === 'undefined' || !('IntersectionObserver' in window)){
+    return;
+  }
+
+  if(!onLoadingRef.value){
+    return;
+  }
+
+  loadingObserver?.disconnect();
+
+  const rootElement = onLoadingRef.value.closest('.popup__content');
+  const root = rootElement instanceof Element ? rootElement : null;
+
+  loadingObserver = new IntersectionObserver((entries) => {
+    if(!hasMore.value || isMoreLoading.value){
+      return;
+    }
+
+    const isIntersecting = entries.some((entry) => entry.isIntersecting);
+    if(isIntersecting){
+      void loadMore();
+    }
+  }, {
+    root,
+    rootMargin: '0px 0px 200px 0px',
+  });
+
+  loadingObserver.observe(onLoadingRef.value);
 }
 
 onMounted(() => {
   doAction();
+});
+
+watch(() => onLoadingRef.value, (el) => {
+  if(el){
+    setupLoadingObserver();
+  }
+}, {immediate: true});
+
+onBeforeUnmount(() => {
+  loadingObserver?.disconnect();
+  loadingObserver = null;
 });
 
 </script>
