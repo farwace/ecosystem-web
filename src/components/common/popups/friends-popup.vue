@@ -32,6 +32,10 @@ import {useAnimatedRouter} from "@/classes/utils/useAnimatedRouter.ts";
 import {storeToRefs} from "pinia";
 import {themeStore} from "@/stores/Theme/themeStore.ts";
 import {bridgeStore} from "@/stores/Bridge/bridgeStore.ts";
+import type {IGameProvider} from "@/modules/GameModule/Interfaces/IGameProvider.ts";
+import {GameProviderSymbol} from "@/modules/GameModule/symbols.ts";
+import {filter, type Subscription} from "rxjs";
+import type {TReverbMessage} from "@/modules/ReverbModule/Types/TReverbMessage.ts";
 const isLoading = ref<boolean>(false);
 const emit = defineEmits(['close']);
 
@@ -46,6 +50,8 @@ const hasMore = ref<boolean>(true);
 const isMoreLoading = ref<boolean>(false);
 const onLoadingRef = ref<HTMLDivElement | null>(null);
 let loadingObserver: IntersectionObserver | null = null;
+const gameProvider: IGameProvider | undefined = inject(GameProviderSymbol);
+let updateFriendsSubscriber: Subscription | undefined;
 
 const arStyles = computed(() => {
   if(isDark.value){
@@ -88,6 +94,16 @@ const doAction = async () => {
   if(friends?.data && (friends?.data?.length || 0) > 0){
     arFriends.value = friends.data;
   }
+
+  if(!updateFriendsSubscriber && (friends?.data?.length || 0) < 1){
+    let emitter = gameProvider?.getGameEmitter$?.();
+    updateFriendsSubscriber = emitter?.pipe?.(
+        filter((message): message is TReverbMessage<any> => message.event === 'user_update_friends'),
+    )?.subscribe?.((message) => {
+      doAction();
+    });
+  }
+
   isLoading.value = false;
 }
 
@@ -160,6 +176,7 @@ watch(() => onLoadingRef.value, (el) => {
 onBeforeUnmount(() => {
   loadingObserver?.disconnect();
   loadingObserver = null;
+  updateFriendsSubscriber?.unsubscribe?.();
 });
 
 </script>

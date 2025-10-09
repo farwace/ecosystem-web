@@ -304,6 +304,11 @@ export class EcosystemProvider implements IEcosystemProvider{
             this._gameEmitter$.next(message);
         });
 
+        this._reverbObserver$.pipe(
+            filter((message): message is TReverbMessage<any> => message.event === 'user_update_friends'),
+        ).subscribe((message) => {
+            this._gameEmitter$.next(message);
+        });
     }
 
     private subscribeToNativeEcosystemEvents = () => {
