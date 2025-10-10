@@ -7,9 +7,11 @@
     </template>
     <template v-else>
       <div class="achievement__list">
-        <div class="item" :class="{disabled: !achievement.received}" v-for="achievement in currentAchievements">
-          <img :src="`/assets/img/achievements/${achievement.code}.svg`" :alt="achievement.code">
-        </div>
+        <template v-for="(achievement, index) in currentAchievements">
+          <div v-if="!limit || (!!limit && index < limit)" class="item" :class="{disabled: !achievement.received}">
+            <img :src="`/assets/img/achievements/${achievement.code}.svg`" :alt="achievement.code">
+          </div>
+        </template>
       </div>
     </template>
   </div>
@@ -27,7 +29,8 @@ const {achievementList} = storeToRefs(achievementsStore());
 const props = defineProps<{
   achievements?:TUserAchievement[] | null,
   name?:string,
-  current?:boolean
+  current?:boolean,
+  limit?: number,
 }>();
 
 const currentAchievements = computed(() => {

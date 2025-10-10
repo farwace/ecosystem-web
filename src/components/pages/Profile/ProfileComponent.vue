@@ -37,7 +37,7 @@
         <div class="title">
           Достижения <span v-if="hasUnclaimedCompletedAchievement && profile?.id == id" class="note-circle"></span><UiIcon v-if="profile?.id == id" class="inline-icon" name="chevron-right"></UiIcon>
         </div>
-        <profile-achievements :current="profile?.id == id" :name="profile?.name" :achievements="profile?.recentAchievements" />
+        <profile-achievements :limit="5" :current="profile?.id == id" :name="profile?.name" :achievements="profile?.recentAchievements" />
       </div>
 
       <template class="cursor-pointer" v-if="profile?.id == id && false">
