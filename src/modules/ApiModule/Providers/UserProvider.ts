@@ -103,7 +103,7 @@ export class UserProvider extends ApiProvider implements IUserProvider{
                     scope: scopeList,
                     app_id: import.meta.env.VITE_VK_APP_ID
                 }).then((data) => {
-                    if(data.accessToken){
+                    if(data?.accessToken){
                         this.setAuthToken(data.accessToken, data.scope, (data?.expires || 0))
                     }
                 })
