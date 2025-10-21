@@ -26,6 +26,8 @@ import type {IThemeStore} from "@/stores/Theme/IThemeStore.ts";
 import type {TGetShareImageResponse} from "@/modules/ApiModule/Types/TGetShareImageResponse.ts";
 import type {IBridgeStore} from "@/stores/Bridge/IBridgeStore.ts";
 import {bridgeStore} from "@/stores/Bridge/bridgeStore.ts";
+import {MetrikaSymbol} from "@/modules/MetrikaModule/symbols.ts";
+import type {IMetrikaProvider} from "@/modules/MetrikaModule/Interfaces/IMetrikaProvider.ts";
 
 @injectable()
 export class BridgeEventsProvider implements IPlatformEvents {
@@ -39,7 +41,9 @@ export class BridgeEventsProvider implements IPlatformEvents {
 
     constructor(
         @inject(NotificationsSymbol)
-        private notificationsProvider: INotificationsProvider
+        private notificationsProvider: INotificationsProvider,
+        @inject(MetrikaSymbol)
+        private metrikaProvider: IMetrikaProvider
     ) {
         bridge.subscribe((event) => {
             this._bridgeEvent$.next(event);
@@ -135,6 +139,8 @@ export class BridgeEventsProvider implements IPlatformEvents {
                     socialId: launchParams.vk_user_id,
                     platform: launchParams.vk_platform
                 });
+
+                this.metrikaProvider.setParams(launchParams);
             }
 
             if(launchParams.vk_platform == 'mobile_iphone' || launchParams?.vk_platform == 'mobile_ipad' || launchParams?.vk_platform == 'mobile_iphone_messenger'){
@@ -233,6 +239,7 @@ export class BridgeEventsProvider implements IPlatformEvents {
     }
 
     buySubscription = async (subscription: TShopSubscription) => {
+        this.metrikaProvider.reachGoal('open-subscription-box');
         try {
             const res = await bridge.send('VKWebAppShowSubscriptionBox', {
                 action: 'create',
@@ -240,6 +247,7 @@ export class BridgeEventsProvider implements IPlatformEvents {
             });
 
             if(res.success){
+                this.metrikaProvider.reachGoal('buy-subscription', {order_price: (+(subscription.price || 0))*3, currency: 'RUB'});
                 this.notificationsProvider.addNotification({
                     type: 'success',
                     message: "Спасибо за совершение покупки!"
@@ -261,6 +269,8 @@ export class BridgeEventsProvider implements IPlatformEvents {
                 item: item.code
             });
 
+            this.metrikaProvider.reachGoal('open-buy-money-window');
+
             if(res.status == 'fail'){
                 this.notificationsProvider.addNotification({
                    type: 'error',
@@ -269,6 +279,7 @@ export class BridgeEventsProvider implements IPlatformEvents {
             }
 
             if(res.status == 'success'){
+                this.metrikaProvider.reachGoal('buy-money', {order_price: (+(item.price || 0))*3, currency: 'RUB'});
                 this.notificationsProvider.addNotification({
                     type: 'success',
                     message: "Спасибо за совершение покупки!"
@@ -323,6 +334,7 @@ export class BridgeEventsProvider implements IPlatformEvents {
         try {
             /**@ts-ignore*/
             await bridge.send('VKWebAppShare', obData)
+            this.metrikaProvider.reachGoal('invite-friend', {game: gameCode || ''});
         }
         catch (e: any) {}
     }
@@ -359,6 +371,7 @@ export class BridgeEventsProvider implements IPlatformEvents {
                     banner_location: BannerAdLocation.BOTTOM,
                     layout_type: BannerAdLayoutType.RESIZE
                 })
+                this.metrikaProvider.reachGoal('display-bottom-brn');
             }
         })
     }
@@ -385,6 +398,7 @@ export class BridgeEventsProvider implements IPlatformEvents {
                 ad_format: EAdsFormats.REWARD
             }).then((data) => {
                 if(data.result){
+                    this.metrikaProvider.reachGoal('display-reward-adds');
                     resolve(true)
                 }
                 else{
@@ -408,6 +422,7 @@ export class BridgeEventsProvider implements IPlatformEvents {
     }
 
     showStoryBox = async (data: TGetShareImageResponse) => {
+        this.metrikaProvider.reachGoal('display-story-box');
         return bridge.send('VKWebAppShowStoryBox', {
             /* @ts-ignore */
             attachment: data.attachment,

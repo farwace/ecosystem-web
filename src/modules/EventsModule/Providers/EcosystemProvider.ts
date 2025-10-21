@@ -43,6 +43,8 @@ import type {IBridgeStore} from "@/stores/Bridge/IBridgeStore.ts";
 import {bridgeStore} from "@/stores/Bridge/bridgeStore.ts";
 import type {IGameApiProvider} from "@/modules/ApiModule/Interfaces/IGameApiProvider.ts";
 import {Console} from "@/classes/utils/Console.ts";
+import {MetrikaSymbol} from "@/modules/MetrikaModule/symbols.ts";
+import type {IMetrikaProvider} from "@/modules/MetrikaModule/Interfaces/IMetrikaProvider.ts";
 
 @injectable()
 export class EcosystemProvider implements IEcosystemProvider{
@@ -71,6 +73,8 @@ export class EcosystemProvider implements IEcosystemProvider{
         private gameProvider: IGameProvider,
         @inject(GameApiProviderSymbol)
         private gameApiProvider: IGameApiProvider,
+        @inject(MetrikaSymbol)
+        private metrikaProvider: IMetrikaProvider
     ) {
         this._reverbObserver$ = this.reverbProvider.getReverbObserver$();
         this._bridgeObserver$ = this.platformEventsProvider.getEmitter();
@@ -177,6 +181,7 @@ export class EcosystemProvider implements IEcosystemProvider{
             if(message.data.senderId == this.ecosystemStore.$state.id){
                 const key = `${message.data.senderId}-${message.data.receiverId}-${message.data.quantity}-${message.data.gift.code}-${new Date()}`;
                 this.notificationsProvider.addBigGift(key, message.data);
+                this.metrikaProvider.reachGoal('send-gift', message.data?.gift);
             }
         });
 
@@ -413,12 +418,14 @@ export class EcosystemProvider implements IEcosystemProvider{
             const assignData = message?.detail?.data || {};
             const dataToSend = Object.assign({}, assignData, {key: this.bridgeStore.$state.shareStoryKey});
             this.userProvider.sendShareComplete(dataToSend);
+            this.metrikaProvider.reachGoal('share-story');
         })
 
         this._bridgeObserver$.pipe(
             filter((message):message is VKBridgeEvent<'VKWebAppAllowNotifications'> => message?.detail?.type === 'VKWebAppAllowNotificationsResult')
         ).subscribe(message => {
-            this.userProvider.sendAllowNotifications()
+            this.userProvider.sendAllowNotifications();
+            this.metrikaProvider.reachGoal('allow-notifications');
         })
 
         this._bridgeObserver$.pipe(
@@ -426,7 +433,8 @@ export class EcosystemProvider implements IEcosystemProvider{
         ).subscribe(message => {
             this.bridgeStore.$patch({
                 inRecommended: true,
-            })
+            });
+            this.metrikaProvider.reachGoal('recommend');
         });
 
         this._bridgeObserver$.pipe(
@@ -434,13 +442,15 @@ export class EcosystemProvider implements IEcosystemProvider{
         ).subscribe(message => {
             this.bridgeStore.$patch({
                 inFavorites: true,
-            })
+            });
+            this.metrikaProvider.reachGoal('add-to-favorites');
         });
 
         this._bridgeObserver$.pipe(
             filter((message):message is VKBridgeEvent<'VKWebAppJoinGroup'> => message?.detail?.type === 'VKWebAppJoinGroupResult')
         ).subscribe(message => {
-            this.userProvider.checkGroupSubscription()
+            this.userProvider.checkGroupSubscription();
+            this.metrikaProvider.reachGoal('check-join-group');
         });
 
 

@@ -31,6 +31,9 @@ import {GameProvider} from "@/modules/GameModule/Providers/GameProvider.ts";
 import type {IGameProvider} from "@/modules/GameModule/Interfaces/IGameProvider.ts";
 import type {IGameApiProvider} from "@/modules/ApiModule/Interfaces/IGameApiProvider.ts";
 import {GameApiProvider} from "@/modules/ApiModule/Providers/GameApiProvider.ts";
+import {MetrikaSymbol} from "@/modules/MetrikaModule/symbols.ts";
+import type {IMetrikaProvider} from "@/modules/MetrikaModule/Interfaces/IMetrikaProvider.ts";
+import {MetrikaProvider} from "@/modules/MetrikaModule/Providers/MetrikaProvider.ts";
 
 export const AppBuilder = () => {
     return {
@@ -38,6 +41,10 @@ export const AppBuilder = () => {
             $app.use(createPinia());
 
             const container = new Container();
+
+            container.bind<IMetrikaProvider>(MetrikaSymbol).to(MetrikaProvider).inSingletonScope();
+            const metrikaProvider = container.get<IMetrikaProvider>(MetrikaSymbol);
+            metrikaProvider.install($app, MetrikaSymbol);
 
             container.bind<INotificationsProvider>(NotificationsSymbol).to(NotificationsProvider).inSingletonScope();
             import.meta.env.VITE_ENVELOP === 'development' ?

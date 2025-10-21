@@ -13,14 +13,17 @@ import type {TGift} from "@/stores/Ecosystem/Types/TGift.ts";
 import type {TRequestScopeResponse} from "@/modules/ApiModule/Types/TRequestScopeResponse.ts";
 import type {TInGameInfo} from "@/stores/Game/Types/TInGameInfo.ts";
 import type {TGetShareImageResponse} from "@/modules/ApiModule/Types/TGetShareImageResponse.ts";
+import {MetrikaSymbol} from "@/modules/MetrikaModule/symbols.ts";
+import type {IMetrikaProvider} from "@/modules/MetrikaModule/Interfaces/IMetrikaProvider.ts";
 
 @injectable()
 export class UserProvider extends ApiProvider implements IUserProvider{
 
     constructor(
         @inject(PlatformEventsSymbol)
-        private platformEvents: IPlatformEvents
-
+        private platformEvents: IPlatformEvents,
+        @inject(MetrikaSymbol)
+        private metrikaProvider: IMetrikaProvider
     ) {
         super();
     }
@@ -75,6 +78,11 @@ export class UserProvider extends ApiProvider implements IUserProvider{
                     requestedScope: resData?.authAccess?.requestedScope || [],
                 }
             });
+
+            this.metrikaProvider.setUserParams({
+                userId: resData.id,
+                socialId: this.ecosystemStore.$state?.socialId || 0,
+            })
 
             this.dailyMissionsStore.$patch({
                 dailyMissionsHasBeenLoaded: true,
