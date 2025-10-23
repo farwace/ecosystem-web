@@ -1,5 +1,5 @@
 <template>
-  <div class="game-help-tooltips">
+  <div class="game-help-tooltips" @click="$emit('close')">
     <div class="help-reduce" v-if="code=='reduce-players'">
       <div class="help-reduce__icon">
         <UiIcon name="chevron-left"></UiIcon>
@@ -33,7 +33,7 @@ import {nextTick, onMounted, ref} from "vue";
 const props = defineProps<{
   code: string
 }>();
-
+defineEmits(["close"]);
 const helpPressReadyTop = ref<string>();
 const helpPressReadyLeft = ref<string>();
 

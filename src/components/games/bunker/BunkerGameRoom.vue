@@ -67,17 +67,21 @@
         </div>
       </transition>
 
-      <div class="bunker__voice-controls" v-if="attachVoiceChat">
-        <!-- Индикатор состояния голосового чата -->
-        <Component
-            :is="VoiceChat"
-            v-if="liveKitToken && liveKitRoomName"
-            :live-kit-token="liveKitToken"
-            :live-kit-room-name="liveKitRoomName"
-            :can-i-speak="canISpeak"
-            ref="voiceChatRef"
-            @volumesUpdate="onVolumesUpdate"
-        />
+      <div class="bunker__voice-controls">
+        <div v-if="attachVoiceChat">
+          <Component
+              :is="VoiceChat"
+              v-if="liveKitToken && liveKitRoomName"
+              :live-kit-token="liveKitToken"
+              :live-kit-room-name="liveKitRoomName"
+              :can-i-speak="canISpeak"
+              ref="voiceChatRef"
+              @volumesUpdate="onVolumesUpdate"
+          />
+        </div>
+        <div class="game-chat">
+          <bunker-chat-input @click="openChatModal"/>
+        </div>
       </div>
     </div>
 
@@ -122,10 +126,7 @@ import {
   nextTick,
   onBeforeUnmount,
   onMounted,
-  onUnmounted,
-  reactive,
   ref,
-  shallowRef,
   watch
 } from "vue";
 import type {TGameStage, TPlayer, TRoomStatus, TScenario} from "@/components/games/bunker/types.ts";
@@ -159,6 +160,8 @@ import type { Subscription } from "rxjs";
 import type {TReverbMessage} from "@/modules/ReverbModule/Types/TReverbMessage.ts";
 import type {IMetrikaProvider} from "@/modules/MetrikaModule/Interfaces/IMetrikaProvider.ts";
 import {MetrikaSymbol} from "@/modules/MetrikaModule/symbols.ts";
+import BunkerChatInput from "@/components/games/bunker/components/BunkerChatInput.vue";
+import {maskProfanity} from "@/classes/utils/Profanity.ts";
 
 const VoiceChat = defineAsyncComponent(() =>
     import ('./../VoiceChat.vue')
@@ -413,6 +416,17 @@ const initializeGame = () => {
   // activeCardTypes.value = roomState.activeCardTypes;
   // eliminatedPlayers.value = roomState.eliminatedPlayers || [];
 
+
+  props.room?.onMessage?.('playerMessage', (message: {playerId: string, message: string}) => {
+    if(players.value[message.playerId] && message.message){
+      const pName = players.value?.[message.playerId]?.name;
+      notificationsProvider?.addNotification({
+        type: 'game-info',
+        message: CutString((pName ? (pName + ' ') : ''), 15) + ': ' + maskProfanity(message.message)
+      });
+    }
+
+  });
 
   props.room?.onMessage?.('voiceToken', async (message: {canSpeak: boolean, roomName: string, token: string}) => {
     Console.log('>>> UPDATE VOICE_TOKEN <<<<<', message);
@@ -953,6 +967,22 @@ const onPlayerToggleBotsClick = () => {
   if(hostId.value == id.value){
     props.room?.send('toggleUseBotsValue');
   }
+}
+
+const sendRoomMessage = (msg:string) => {
+  props.room?.send('sendMessage', msg);
+}
+
+const openChatModal = () => {
+  notificationsProvider?.addPopup('game-chat-modal', 'game-chat-modal', {
+    modal: true,
+    noTitle: true,
+    middle: true,
+    darkBg: true,
+    class: 'game-bunker',
+    noPaddings: true,
+    sendCallback: sendRoomMessage,
+  })
 }
 
 

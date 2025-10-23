@@ -223,12 +223,24 @@ const closeAllPopups = () => {
   })
 }
 
+const onEscKeyPress = (e: KeyboardEvent) => {
+  if(e?.keyCode === 27 || e?.code === 'Escape'){
+    const allKeys = Object.keys(popups.value).filter?.((key: string) => !!popups.value[key]?.canClose);
+    if(allKeys?.length){
+      const closeKey = allKeys[allKeys?.length-1];
+      closePopup(closeKey);
+    }
+  }
+}
+
 onMounted(() => {
   window.addEventListener('popstate', closeAllPopups);
+  window.addEventListener('keydown', onEscKeyPress);
 });
 
 onBeforeUnmount(() => {
   window.removeEventListener('popstate', closeAllPopups);
+  window.removeEventListener('keydown', onEscKeyPress);
 })
 
 </script>

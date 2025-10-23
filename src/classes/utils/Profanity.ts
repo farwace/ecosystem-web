@@ -5,6 +5,11 @@ type CheckOptions = {
     aggressive?: boolean;
 };
 
+type MaskOptions = CheckOptions & {
+    /** Символ для маскировки нецензурных слов (по умолчанию '*') */
+    maskChar?: string;
+};
+
 const HOMOGLYPHS: Record<string, string> = {
     // латиница -> кириллица, где это уместно
     a: "а", e: "е", o: "о", p: "р", c: "с", y: "у", x: "х", k: "к", h: "н", t: "т", m: "м", b: "в",
@@ -156,4 +161,32 @@ export function isClean(input: string, options: CheckOptions = {}): boolean {
     }
 
     return true;
+}
+
+/** Маскируем найденные нецензурные слова последовательностью из символов maskChar */
+export function maskProfanity(input: string, options: MaskOptions = {}): string {
+    const { maskChar = "*" } = options;
+
+    if (!input) return input;
+
+    const tokenRegex = /[\p{L}\p{N}_]+/gu;
+    let result = "";
+    let lastIndex = 0;
+
+    for (const match of input.matchAll(tokenRegex)) {
+        const [token] = match;
+        const startIndex = match.index ?? 0;
+
+        result += input.slice(lastIndex, startIndex);
+
+        if (!isClean(token, options)) {
+            result += maskChar.repeat(Array.from(token).length);
+        } else {
+            result += token;
+        }
+
+        lastIndex = startIndex + token.length;
+    }
+
+    return result + input.slice(lastIndex);
 }
