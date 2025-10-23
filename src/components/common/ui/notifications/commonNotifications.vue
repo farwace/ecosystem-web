@@ -303,6 +303,16 @@ onBeforeUnmount(() => {
         overflow-y: auto;
       }
     }
+
+    &.game-help{
+      top: 0!important;
+      transform: none!important;;
+      width: 1px!important;;
+      height: 1px!important;;
+      left: 0!important;;
+      max-width: unset!important;;
+      max-height: unset!important;;
+    }
   }
 
   &.centered{

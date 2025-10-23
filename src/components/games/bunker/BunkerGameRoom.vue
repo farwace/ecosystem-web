@@ -223,6 +223,8 @@ const isTouchDevide = ref<boolean>(true);
 const unbindCallbacks: any[] = [];
 const customId = ref<string>();
 
+let displayChangePlayersCountTimeout = 0;
+
 const syncCustomIdQuery = (value?: string | null) => {
   if (typeof window === 'undefined') {
     return;
@@ -353,10 +355,26 @@ const initializeGame = () => {
   unbindCallbacks.push($(props.room.state).players.onAdd((playerData, playerId) => {
     Console.log('>>> PLAYERS ON ADD', playerId, playerData);
     players.value![playerId] = createPlayerObject(playerData);
-
+    if(hostId.value == id.value){
+      if(displayChangePlayersCountTimeout){
+        clearTimeout(displayChangePlayersCountTimeout);
+      }
+      displayChangePlayersCountTimeout = setTimeout(() => {
+        showChangePlayersCountTimeout();
+      }, 3000);
+    }
     unbindCallbacks.push($(playerData).onChange(() => {
       Console.log('>>> PLAYER DATA ON CHANGE', playerId, playerData);
       players.value![playerId] = createPlayerObject(playerData);
+
+      if(hostId.value == id.value){
+        if(displayChangePlayersCountTimeout){
+          clearTimeout(displayChangePlayersCountTimeout);
+        }
+        displayChangePlayersCountTimeout = setTimeout(() => {
+          showChangePlayersCountTimeout();
+        }, 3000);
+      }
     }))
 
   }))
@@ -726,8 +744,56 @@ const requestSetLeader = (playerId: string) => {
   props.room?.send('setLeaderPlayer', playerId);
 }
 
+const showChangePlayersCountTimeout = () => {
+  if(status.value != 'waiting'){
+    return;
+  }
+  if(hostId.value != id.value){
+    return;
+  }
+  if((playersCount.value || 0) < 5){
+    return;
+  }
+
+  let isAllReady = true;
+  let cntPlayers = 0;
+  Object.keys(players.value).forEach(p => {
+    if(!!players?.value?.[p]?.id){
+      cntPlayers += 1;
+      if(!players?.value?.[p]?.isReady){
+        isAllReady = false;
+      }
+    }
+  });
+  if(!isAllReady){
+    return;
+  }
+  if(cntPlayers < 4){
+    return;
+  }
+
+  notificationsProvider?.addPopup?.('you-can-reduce-players-count-for-start-game', 'game-bunker-help', {
+    modal: true,
+    noPaddings: true,
+    noBackground: true,
+    noTitle: true,
+    darkBg: true,
+    noCloseButton: true,
+    code: 'reduce-players',
+    class: 'game-help'
+  });
+}
+
 const requestReady = (val: boolean) => {
   props.room?.send('ready', val);
+  if(hostId.value == id.value){
+    if(displayChangePlayersCountTimeout){
+      clearTimeout(displayChangePlayersCountTimeout);
+    }
+    displayChangePlayersCountTimeout = setTimeout(() => {
+      showChangePlayersCountTimeout();
+    }, 3000);
+  }
 }
 
 const onTouchPlace = (place: string | number) => {
