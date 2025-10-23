@@ -7,12 +7,12 @@
       <div>
         Уменьшите количество <br/> слотов для старта
       </div>
-      <div class="help-reduce__icon">
+      <div class="help-reduce__icon alarm-icon">
         <UiIcon name="alarm"></UiIcon>
       </div>
     </div>
     <div class="help-press-ready" v-if="code=='press-ready' && helpPressReadyTop">
-      <div class="help-press-ready__icon">
+      <div class="help-press-ready__icon alarm-icon">
         <UiIcon name="alarm"></UiIcon>
       </div>
       <div>
@@ -42,8 +42,8 @@ onMounted(() => {
   if(readyBtn){
     const rect = readyBtn?.getBoundingClientRect?.();
     if(rect?.top){
-      helpPressReadyTop.value = (rect.top - 32) + 'px';
-      helpPressReadyLeft.value = (rect.left - 128) + 'px';
+      helpPressReadyTop.value = (rect.top - 48) + 'px';
+      helpPressReadyLeft.value = (rect.left - 158) + 'px';
     }
   }
 })
@@ -63,8 +63,8 @@ onMounted(() => {
   background-color: rgba(0,0,0,.3);
   padding: 2px 10px;
   border-radius: 12px;
-  line-height: 22px;
-  font-size: 17px;
+  line-height: 28px;
+  font-size: 20px;
   position: fixed;
 
   top: v-bind(helpPressReadyTop);
@@ -76,8 +76,8 @@ onMounted(() => {
     justify-content: center;
 
     svg{
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
     }
   }
 }
@@ -107,6 +107,45 @@ onMounted(() => {
       width: 20px;
       height: 20px;
     }
+  }
+}
+
+.alarm-icon{
+  animation: blink-alarm-icon 1.8s infinite;
+  -webkit-animation: blink-alarm-icon 1.8s infinite;
+}
+
+@-webkit-keyframes blink-alarm-icon {
+  0%{
+    opacity: .2;
+  }
+  70%{
+    opacity: 1;
+  }
+  100%{
+    opacity: .2;
+  }
+}
+@-moz-keyframes blink-alarm-icon {
+  0%{
+    opacity: .2;
+  }
+  70%{
+    opacity: 1;
+  }
+  100%{
+    opacity: .2;
+  }
+}
+@keyframes blink-alarm-icon {
+  0%{
+    opacity: .2;
+  }
+  70%{
+    opacity: 1;
+  }
+  100%{
+    opacity: .2;
   }
 }
 </style>
