@@ -16,8 +16,9 @@
         &nbsp;&nbsp;&nbsp;
       </div>
     </div>
-    <div v-if="!isLoading && arFriends.length < 1">
-      Здесь пока никого нет
+    <div class="invite-block" v-if="!isLoading && arFriends.length < 1">
+      Здесь пока никого нет <br/>
+      <ui-btn class="invite-btn" @click="inviteFriends">Пригласить друзей</ui-btn>
     </div>
   </div>
 </template>
@@ -36,6 +37,9 @@ import type {IGameProvider} from "@/modules/GameModule/Interfaces/IGameProvider.
 import {GameProviderSymbol} from "@/modules/GameModule/symbols.ts";
 import {filter, type Subscription} from "rxjs";
 import type {TReverbMessage} from "@/modules/ReverbModule/Types/TReverbMessage.ts";
+import UiBtn from "@/components/common/ui/UiBtn.vue";
+import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
+import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
 const isLoading = ref<boolean>(false);
 const emit = defineEmits(['close']);
 
@@ -52,6 +56,12 @@ const onLoadingRef = ref<HTMLDivElement | null>(null);
 let loadingObserver: IntersectionObserver | null = null;
 const gameProvider: IGameProvider | undefined = inject(GameProviderSymbol);
 let updateFriendsSubscriber: Subscription | undefined;
+
+const bridgeProvider: IPlatformEvents | undefined = inject(PlatformEventsSymbol);
+
+const inviteFriends = () => {
+  bridgeProvider?.inviteFriendToGame?.();
+}
 
 const arStyles = computed(() => {
   if(isDark.value){
@@ -247,6 +257,17 @@ onBeforeUnmount(() => {
     flex-direction: column;
     gap: 8px;
   }
+}
+
+.invite-block{
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+.invite-btn.btn{
+  margin-top: 10px;
+  padding: 4px 12px;
 }
 
 </style>

@@ -136,7 +136,7 @@ export class StubEventsProvider implements IPlatformEvents{
         return;
     }
 
-    inviteFriendToGame = async (roomId: string, gameCode: string) => {
+    inviteFriendToGame = async (roomId?: string, gameCode?: string) => {
         Console.log('>>> INVITE FRIEND TO GAME >>>', roomId, gameCode);
     }
 

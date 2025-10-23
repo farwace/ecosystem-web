@@ -323,13 +323,13 @@ export class BridgeEventsProvider implements IPlatformEvents {
         }
     }
 
-    inviteFriendToGame = async (roomId: string, gameCode: string) => {
+    inviteFriendToGame = async (roomId?: string, gameCode?: string) => {
         const userId = this.ecosystemStore.$state.id;
         const obData: {[key: string]: string} = {
-            link: import.meta.env.VITE_VK_APP_URL + '#user_id=' + userId + '---game='+ gameCode +'---room=' + roomId,
+            link: import.meta.env.VITE_VK_APP_URL + '#user_id=' + userId + (gameCode ? ('---game='+ gameCode) : '') +(roomId ? ('---room=' + roomId) : ''),
         }
         if(['mobile_android', 'mobile_ipad', 'mobile_iphone', 'mobile_android_messenger', 'mobile_iphone_messenger'].indexOf(this.ecosystemStore.$state.platform || '') > -1){
-            obData['text'] = 'Заходи ко мне в ' + this.getGameNameByCode(gameCode) + '! Срочно нужен сокомандник!';
+            obData['text'] = 'Заходи ко мне в ' + this.getGameNameByCode(gameCode || '') + '! Срочно нужен сокомандник!';
         }
         try {
             /**@ts-ignore*/
