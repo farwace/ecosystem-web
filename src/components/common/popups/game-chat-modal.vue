@@ -11,7 +11,7 @@
 import BunkerButton from "@/components/games/bunker/components/BunkerButton.vue";
 import {onMounted, ref} from "vue";
 
-const inputRef = ref<HTMLTextAreaElement>(null);
+const inputRef = ref<HTMLTextAreaElement>();
 
 const props = defineProps<{
   sendCallback?: (msg: string) => void;
