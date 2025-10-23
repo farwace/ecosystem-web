@@ -8,7 +8,8 @@
           'active': popup.isOpen,
           'backdrop-blur': popup.data?.backdropBlur,
           'dark-bg': popup.data?.darkBg,
-          'centered': popup.data?.modal
+          'centered': popup.data?.modal,
+          'no-outer': popup.data?.noOuter
         }"
     >
       <div
@@ -313,6 +314,11 @@ onBeforeUnmount(() => {
       max-width: unset!important;;
       max-height: unset!important;;
     }
+  }
+
+  &.no-outer{
+    width: 1px;
+    height: 1px;
   }
 
   &.centered{

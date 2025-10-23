@@ -1,38 +1,102 @@
 <template>
-  <div>
+  <div class="game-help-tooltips">
     <div class="help-reduce" v-if="code=='reduce-players'">
       <div class="help-reduce__icon">
         <UiIcon name="chevron-left"></UiIcon>
       </div>
       <div>
-        Вы можете уменьшить<br/>количество слотов для старта
+        Уменьшите количество <br/> слотов для старта
+      </div>
+      <div class="help-reduce__icon">
+        <UiIcon name="alarm"></UiIcon>
       </div>
     </div>
+    <div class="help-press-ready" v-if="code=='press-ready' && helpPressReadyTop">
+      <div class="help-press-ready__icon">
+        <UiIcon name="alarm"></UiIcon>
+      </div>
+      <div>
+        Нажмите готов
+      </div>
+      <div class="help-press-ready__icon">
+        <UiIcon name="chevron-down"></UiIcon>
+      </div>
+    </div>
+
   </div>
 </template>
 
 <script lang="ts" setup>
 import UiIcon from "@/components/common/icons/UiIcon.vue";
+import {nextTick, onMounted, ref} from "vue";
 
 const props = defineProps<{
   code: string
-}>()
+}>();
+
+const helpPressReadyTop = ref<string>();
+const helpPressReadyLeft = ref<string>();
+
+onMounted(() => {
+  const readyBtn = document.querySelector('.bunker__controls .buttons .ready');
+  if(readyBtn){
+    const rect = readyBtn?.getBoundingClientRect?.();
+    if(rect?.top){
+      helpPressReadyTop.value = (rect.top - 32) + 'px';
+      helpPressReadyLeft.value = (rect.left - 128) + 'px';
+    }
+  }
+})
+
 </script>
 <style lang="scss" scoped>
+.game-help-tooltips{
+  color: #939393;
+}
+.help-press-ready{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 10px;
+  justify-content: space-between;
+  text-align: right;
+  background-color: rgba(0,0,0,.3);
+  padding: 2px 10px;
+  border-radius: 12px;
+  line-height: 22px;
+  font-size: 17px;
+  position: fixed;
+
+  top: v-bind(helpPressReadyTop);
+  left: v-bind(helpPressReadyLeft);
+
+  &__icon{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    svg{
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
 .help-reduce{
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
+  gap: 10px;
   justify-content: space-between;
   text-align: right;
-  background-color: rgba(255,255,255,.05);
-  width: 280px;
+  background-color: rgba(0,0,0,.3);
   padding: 2px 10px;
   border-radius: 12px;
+  line-height: 18px;
+  font-size: 17px;
   position: fixed;
-  top: 10px;
-  top: calc(env(safe-area-inset-top,0) + 10px);
-  left: 58px;
+  top: 12px;
+  top: calc(env(safe-area-inset-top,0) + 12px);
+  left: 48px;
 
   &__icon{
     display: flex;

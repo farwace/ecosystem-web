@@ -224,6 +224,7 @@ const unbindCallbacks: any[] = [];
 const customId = ref<string>();
 
 let displayChangePlayersCountTimeout = 0;
+let displayPressReadyTimeout = 0;
 
 const syncCustomIdQuery = (value?: string | null) => {
   if (typeof window === 'undefined') {
@@ -360,8 +361,16 @@ const initializeGame = () => {
         clearTimeout(displayChangePlayersCountTimeout);
       }
       displayChangePlayersCountTimeout = setTimeout(() => {
-        showChangePlayersCountTimeout();
+        showChangePlayersCountHelp();
       }, 3000);
+
+      if(displayPressReadyTimeout){
+        clearTimeout(displayPressReadyTimeout);
+      }
+      displayPressReadyTimeout = setTimeout(() => {
+        showPressReadyHelp();
+      }, 3000);
+
     }
     unbindCallbacks.push($(playerData).onChange(() => {
       Console.log('>>> PLAYER DATA ON CHANGE', playerId, playerData);
@@ -372,7 +381,14 @@ const initializeGame = () => {
           clearTimeout(displayChangePlayersCountTimeout);
         }
         displayChangePlayersCountTimeout = setTimeout(() => {
-          showChangePlayersCountTimeout();
+          showChangePlayersCountHelp();
+        }, 3000);
+
+        if(displayPressReadyTimeout){
+          clearTimeout(displayPressReadyTimeout);
+        }
+        displayPressReadyTimeout = setTimeout(() => {
+          showPressReadyHelp();
         }, 3000);
       }
     }))
@@ -744,7 +760,47 @@ const requestSetLeader = (playerId: string) => {
   props.room?.send('setLeaderPlayer', playerId);
 }
 
-const showChangePlayersCountTimeout = () => {
+const showPressReadyHelp = () => {
+  if(status.value != 'waiting'){
+    return;
+  }
+  if(!!currentPlayer.value?.isReady){
+    return;
+  }
+
+  let isAllReady = true;
+  let cntPlayers = 0;
+  Object.keys(players.value).forEach(p => {
+
+    if(!!players?.value?.[p]?.id){
+      cntPlayers += 1;
+      if(id.value && players?.value?.[p]?.id && players?.value?.[p]?.id != id.value){
+        if(!players?.value?.[p]?.isReady){
+          isAllReady = false;
+        }
+      }
+    }
+  });
+  if(!isAllReady){
+    return;
+  }
+  if(cntPlayers != playersCount.value){
+    return;
+  }
+
+  notificationsProvider?.addPopup?.('you-can-press-ready-for-start-game', 'game-bunker-help', {
+    modal: true,
+    noOuter: true,
+    noPaddings: true,
+    noBackground: true,
+    noTitle: true,
+    noCloseButton: true,
+    code: 'press-ready',
+    class: 'game-help'
+  });
+}
+
+const showChangePlayersCountHelp = () => {
   if(status.value != 'waiting'){
     return;
   }
@@ -774,10 +830,11 @@ const showChangePlayersCountTimeout = () => {
 
   notificationsProvider?.addPopup?.('you-can-reduce-players-count-for-start-game', 'game-bunker-help', {
     modal: true,
+    noOuter: true,
     noPaddings: true,
     noBackground: true,
     noTitle: true,
-    darkBg: true,
+    darkBg: false,
     noCloseButton: true,
     code: 'reduce-players',
     class: 'game-help'
@@ -791,7 +848,7 @@ const requestReady = (val: boolean) => {
       clearTimeout(displayChangePlayersCountTimeout);
     }
     displayChangePlayersCountTimeout = setTimeout(() => {
-      showChangePlayersCountTimeout();
+      showChangePlayersCountHelp();
     }, 3000);
   }
 }
@@ -970,6 +1027,17 @@ const isSpectator = computed(() => {
 watch(currentSpeakerId, (neoVal) => {
   if(currentPlayer.value?.id == currentSpeakerId.value){
     canSendCard.value = true;
+  }
+});
+
+watch(playersCount, (neoVal) => {
+  if(status.value == 'waiting'){
+    if(displayPressReadyTimeout){
+      clearTimeout(displayPressReadyTimeout);
+    }
+    displayPressReadyTimeout = setTimeout(() => {
+      showPressReadyHelp();
+    }, 3000);
   }
 });
 
