@@ -52,6 +52,25 @@ export class BridgeEventsProvider implements IPlatformEvents {
         this.themeStore = themeStore();
         this.bridgeStore = bridgeStore();
         this.arLaunchParams = window?.location?.search?.slice?.(1)?.split?.('&')?.map?.(e => e?.split?.('='));
+
+        const metrikaObserver$ = this.metrikaProvider?.getEventsObserver$?.();
+        if(metrikaObserver$){
+            metrikaObserver$.subscribe(e => {
+                const socialId = (this.ecosystemStore?.$state?.socialId || '')  + '';
+
+                if(e?.name){
+                    try {
+                        bridge.send('VKWebAppTrackEvent', {
+                            event_name: e.name,
+                            custom_user_id: socialId,
+                            event_params: e.params || {}
+                        })
+                    }
+                    catch (error) {}
+                }
+
+            })
+        }
     }
 
     install(app: App, symbol: symbol) {

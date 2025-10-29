@@ -20,6 +20,15 @@
     <div class="game__button completed" @click="updateNotificationPermissions" v-if="showVoteResultButton">
       Спасибо, Твой голос учтен!
     </div>
+    <template v-if="showVoteResultButton && showSubscribeToGroup">
+      <div class="subscribe-to-group">
+        <div class="subscribe-to-group__subtitle">Не пропусти новости о проекте, вступай в официальное сообщество Лапа Play Вконтакте!</div>
+        <div class="game__button will-play" @click="checkSubscribeToGroup">
+          Подписаться
+        </div>
+      </div>
+    </template>
+
     <a href="https://vk.com/write-232362939" target="_blank" class="game__button" v-if="showOfficialGroupButton">
       Написать сообщение <UiIcon name="target-blank" class="inline-icon" />
     </a>
@@ -35,10 +44,17 @@ import {GameApiProviderSymbol} from "@/modules/ApiModule/symbols.ts";
 import UiIcon from "@/components/common/icons/UiIcon.vue";
 import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
 import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
+import {storeToRefs} from "pinia";
+import {achievementsStore} from "@/stores/Achievements/achievementsStore.ts";
+import type {IMetrikaProvider} from "@/modules/MetrikaModule/Interfaces/IMetrikaProvider.ts";
+import {MetrikaSymbol} from "@/modules/MetrikaModule/symbols.ts";
 const isLoading = ref<boolean>(true);
 
 const gameApi: IGameApiProvider | undefined  = inject(GameApiProviderSymbol);
 const bridgeProvider: IPlatformEvents | undefined = inject(PlatformEventsSymbol);
+const metrikaProvider: IMetrikaProvider | undefined = inject(MetrikaSymbol);
+
+const {achievementList} = storeToRefs(achievementsStore());
 
 const props = defineProps<{
   contentTitle: string,
@@ -77,6 +93,15 @@ const showVoteButton = computed(() => {
 const showVoteResultButton = computed(() => {
   return ['quiz', 'voice', 'draw'].indexOf(props.code || '') > -1 && hasSent.value === true;
 });
+
+const showSubscribeToGroup = computed(() => {
+  return !!(achievementList.value?.filter?.((a) => a.code === 'group_subscriber' && !a.completed)?.[0]);
+});
+
+const checkSubscribeToGroup = () => {
+  bridgeProvider?.checkAchievement?.('group_subscriber');
+}
+
 const voteForGame = async () => {
   isLoading.value = true;
   try {
@@ -85,6 +110,7 @@ const voteForGame = async () => {
     if(result?.data){
       hasSent.value = true;
     }
+    metrikaProvider?.reachGoal('voteForGame', {code: props.code})
   }
   catch (e){}
   isLoading.value = false;
@@ -192,6 +218,15 @@ const updateNotificationPermissions = () => {
     &.completed{
       opacity: .68;
     }
+  }
+}
+
+.subscribe-to-group{
+  margin-top: 20px;
+  text-align: center;
+
+  &__subtitle{
+    margin-bottom: 10px;
   }
 }
 
