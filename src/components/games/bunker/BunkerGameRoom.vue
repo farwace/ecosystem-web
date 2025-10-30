@@ -1064,6 +1064,12 @@ watch(isHidden, (neoVal) => {
   }
 });
 
+watch(status, (neoVal) => {
+  if(neoVal == 'waiting' && isHidden.value) {
+    router.push('/')
+  }
+});
+
 watch(currentSpeakerId, (neoVal) => {
   if(currentPlayer.value?.id == currentSpeakerId.value){
     canSendCard.value = true;
