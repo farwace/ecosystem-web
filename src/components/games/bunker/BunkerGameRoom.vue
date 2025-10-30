@@ -162,6 +162,7 @@ import type {IMetrikaProvider} from "@/modules/MetrikaModule/Interfaces/IMetrika
 import {MetrikaSymbol} from "@/modules/MetrikaModule/symbols.ts";
 import BunkerChatInput from "@/components/games/bunker/components/BunkerChatInput.vue";
 import {maskProfanity} from "@/classes/utils/Profanity.ts";
+import {gameStore} from "@/stores/Game/gameStore.ts";
 
 const VoiceChat = defineAsyncComponent(() =>
     import ('./../VoiceChat.vue')
@@ -228,6 +229,8 @@ const customId = ref<string>();
 
 let displayChangePlayersCountTimeout = 0;
 let displayPressReadyTimeout = 0;
+
+const {isHidden} = storeToRefs(gameStore());
 
 const syncCustomIdQuery = (value?: string | null) => {
   if (typeof window === 'undefined') {
@@ -1053,6 +1056,13 @@ const isSpectator = computed(() => {
   });
   return spec;
 })
+
+// если закрыли игру то сразу выкидывать на главную страницу
+watch(isHidden, (neoVal) => {
+  if(neoVal && status.value == 'waiting') {
+    router.push('/')
+  }
+});
 
 watch(currentSpeakerId, (neoVal) => {
   if(currentPlayer.value?.id == currentSpeakerId.value){
