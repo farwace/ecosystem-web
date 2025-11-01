@@ -23,7 +23,7 @@
     <div class="add-to-block" v-if="shouldShowAddToBlock">
       <div @click="addToRecommended" class="add-to-favorite" v-if="!inRecommended">
         <ui-icon class="favorite-icon" name="star"/>
-        <span>Рекомендовать</span>
+        <span>Рекомендация</span>
       </div>
       <div @click="addToFavorite" class="add-to-favorite" v-if="!inFavorites && !!inRecommended">
         <ui-icon class="favorite-icon" name="star"/>
