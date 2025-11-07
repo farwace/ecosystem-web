@@ -24,6 +24,7 @@
           'bg-blur': popup.data?.backgroundBlur,
           'no-title': popup.data?.noTitle,
           'no-scroll': popup.data?.noScroll,
+          'overflow-visible': popup.data?.overflowVisible,
           'no-bg': popup.data?.noBackground,
           'h-100': popup.data?.fullHeight,
           'no-max-height': popup.data?.noMaxHeight,
@@ -295,6 +296,12 @@ onBeforeUnmount(() => {
   }
   .popup{
     box-shadow: 0 0 15px rgba(0,0,0,.15);
+
+    &.overflow-visible{
+      .popup__content{
+        overflow-y: visible!important;
+      }
+    }
 
     &.no-scroll{
       &.no-title{

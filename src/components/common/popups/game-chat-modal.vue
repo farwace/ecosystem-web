@@ -5,12 +5,21 @@
   <div>
     <BunkerButton class="send-btn" @click="sendMsg">Отправить</BunkerButton>
   </div>
+
+  <div class="last-messages">
+    <div class="message" v-for="message in lastMessages">
+      {{ message }}
+    </div>
+  </div>
 </div>
 </template>
 <script lang="ts" setup>
 import BunkerButton from "@/components/games/bunker/components/BunkerButton.vue";
 import {onMounted, ref} from "vue";
+import {storeToRefs} from "pinia";
+import {gameStore} from "@/stores/Game/gameStore.ts";
 
+const {lastMessages} = storeToRefs(gameStore());
 const inputRef = ref<HTMLTextAreaElement>();
 
 const props = defineProps<{
@@ -64,6 +73,19 @@ const onEnterKeyDown = (e: KeyboardEvent) => {
   .send-btn {
     background-color: #95501B;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
+  }
+
+  .last-messages{
+    position: absolute;
+    top: 100%;
+    width: calc(100% - 20px);
+
+    .message{
+      margin-bottom: 2px;
+      border-radius: 4px;
+      padding: 2px 4px;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
   }
 }
 

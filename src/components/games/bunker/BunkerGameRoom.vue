@@ -230,7 +230,17 @@ const customId = ref<string>();
 let displayChangePlayersCountTimeout = 0;
 let displayPressReadyTimeout = 0;
 
-const {isHidden} = storeToRefs(gameStore());
+const {isHidden, lastMessages} = storeToRefs(gameStore());
+
+const rememberLastMessage = (message: string) => {
+  if (!message) {
+    return;
+  }
+  setTimeout(() => {
+    lastMessages.value = [message, ...lastMessages.value].slice(0, 5);
+  }, 300)
+
+};
 
 const syncCustomIdQuery = (value?: string | null) => {
   if (typeof window === 'undefined') {
@@ -423,9 +433,12 @@ const initializeGame = () => {
   props.room?.onMessage?.('playerMessage', (message: {playerId: string, message: string}) => {
     if(players.value[message.playerId] && message.message){
       const pName = players.value?.[message.playerId]?.name;
+      const msg = CutString((pName ? (pName + ' ') : ''), 15) + ': ' + maskProfanity(message.message);
+
+      rememberLastMessage(msg);
       notificationsProvider?.addNotification({
         type: 'game-info',
-        message: CutString((pName ? (pName + ' ') : ''), 15) + ': ' + maskProfanity(message.message)
+        message: msg
       });
     }
 
@@ -984,6 +997,7 @@ const openChatModal = () => {
     darkBg: true,
     class: 'game-bunker',
     noPaddings: true,
+    overflowVisible: true,
     sendCallback: sendRoomMessage,
   })
 }
@@ -1174,6 +1188,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  lastMessages.value = [];
   syncCustomIdQuery(null);
   for(let i = 0; i < unbindCallbacks.length; i++){
     unbindCallbacks?.[i]?.();

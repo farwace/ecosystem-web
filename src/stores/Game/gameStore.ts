@@ -7,5 +7,6 @@ export const gameStore = defineStore('game', {
     state: ():IGameStore => ({
         inGameRoom: undefined,
         isHidden: false,
+        lastMessages: [],
     })
 })

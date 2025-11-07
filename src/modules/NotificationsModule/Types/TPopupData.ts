@@ -18,4 +18,5 @@ export type TPopupData = {
     darkBg?:boolean,
     modal?:boolean,
     noScroll?:boolean,
+    overflowVisible?:boolean,
 } | {[key:string]:any}

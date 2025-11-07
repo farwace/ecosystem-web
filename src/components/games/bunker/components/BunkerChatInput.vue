@@ -12,7 +12,7 @@ import BunkerButton from "@/components/games/bunker/components/BunkerButton.vue"
 <style lang="scss" scoped>
 
 .chat-box{
-  margin-top: 20px;
+  margin-top: 15px;
 
  :deep(.game-btn__content) {
    padding: 5px 10px;
