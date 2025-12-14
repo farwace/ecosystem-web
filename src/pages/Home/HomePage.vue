@@ -149,6 +149,7 @@ watch(id, (neoVal) => {
   position: fixed;
   bottom: 35px;
   left: 15px;
+  z-index: 10;
 }
 .add-to-favorite{
   display: flex;
