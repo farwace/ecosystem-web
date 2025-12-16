@@ -5,7 +5,7 @@
     </div>
     <div class="results__text">
       <div v-if="experience || coins">
-        <div v-if="canShareResult" class="share-result" :class="{won: won}">
+        <div v-if="isAcceptShareResult" class="share-result" :class="{won: won}">
           <div class="share-button" :class="{'disabled':isLoading}">
             <div class="btn" @click="shareStoryBox">
               <template v-if="!won">
@@ -19,7 +19,7 @@
             </div>
           </div>
         </div>
-        <div class="results__prize" :class="{won: won, 'can-share': !!canShareResult}">
+        <div class="results__prize" :class="{won: won, 'can-share': !!isAcceptShareResult}">
           <div>
             Награда:
           </div>
@@ -53,7 +53,9 @@ import {storeToRefs} from "pinia";
 import {bridgeStore} from "@/stores/Bridge/bridgeStore.ts";
 import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
 import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
+import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
 
+const { launchParams } = storeToRefs(ecosystemStore());
 const {shareStoryKey} = storeToRefs(bridgeStore());
 const userProvider: IUserProvider | undefined = inject(UserProviderSymbol);
 const bridgeProvider: IPlatformEvents | undefined = inject(PlatformEventsSymbol);
@@ -69,6 +71,15 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits(['close']);
+
+const isAcceptShareResult = computed(() => {
+  return props.canShareResult && ([
+    'desktop_app_messenger',
+    'desktop_web_messenger',
+    'mobile_android_messenger',
+    'mobile_iphone_messenger'
+  ].indexOf(launchParams?.value?.vk_platform || '') < 0);
+});
 
 const pictureSrc = computed(() => {
   const male = props.user?.sex != 1;
