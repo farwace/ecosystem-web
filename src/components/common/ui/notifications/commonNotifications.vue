@@ -437,6 +437,7 @@ onBeforeUnmount(() => {
       top: -20px;
       padding: 10px;
       cursor: pointer;
+      transform: translate3d(0, 0, 0);
     }
 
     &__title{

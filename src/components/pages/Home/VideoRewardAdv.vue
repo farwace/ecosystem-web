@@ -56,6 +56,7 @@ const getSpinHasBeenClicked = () => {
 [theme="dark"]{
   .spin{
     filter: grayscale(1);
+    transform: translate3d(0, 0, 0);
     &.active {
       filter: none;
     }
