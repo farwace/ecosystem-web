@@ -1,5 +1,6 @@
 <template>
   <div class="page-container">
+    <Snowfall />
     <div class="header">
       <user-avatar :vip="!!subscription?.personalAccess" :alarm="hasUnclaimedCompletedAchievement" :first-name="firstName" :avatar="avatar" @click="() => id && router.push({name: 'profile', params: {id: id}})"/>
       <user-experience />
@@ -68,6 +69,7 @@ import {gameStore} from "@/stores/Game/gameStore.ts";
 import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
 import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
 import GameItems from "@/components/pages/Home/GameItems.vue";
+import Snowfall from "@/components/common/ui/Snowfall.vue";
 
 const {id, firstName, avatar, subscription} = storeToRefs(ecosystemStore());
 const {inFavorites, inHomeScreen, inRecommended, notificationsEnabled} = storeToRefs(bridgeStore());
