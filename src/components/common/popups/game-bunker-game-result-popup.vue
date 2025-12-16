@@ -53,9 +53,9 @@ import {storeToRefs} from "pinia";
 import {bridgeStore} from "@/stores/Bridge/bridgeStore.ts";
 import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
 import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
-import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
+import {themeStore} from "@/stores/Theme/themeStore.ts";
 
-const { launchParams } = storeToRefs(ecosystemStore());
+const { clientInfo } = storeToRefs(themeStore());
 const {shareStoryKey} = storeToRefs(bridgeStore());
 const userProvider: IUserProvider | undefined = inject(UserProviderSymbol);
 const bridgeProvider: IPlatformEvents | undefined = inject(PlatformEventsSymbol);
@@ -74,11 +74,9 @@ const emits = defineEmits(['close']);
 
 const isAcceptShareResult = computed(() => {
   return props.canShareResult && ([
-    'desktop_app_messenger',
-    'desktop_web_messenger',
-    'mobile_android_messenger',
-    'mobile_iphone_messenger'
-  ].indexOf(launchParams?.value?.vk_platform || '') < 0);
+    'vkme',
+    'ok'
+  ].indexOf(clientInfo?.value?.app || '') < 0);
 });
 
 const pictureSrc = computed(() => {
