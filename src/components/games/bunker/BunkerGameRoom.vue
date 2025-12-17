@@ -7,6 +7,7 @@
           :withBots="useBots"
           :isPrivateRoom="isPrivateRoom"
           :canRepairMicrophone="canRepairMicrophone"
+          :isEventSets="isEventSets"
           @repairMicrophone="tryRepairMicrophone"
           @leave="onLeaveClick"
           @rules="onRulesClick"
@@ -14,6 +15,7 @@
           @minus="onPlayersMinusClick"
           @plus="onPlayersPlusClick"
           @bots="onPlayerToggleBotsClick"
+          @event-sets="onPlayerToggleEventSetsClick"
       />
     </div>
 
@@ -199,6 +201,7 @@ const currentSpeakerId = ref<number | string>();
 const gameStage = ref<TGameStage>();
 const hostId = ref<number>();
 const isPrivateRoom = ref<boolean>();
+const isEventSets = ref<boolean>();
 const useBots = ref<boolean>();
 const minPlayers = ref<number>();
 const maxPlayers = ref<number>();
@@ -226,6 +229,10 @@ const router = useAnimatedRouter();
 const isTouchDevide = ref<boolean>(true);
 const unbindCallbacks: any[] = [];
 const customId = ref<string>();
+const AFK_TIMEOUT_MS = 5 * 1000;
+const afkEvents: Array<keyof WindowEventMap> = ['click', 'pointerdown', 'touchstart', 'keydown'];
+let afkTimer: ReturnType<typeof setTimeout> | null = null;
+let afkListenersAttached = false;
 
 let displayChangePlayersCountTimeout = 0;
 let displayPressReadyTimeout = 0;
@@ -265,6 +272,66 @@ const syncCustomIdQuery = (value?: string | null) => {
   window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
 };
 
+const clearAfkTimer = () => {
+  if (afkTimer) {
+    clearTimeout(afkTimer);
+    afkTimer = null;
+  }
+};
+
+const scheduleAfkRedirect = () => {
+  clearAfkTimer();
+  afkTimer = setTimeout(() => {
+    notificationsProvider?.addPopup('you-are-kicked', 'simple-popup', {
+      message: '<div style="margin-top: 35px; text-align: center">Вы были исключены из комнаты за бездействие</div>',
+      modal: true,
+      middle: true,
+      noTitle: true,
+      darkBg: true,
+    })
+    router.replace('/');
+  }, AFK_TIMEOUT_MS);
+};
+
+const handleAfkActivity = () => {
+  if (status.value !== 'waiting') {
+    return;
+  }
+  scheduleAfkRedirect();
+};
+
+const attachAfkListeners = () => {
+  if (afkListenersAttached || typeof window === 'undefined') {
+    return;
+  }
+  afkListenersAttached = true;
+  afkEvents.forEach((eventName) => {
+    window.addEventListener(eventName, handleAfkActivity, {passive: true});
+  });
+};
+
+const detachAfkListeners = () => {
+  if (!afkListenersAttached || typeof window === 'undefined') {
+    return;
+  }
+  afkListenersAttached = false;
+  afkEvents.forEach((eventName) => {
+    window.removeEventListener(eventName, handleAfkActivity);
+  });
+};
+
+const enableAfkDetection = () => {
+  attachAfkListeners();
+  if (status.value === 'waiting') {
+    scheduleAfkRedirect();
+  }
+};
+
+const disableAfkDetection = () => {
+  detachAfkListeners();
+  clearAfkTimer();
+};
+
 const initializeGame = () => {
   const roomState = props.room.state as BunkerGameRoomState;
   const $ = getStateCallbacks(props.room);
@@ -292,6 +359,10 @@ const initializeGame = () => {
   unbindCallbacks.push($(props.room.state).listen("isPrivateRoom", (currentValue, previousValue) => {
     isPrivateRoom.value = currentValue;
   }));
+  unbindCallbacks.push($(props.room.state).listen("isEventSet", (currentValue, previousValue) => {
+    isEventSets.value = currentValue;
+  }));
+
   unbindCallbacks.push($(props.room.state).listen("useBots", (currentValue, previousValue) => {
     useBots.value = currentValue;
   }));
@@ -985,6 +1056,13 @@ const onPlayerToggleBotsClick = () => {
   }
 }
 
+const onPlayerToggleEventSetsClick = () => {
+  if(hostId.value == id.value){
+    props.room?.send('toggleEventSetsValue');
+  }
+}
+
+
 const sendRoomMessage = (msg:string) => {
   props.room?.send('sendMessage', msg);
 }
@@ -1079,9 +1157,15 @@ watch(isHidden, (neoVal) => {
 });
 
 watch(status, (neoVal) => {
-  if(neoVal == 'waiting' && isHidden.value) {
-    router.push('/')
+  if(neoVal == 'waiting') {
+    enableAfkDetection();
+    if(isHidden.value) {
+      router.push('/')
+    }
+    return;
   }
+
+  disableAfkDetection();
 });
 
 watch(currentSpeakerId, (neoVal) => {
@@ -1190,6 +1274,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   lastMessages.value = [];
   syncCustomIdQuery(null);
+  disableAfkDetection();
   for(let i = 0; i < unbindCallbacks.length; i++){
     unbindCallbacks?.[i]?.();
   }

@@ -28,6 +28,7 @@ const props = defineProps<{
   playersCount?: string,
   isPrivateRoom?: string,
   bots?: string,
+  isEventSet?: string,
 }>();
 
 const client: {instance?: Client | null} = {
@@ -77,7 +78,10 @@ const waitForAuthString = (): Promise<string> => {
 
 const getJoinOptions = async () => {
   const auth = await waitForAuthString();
-  return {authString: auth.replace(/^Bearer\s+/i, '')};
+  return {
+    authString: auth.replace(/^Bearer\s+/i, ''),
+    isEventSet: props.isEventSet == '1' || props.isEventSet === undefined
+  };
 };
 
 const handleRoomLeave = (code: any) => {

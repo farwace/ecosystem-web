@@ -10,6 +10,18 @@
         <UIToggle field-id="toggle-private-room" v-model="isPrivate"/> <label for="toggle-private-room">{{ isPrivate ? 'Закрытая' : 'Открытая' }}</label>
       </div>
     </div>
+
+    <div class="item">
+      <div class="title">
+        <label for="toggle-use-bots">
+          Только зимние сценарии:
+        </label>
+      </div>
+      <div class="value inline">
+        <UIToggle field-id="toggle-event-set" v-model="isEventSet"/> <label for="toggle-use-bots">{{ isEventSet ? 'Выкл' : 'Вкл' }}</label>
+      </div>
+    </div>
+
     <div class="item">
       <div class="title">
         <label for="toggle-use-bots">
@@ -51,6 +63,7 @@ const router = useAnimatedRouter();
 
 const isPrivate = ref<boolean>();
 const useBots = ref<boolean>();
+const isEventSet = ref<boolean>();
 const playersCount = ref<number>();
 
 const props = defineProps<{
@@ -87,7 +100,7 @@ const onPlayersPlus = () => {
 const createRoom = () => {
   props?.onGameStart?.();
   emits('close');
-  router.push({name: 'bunkerGame', query: {neo: 1, players: (playersCount.value || 8), private: isPrivate.value ? 1 : 0, bots: !useBots.value ? 1 : 0}});
+  router.push({name: 'bunkerGame', query: {neo: 1, players: (playersCount.value || 8), private: isPrivate.value ? 1 : 0, bots: !useBots.value ? 1 : 0, 'is_event_set': !isEventSet.value ? 1 : 0}});
 }
 
 onMounted(() => {
