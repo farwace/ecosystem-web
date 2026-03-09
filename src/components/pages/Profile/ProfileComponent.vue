@@ -1,6 +1,6 @@
 <template>
   <div class="profile-page">
-    <Snowfall />
+    
     <div class="top-buttons" v-if="!modal">
       <img src="/assets/img/chevron-left.png" alt="<" class="back-btn" @click="() => router.back()">
     </div>
@@ -83,7 +83,7 @@ import type {IGiftsProvider} from "@/modules/ApiModule/Interfaces/IGiftsProvider
 import {achievementsStore} from "@/stores/Achievements/achievementsStore.ts";
 import {useAnimatedRouter} from "@/classes/utils/useAnimatedRouter.ts";
 import {filter, Subscription} from "rxjs";
-import Snowfall from "@/components/common/ui/Snowfall.vue";
+
 
 const router = useAnimatedRouter();
 const {id, firstName, sex, subscription} = storeToRefs(ecosystemStore());

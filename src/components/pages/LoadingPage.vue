@@ -2,7 +2,6 @@
   <div
       class="loading-page"
   >
-    <Snowfall />
     <div class="background-dots">
       <div
           v-for="(dot, index) in totalDots"
@@ -23,7 +22,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import Snowfall from "@/components/common/ui/Snowfall.vue";
+//import Snowfall from "@/components/common/ui/Snowfall.vue";
 
 const loadingText = ref('Загрузка&nbsp;&nbsp;&nbsp;')
 
