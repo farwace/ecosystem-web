@@ -80,7 +80,7 @@ const getJoinOptions = async () => {
   const auth = await waitForAuthString();
   return {
     authString: auth.replace(/^Bearer\s+/i, ''),
-    isEventSet: props.isEventSet == '1' || props.isEventSet === undefined
+    isEventSet: (props.isEventSet == '1' || props.isEventSet === undefined) && false //только ивентные сценарии по умолчанию
   };
 };
 

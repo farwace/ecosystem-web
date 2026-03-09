@@ -9,11 +9,11 @@
         <UIPassiveToggle :value="withBots"/>
         <div>{{ withBots ? 'Вкл' : 'Выкл' }}</div>
       </div>
-      <div class="item item-toggle" v-if="host" @click.prevent="$emit('eventSets')">
+<!--      <div class="item item-toggle" v-if="host" @click.prevent="$emit('eventSets')">
         <div>Только зимние сценарии</div>
         <UIPassiveToggle :value="isEventSets"/>
         <div>{{ isEventSets ? 'Вкл' : 'Выкл' }}</div>
-      </div>
+      </div>-->
 
       <div class="item item-players" v-if="host">
         Игроки

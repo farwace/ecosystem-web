@@ -11,7 +11,7 @@
       </div>
     </div>
 
-    <div class="item">
+<!--    <div class="item">
       <div class="title">
         <label for="toggle-use-bots">
           Только зимние сценарии:
@@ -20,7 +20,7 @@
       <div class="value inline">
         <UIToggle field-id="toggle-event-set" v-model="isEventSet"/> <label for="toggle-use-bots">{{ isEventSet ? 'Выкл' : 'Вкл' }}</label>
       </div>
-    </div>
+    </div>-->
 
     <div class="item">
       <div class="title">
