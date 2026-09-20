@@ -9,7 +9,8 @@
       </div>
 
     </div>
-    <div ref="shopContainer" class="items-container">
+    <p v-if="!capabilities.payments" style="padding: 24px">Покупки в браузере пока недоступны.</p>
+    <div v-else ref="shopContainer" class="items-container">
       <div class="shop__subscription" v-if="(shop?.subscriptions?.length || 0) > 0 && !subscription">
         <div class="shop__title">
           Купить подписку
@@ -40,6 +41,7 @@ import SubscriptionItem from "@/components/common/popups/Shop/SubscriptionItem.v
 import CoinItem from "@/components/common/popups/Shop/CoinItem.vue";
 import {storeToRefs} from "pinia";
 import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
+import {capabilities} from '@/platform/launch';
 
 const { subscription } = storeToRefs(ecosystemStore());
 
@@ -62,6 +64,7 @@ const loadItems = async () => {
 }
 
 onMounted(() => {
+  if (!capabilities.payments) return;
   const tmpCoins: TShopResponse['coins'] = [];
   for(let i = 0; i < 12; i++){
     tmpCoins.push({

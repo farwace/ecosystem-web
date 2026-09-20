@@ -16,12 +16,13 @@
 
     <img class="rocket" src="/assets/img/rocket.svg" alt="rocket" />
 
-    <div class="loading-text" v-html="loadingText"></div>
+    <div class="loading-text" v-html="sanitizeHtml(loadingText)"></div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import {sanitizeHtml} from '@/utils/sanitize-html';
 //import Snowfall from "@/components/common/ui/Snowfall.vue";
 
 const loadingText = ref('Загрузка&nbsp;&nbsp;&nbsp;')

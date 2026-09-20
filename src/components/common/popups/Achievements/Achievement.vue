@@ -47,7 +47,7 @@
             <template v-if="achievement.experience && achievement.experience > 0">
               <UiIcon name="experience" class="inline-icon"/> {{ achievement.experience }}
             </template>
-            <template v-if="achievement.code == 'group_subscriber'">
+            <template v-if="capabilities.vkSocial && achievement.code == 'group_subscriber'">
               <div class="small-button" @click="$emit('check')">Проверить</div>
             </template>
           </div>
@@ -60,6 +60,7 @@
 import type {TUserAchievement} from "@/stores/Achievements/Types/TUserAchievement.ts";
 import {Dropdown as VDropdown, vTooltip} from "floating-vue";
 import UiIcon from "@/components/common/icons/UiIcon.vue";
+import {capabilities} from '@/platform/launch';
 
 defineOptions({
   components: {

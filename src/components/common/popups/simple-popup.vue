@@ -1,9 +1,11 @@
 <template>
   <div>
-    <div v-html="message"></div>
+    <div v-html="sanitizeHtml(message)"></div>
   </div>
 </template>
 <script lang="ts" setup>
+import {sanitizeHtml} from '@/utils/sanitize-html';
+
 defineProps<{
   message?:string
 }>();

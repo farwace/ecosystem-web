@@ -44,8 +44,8 @@
             v-if="(popup.data?.title || popup.data?.subtitle || (!popup.data?.noClose && !popup.data?.noCloseButton && !popup.data?.noTitle))"
             class="popup__title"
         >
-          <div v-if="popup.data?.title" v-html="popup.data?.title"></div>
-          <div v-if="popup.data?.subTitle" class="subtitle" v-html="popup.data?.subTitle"></div>
+          <div v-if="popup.data?.title" v-html="sanitizeHtml(popup.data?.title)"></div>
+          <div v-if="popup.data?.subTitle" class="subtitle" v-html="sanitizeHtml(popup.data?.subTitle)"></div>
         </div>
         <div class="popup__content">
           <AsyncPopupItem
@@ -72,6 +72,7 @@ import {ClickOutside} from "@/classes/directives/clickOutside";
 import UiIcon from "@/components/common/icons/UiIcon.vue";
 import AsyncPopupItem from "@/components/common/ui/notifications/AsyncPopupItem.vue";
 import {Console} from "@/classes/utils/Console.ts";
+import {sanitizeHtml} from '@/utils/sanitize-html';
 
 
 

@@ -3,6 +3,7 @@ import {nextTick, ref} from 'vue'
 import { useRouter } from 'vue-router'
 import {themeStore} from "@/stores/Theme/themeStore.ts";
 import {ecosystemStore} from "@/stores/Ecosystem/ecosystemStore.ts";
+import {isWeb} from '@/platform/launch';
 
 export function useAnimatedRouter(): Router {
     const router = useRouter()
@@ -31,6 +32,7 @@ export function useAnimatedRouter(): Router {
     };
 
     const applyPersistentQuery = (target: RouteLocationRaw): RouteLocationRaw => {
+        if (isWeb) return target;
         const persistentParams = buildPersistentParams();
 
         if (typeof target === 'string') {

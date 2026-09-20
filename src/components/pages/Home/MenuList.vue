@@ -3,7 +3,7 @@
   <menu-item @click="openRating" icon="rating">Рейтинг</menu-item>
   <menu-item @click="openFriends" icon="friends">Друзья</menu-item>
 
-  <VideoRewardAdv />
+  <VideoRewardAdv v-if="capabilities.rewardedAds" />
 
 <!--  <menu-item @click="openMessages" icon="message">Сообщения</menu-item>-->
 </template>
@@ -15,6 +15,7 @@ import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfa
 import {storeToRefs} from "pinia";
 import {dailyMissionsStore} from "@/stores/DailyMissions/dailyMissionsStore.ts";
 import VideoRewardAdv from "@/components/pages/Home/VideoRewardAdv.vue";
+import {capabilities} from '@/platform/launch';
 const notificationsProvider: INotificationsProvider | undefined = inject(NotificationsSymbol);
 const { hasUnclaimedCompletedMission } = storeToRefs(dailyMissionsStore());
 

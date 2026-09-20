@@ -9,7 +9,7 @@
       </div>
     </div>
     <div class="game__data">
-      <div class="game__content coming-soon" :class="[''+code]" v-html="gameContent" v-if="gameContent"></div>
+      <div class="game__content coming-soon" :class="[''+code]" v-html="sanitizeHtml(gameContent)" v-if="gameContent"></div>
       <div v-if="code == 'callback'">
         <img class="suggest-img" src="/assets/img/games/home/suggest-callback.png" alt="Предложи идею">
       </div>
@@ -48,6 +48,8 @@ import {storeToRefs} from "pinia";
 import {achievementsStore} from "@/stores/Achievements/achievementsStore.ts";
 import type {IMetrikaProvider} from "@/modules/MetrikaModule/Interfaces/IMetrikaProvider.ts";
 import {MetrikaSymbol} from "@/modules/MetrikaModule/symbols.ts";
+import {capabilities} from '@/platform/launch';
+import {sanitizeHtml} from '@/utils/sanitize-html';
 const isLoading = ref<boolean>(true);
 
 const gameApi: IGameApiProvider | undefined  = inject(GameApiProviderSymbol);
@@ -95,7 +97,7 @@ const showVoteResultButton = computed(() => {
 });
 
 const showSubscribeToGroup = computed(() => {
-  return !!(achievementList.value?.filter?.((a) => a.code === 'group_subscriber' && !a.completed)?.[0]);
+  return capabilities.vkSocial && !!(achievementList.value?.filter?.((a) => a.code === 'group_subscriber' && !a.completed)?.[0]);
 });
 
 const checkSubscribeToGroup = () => {

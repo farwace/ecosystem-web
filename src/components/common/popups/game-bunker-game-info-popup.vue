@@ -15,7 +15,7 @@
         <span class="show-more" v-show="!additionalInfoShown" @click="additionalInfoShown = !additionalInfoShown">Подробнее об игре <ui-icon name="chevron-right" class="inline-icon"/></span>
         <SlideDown :expanded="!!additionalInfoShown" :duration="450" easing="ease-in" :opacity="true">
           <div class="content">
-            <div v-html="gameContent"></div>
+            <div v-html="sanitizeHtml(gameContent)"></div>
             <div>
               <bunker-start-game-buttons only-start @start="$emit('close')"/>
             </div>
@@ -34,6 +34,7 @@ import {GameApiProviderSymbol} from "@/modules/ApiModule/symbols.ts";
 import BunkerButton from "@/components/games/bunker/components/BunkerButton.vue";
 import UiIcon from "@/components/common/icons/UiIcon.vue";
 import SlideDown from "@/components/common/ui/SlideDown.vue";
+import {sanitizeHtml} from '@/utils/sanitize-html';
 const isLoading = ref<boolean>(false);
 
 const gameApi: IGameApiProvider | undefined  = inject(GameApiProviderSymbol);

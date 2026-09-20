@@ -54,6 +54,7 @@ import {bridgeStore} from "@/stores/Bridge/bridgeStore.ts";
 import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
 import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
 import {themeStore} from "@/stores/Theme/themeStore.ts";
+import {capabilities} from '@/platform/launch';
 
 const { clientInfo } = storeToRefs(themeStore());
 const {shareStoryKey} = storeToRefs(bridgeStore());
@@ -73,7 +74,7 @@ const props = defineProps<{
 const emits = defineEmits(['close']);
 
 const isAcceptShareResult = computed(() => {
-  return props.canShareResult && ([
+  return capabilities.stories && props.canShareResult && ([
     'vkme',
     'ok'
   ].indexOf(clientInfo?.value?.app || '') < 0);
