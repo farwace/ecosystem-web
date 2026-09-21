@@ -128,6 +128,7 @@ onUnmounted(() => {
 [theme="dark"] {
   .loading-page{
     background-color: #222222;
+    color: #939393;
   }
   .background-dots{
     .dot{

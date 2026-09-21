@@ -115,7 +115,9 @@ export class ReverbProvider implements IReverbProvider{
                             noClose: true,
                             noCloseButton: true,
                             title: 'Потеряно соединение с сервером',
-                            message: '<div>Соединение будет восстановлено автоматически.<br/><br/>Если ничего не происходит<br/><br/><span class="btn" style="margin-bottom: 20px;" onclick="window.location.reload()">Восстановить соединение</span></div>'
+                            message: 'Соединение будет восстановлено автоматически.<br/><br/>Если ничего не происходит',
+                            action: 'reload',
+                            actionLabel: 'Восстановить соединение',
 
                         });
                     }

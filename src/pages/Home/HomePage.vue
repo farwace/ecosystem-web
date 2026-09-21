@@ -118,7 +118,16 @@ watch(id, (neoVal) => {
 
 </script>
 <style lang="scss" scoped>
-.web-logout { display: block; margin: 10px 0 10px auto; background: transparent; border: 0; color: inherit; cursor: pointer; text-decoration: underline; }
+.web-logout {
+  display: block;
+  margin: 10px 0 10px auto;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-top: -25px;
+}
 .page-container{
   padding: 20px;
   overflow-y: auto;
@@ -140,6 +149,7 @@ watch(id, (neoVal) => {
 }*/
 
 .btn-list{
+  min-height: 104px;
   display: flex;
   flex-wrap: nowrap;
   gap: 15px;

@@ -1,7 +1,7 @@
 <template>
   <RouterView v-if="applicationState.ready" />
   <AuthScreen v-else-if="isWeb" />
-  <div v-else role="status" style="padding: 32px">{{ applicationState.error || 'Загрузка LAPA PLAY…' }}</div>
+  <LoadingPage v-else />
   <common-notifications v-if="!isWeb || applicationState.ready" />
   <big-gift-notifications v-if="!isWeb || applicationState.ready" />
 </template>
@@ -17,6 +17,7 @@ import type {IGameProvider} from "@/modules/GameModule/Interfaces/IGameProvider.
 import {GameProviderSymbol} from "@/modules/GameModule/symbols.ts";
 import {useAnimatedRouter} from "@/classes/utils/useAnimatedRouter.ts";
 import AuthScreen from '@/auth/AuthScreen.vue';
+import LoadingPage from '@/components/pages/LoadingPage.vue';
 import {applicationState} from '@/auth/web-session';
 import {isWeb} from '@/platform/launch';
 
