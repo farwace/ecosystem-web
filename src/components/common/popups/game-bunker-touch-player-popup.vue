@@ -4,7 +4,7 @@
       <div>
         <div class="player">
           <div class="player__avatar">
-            <img :src="player.avatar" :alt="player.name">
+            <img :src="player.avatar || '/assets/img/avatar-stub.png'" :alt="player.name">
           </div>
           <div class="player__name">
             <div class="player__name__text">
