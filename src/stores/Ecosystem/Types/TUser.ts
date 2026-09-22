@@ -2,6 +2,7 @@ export type TUser = {
     id: number,
     avatar: string,
     avatarBig: string,
+    animal?: string | null,
     firstName: string,
     sex: number | undefined | null,
     lvl: number,

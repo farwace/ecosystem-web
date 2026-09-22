@@ -5,7 +5,7 @@
     </div>
     <div class="item__body">
       <div class="item__picture">
-        <img :src="user.avatar" :alt="user.firstName">
+        <img :src="avatarUrl" :alt="user.firstName">
       </div>
       <div class="item__description">
         <img v-if="user.premium" class="vip" src="/assets/img/popularity/vip.png" alt="vip">
@@ -27,6 +27,7 @@
   </div>
 </template>
 <script lang="ts" setup>
+import {computed} from 'vue';
 import type {TUser} from "@/stores/Ecosystem/Types/TUser.ts";
 import {prepareNumber} from "@/classes/utils/PrepareNumber.ts";
 
@@ -35,6 +36,20 @@ const props = defineProps<{
   user: TUser,
   stub?: boolean
 }>();
+
+const allowedAnimals = ['cat', 'chicken', 'koala', 'fox', 'panda', 'tiger'];
+
+const avatarUrl = computed(() => {
+  if (props.user.avatar) {
+    return props.user.avatar;
+  }
+
+  const animal = props.user.animal && allowedAnimals.includes(props.user.animal)
+    ? props.user.animal
+    : 'tiger';
+
+  return `/assets/img/animals/${animal}.svg`;
+});
 </script>
 
 <style lang="scss" scoped>
