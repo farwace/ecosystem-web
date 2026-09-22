@@ -34,6 +34,10 @@ import {GameApiProvider} from "@/modules/ApiModule/Providers/GameApiProvider.ts"
 import {MetrikaSymbol} from "@/modules/MetrikaModule/symbols.ts";
 import type {IMetrikaProvider} from "@/modules/MetrikaModule/Interfaces/IMetrikaProvider.ts";
 import {MetrikaProvider} from "@/modules/MetrikaModule/Providers/MetrikaProvider.ts";
+import {WebEventsProvider} from '@/modules/EventsModule/Providers/WebEventsProvider';
+import {isWeb} from '@/platform/launch';
+import {applicationState, loadWebSession} from '@/auth/web-session';
+import {ecosystemStore} from '@/stores/Ecosystem/ecosystemStore';
 
 export const AppBuilder = () => {
     return {
@@ -47,7 +51,9 @@ export const AppBuilder = () => {
             metrikaProvider.install($app, MetrikaSymbol);
 
             container.bind<INotificationsProvider>(NotificationsSymbol).to(NotificationsProvider).inSingletonScope();
-            import.meta.env.VITE_ENVELOP === 'development' ?
+            isWeb ?
+                container.bind<IPlatformEvents>(PlatformEventsSymbol).to(WebEventsProvider).inSingletonScope() :
+            import.meta.env.DEV && import.meta.env.VITE_ENVELOP === 'development' ?
                 container.bind<IPlatformEvents>(PlatformEventsSymbol).to(StubEventsProvider).inSingletonScope() :
                 container.bind<IPlatformEvents>(PlatformEventsSymbol).to(BridgeEventsProvider).inSingletonScope();
             const bridgeEventsProvider = container.get<IPlatformEvents>(PlatformEventsSymbol);
@@ -76,18 +82,36 @@ export const AppBuilder = () => {
             const balanceProvider = container.get<IBalanceProvider>(BalanceProviderSymbol);
             balanceProvider.install($app, BalanceProviderSymbol);
 
-            await bridgeEventsProvider.init();
-            await userProvider.getUserInfo();
-
             container.bind<IReverbProvider>(ReverbSymbol).to(ReverbProvider).inSingletonScope();
             const reverbProvider = container.get<IReverbProvider>(ReverbSymbol);
             reverbProvider.install($app, ReverbSymbol);
 
 
 
+            reverbProvider.getReverbObserver$().subscribe(reverb => {
+                Console.log('>>> ', reverb);
+            })
+
             container.bind<IEcosystemProvider>(EcosystemSymbol).to(EcosystemProvider).inSingletonScope();
             const ecosystemProvider = container.get<IEcosystemProvider>(EcosystemSymbol);
             ecosystemProvider.install($app, EcosystemSymbol);
+
+            window.addEventListener('web-session-ended', () => reverbProvider.closeConnections());
+            try {
+                await bridgeEventsProvider.init();
+                if (isWeb) {
+                    const user = await loadWebSession();
+                    if (!user?.verified || new URLSearchParams(location.search).get('auth') === 'reset') return;
+                }
+                await userProvider.getUserInfo();
+                if (!ecosystemStore().id) throw new Error('Не удалось загрузить профиль.');
+                await reverbProvider.createConnection();
+                applicationState.ready = true;
+            } catch (error) {
+                applicationState.error = error instanceof Error ? error.message : 'Ошибка запуска приложения.';
+            } finally {
+                applicationState.checking = false;
+            }
 
         }
     }

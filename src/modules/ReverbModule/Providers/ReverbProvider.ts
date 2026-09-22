@@ -13,6 +13,8 @@ import {UserProviderSymbol} from "@/modules/ApiModule/symbols.ts";
 import type {IUserProvider} from "@/modules/ApiModule/Interfaces/IUserProvider.ts";
 import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
 import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
+import {isWeb} from '@/platform/launch';
+import {requestConnectionTicket, webRequest} from '@/auth/web-session';
 
 declare global {
     interface Window {
@@ -28,6 +30,21 @@ export class ReverbProvider implements IReverbProvider{
     private privateChannel: any;
     private echo: Echo<keyof Broadcaster> | undefined;
     private _heartBeatInterval: any;
+    private webTicket = '';
+    private ticketExpires = 0;
+    private ticketRequest?: Promise<string>;
+
+    private async connectionTicket(): Promise<string> {
+        if (this.webTicket && Date.now() < this.ticketExpires) return this.webTicket;
+        if (!this.ticketRequest) {
+            this.ticketRequest = requestConnectionTicket('reverb').then(ticket => {
+                this.webTicket = ticket;
+                this.ticketExpires = Date.now() + 180_000;
+                return ticket;
+            }).finally(() => { this.ticketRequest = undefined; });
+        }
+        return this.ticketRequest;
+    }
 
     constructor(
         @inject(UserProviderSymbol)
@@ -44,19 +61,19 @@ export class ReverbProvider implements IReverbProvider{
         }
     }
 
-    private getAuthData = (): {[key: string]: string | number} => {
+    private getAuthData = async (): Promise<{[key: string]: string | number}> => {
         return {
             user_id: this.ecosystemStore.$state.id,
-            auth: this.ecosystemStore.$state.authString,
+            auth: isWeb ? await this.connectionTicket() : this.ecosystemStore.$state.authString,
         }
     }
 
     install(app: App, symbol: symbol) {
         app.provide(symbol, this);
-        this.createConnection();
     }
 
-    createConnection(){
+    async createConnection(){
+        if (isWeb) await this.connectionTicket();
         this.echo = new Echo({
             broadcaster: 'reverb',
             key: import.meta.env.VITE_REVERB_APP_KEY,
@@ -75,6 +92,15 @@ export class ReverbProvider implements IReverbProvider{
                 }
             },
             authEndpoint: import.meta.env.VITE_REVERB_APP_AUTH_ENDPOINT,
+            ...(isWeb ? {
+                authorizer: (channel: {name: string}) => ({
+                    authorize: (socketId: string, callback: (error: Error | null, data: any) => void) => {
+                        webRequest('/broadcasting/auth', {
+                            method: 'POST', body: JSON.stringify({socket_id: socketId, channel_name: channel.name}),
+                        }).then(data => callback(null, data)).catch(error => callback(error, null));
+                    },
+                }),
+            } : {}),
 
         });
 
@@ -89,7 +115,9 @@ export class ReverbProvider implements IReverbProvider{
                             noClose: true,
                             noCloseButton: true,
                             title: 'Потеряно соединение с сервером',
-                            message: '<div>Соединение будет восстановлено автоматически.<br/><br/>Если ничего не происходит<br/><br/><span class="btn" style="margin-bottom: 20px;" onclick="window.location.reload()">Восстановить соединение</span></div>'
+                            message: 'Соединение будет восстановлено автоматически.<br/><br/>Если ничего не происходит',
+                            action: 'reload',
+                            actionLabel: 'Восстановить соединение',
 
                         });
                     }
@@ -109,7 +137,7 @@ export class ReverbProvider implements IReverbProvider{
         this.privateChannel
             .subscribed(async () => {
                 try{
-                    this.privateChannel.whisper('missed-events', this.getAuthData());
+                    this.privateChannel.whisper('missed-events', await this.getAuthData());
 
                     const pusherConn = (this.echo?.connector as any)?.pusher?.connection;
                     this.ecosystemStore.$patch({
@@ -143,14 +171,14 @@ export class ReverbProvider implements IReverbProvider{
                 this._reverbObserver$.next(p);
             });
 
-        this._heartBeatInterval = setInterval(() => this.privateChannel.whisper('heartbeat', this.getAuthData()), 30_000);
+        this._heartBeatInterval = setInterval(() => { void this.sendMessage('heartbeat', {}); }, 30_000);
 
     }
 
-    sendMessage(event: string, data: {[key: string]: any}) {
+    async sendMessage(event: string, data: {[key: string]: any}) {
         try {
             Console.log('>>> SEND MESSAGE TO REVERB BEFORE');
-            const dataToSend = Object.assign({}, this.getAuthData(), data)
+            const dataToSend = Object.assign({}, data, await this.getAuthData())
             this.privateChannel.whisper(event, dataToSend);
             Console.log('>>> SEND MESSAGE TO REVERB AFTER');
         }
@@ -173,7 +201,7 @@ export class ReverbProvider implements IReverbProvider{
 
     onCloseApp() {
         //todo: вызывать метод по событию VKWebAppCloseResult из bridge!
-        this.privateChannel.whisper('close', this.getAuthData());
+        void this.sendMessage('close', {});
     }
 
 }

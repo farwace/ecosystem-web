@@ -12,8 +12,8 @@
     <swiper-slide>
       <img
           class="slide-img"
-          :src="profile.avatar"
-          :srcset="profile.avatarBig"
+          :src="profile.avatar || '/assets/img/avatar-stub.png'"
+          :srcset="profile.avatar ? profile.avatarBig : undefined"
           loading="lazy"
           alt=""
       >

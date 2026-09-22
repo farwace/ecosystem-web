@@ -81,6 +81,11 @@ const avatarUrl = computed(() => {
   if(props.player?.avatar){
     return `url(${props.player?.avatar})`;
   }
+
+  if(props.player && !props.disabled){
+    return "url('/assets/img/avatar-stub.png')";
+  }
+
   return 'none';
 });
 

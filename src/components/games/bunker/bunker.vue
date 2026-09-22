@@ -17,6 +17,8 @@ import {NotificationsSymbol} from "@/modules/NotificationsModule/symbols.ts";
 import type {INotificationsProvider} from "@/modules/NotificationsModule/Interfaces/INotificationsProvider.ts";
 import {useAnimatedRouter} from "@/classes/utils/useAnimatedRouter.ts";
 import {Console} from "@/classes/utils/Console.ts";
+import {isWeb} from '@/platform/launch';
+import {requestConnectionTicket} from '@/auth/web-session';
 
 const {authString} = storeToRefs(ecosystemStore());
 const router = useAnimatedRouter();
@@ -77,7 +79,7 @@ const waitForAuthString = (): Promise<string> => {
 };
 
 const getJoinOptions = async () => {
-  const auth = await waitForAuthString();
+  const auth = isWeb ? await requestConnectionTicket('game') : await waitForAuthString();
   return {
     authString: auth.replace(/^Bearer\s+/i, ''),
     isEventSet: (props.isEventSet == '1' || props.isEventSet === undefined) && false //только ивентные сценарии по умолчанию

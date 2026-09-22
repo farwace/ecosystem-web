@@ -15,6 +15,7 @@ import type {TInGameInfo} from "@/stores/Game/Types/TInGameInfo.ts";
 import type {TGetShareImageResponse} from "@/modules/ApiModule/Types/TGetShareImageResponse.ts";
 import {MetrikaSymbol} from "@/modules/MetrikaModule/symbols.ts";
 import type {IMetrikaProvider} from "@/modules/MetrikaModule/Interfaces/IMetrikaProvider.ts";
+import {isWeb} from '@/platform/launch';
 
 @injectable()
 export class UserProvider extends ApiProvider implements IUserProvider{
@@ -97,7 +98,7 @@ export class UserProvider extends ApiProvider implements IUserProvider{
             await this.platformEvents.setApplicationIsReady();
 
             //При входе в приложение если есть уже разрешения - переспросить чтобы обновить токен
-            if(((resData?.authAccess?.scope || [])?.length || 0) > 0){
+            if(!isWeb && ((resData?.authAccess?.scope || [])?.length || 0) > 0){
                 const scopeList = (resData?.authAccess?.scope || []).join(',');
                 this.platformEvents.getAuthToken({
                     scope: scopeList,

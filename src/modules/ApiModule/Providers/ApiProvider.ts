@@ -10,6 +10,8 @@ import {achievementsStore} from "@/stores/Achievements/achievementsStore.ts";
 import type {IAchievementsStore} from "@/stores/Achievements/IAchievementsStore.ts";
 import {gameStore} from "@/stores/Game/gameStore.ts";
 import type {IGameStore} from "@/stores/Game/IGameStore.ts";
+import {isWeb} from '@/platform/launch';
+import {webApiUrl, webRequest} from '@/auth/web-session';
 
 export abstract class ApiProvider implements IApiProvider{
     protected readonly ecosystemStore: Store<'ecosystem', IEcosystemStore>;
@@ -29,6 +31,7 @@ export abstract class ApiProvider implements IApiProvider{
     }
 
     getApiEndpoint = () => {
+        if (isWeb) return webApiUrl();
         return `${import.meta.env.VITE_API_ENDPOINT}api/${import.meta.env.VITE_API_VERSION}`
     }
 
@@ -41,6 +44,14 @@ export abstract class ApiProvider implements IApiProvider{
     }
 
     fetch = async (url: string, opt?: RequestInit, body?: any, errorCallback = (message?: string) => {}): Promise<TResponse<unknown>> => {
+        if (isWeb) {
+            try {
+                return await webRequest(url, {...opt, ...(body ? {body: JSON.stringify(body)} : {})});
+            } catch (error) {
+                errorCallback(error instanceof Error ? error.message : 'Ошибка запроса');
+                throw error;
+            }
+        }
         const options: RequestInit = {
             method: "GET",
             cache: "no-cache",

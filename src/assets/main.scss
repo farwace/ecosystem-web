@@ -7,8 +7,32 @@
   font-family: base.$font-family;
 }
 
+html {
+  min-height: 100%;
+  background: #fff2e2;
+  color-scheme: light;
+}
+
+html[theme="dark"] {
+  background: #141414;
+  color-scheme: dark;
+}
+
 body {
   min-width: 100px;
-  min-height: 100%;
+  min-height: 100vh;
   margin: 0;
+  background: #fff2e2;
+  color: #5c3a22;
+}
+
+#app {
+  min-height: 100vh;
+  background: #fff2e2;
+}
+
+html[theme="dark"] body,
+html[theme="dark"] #app {
+  background: #141414;
+  color: #f0d8bd;
 }

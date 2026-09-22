@@ -1,13 +1,23 @@
 <template>
   <div>
-    <div v-html="message"></div>
+    <div v-html="sanitizeHtml(message)"></div>
+    <span class="btn" v-if="action === 'reload'" @click="reload">
+      {{ actionLabel || 'Восстановить соединение' }}
+    </span>
   </div>
 </template>
 <script lang="ts" setup>
-defineProps<{
+import {sanitizeHtml} from '@/utils/sanitize-html';
+
+const props = defineProps<{
   message?:string
+  action?: string
+  actionLabel?: string
 }>();
 
+const reload = () => {
+  if (props.action === 'reload') window.location.reload();
+};
 </script>
 <style lang="scss" scoped>
 :deep(.btn){
@@ -38,5 +48,9 @@ defineProps<{
     height: 20px;
     flex-shrink: 0;
   }
+}
+
+.btn {
+  margin-top: 16px;
 }
 </style>

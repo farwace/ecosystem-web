@@ -5,6 +5,7 @@
       <user-avatar :vip="!!subscription?.personalAccess" :alarm="hasUnclaimedCompletedAchievement" :first-name="firstName" :avatar="avatar" @click="() => id && router.push({name: 'profile', params: {id: id}})"/>
       <user-experience />
     </div>
+    <button v-if="isWeb" class="web-logout" @click="signOut">Выйти</button>
 
     <div class="btn-list">
       <menu-list />
@@ -69,6 +70,11 @@ import {gameStore} from "@/stores/Game/gameStore.ts";
 import type {IPlatformEvents} from "@/modules/EventsModule/Interfaces/IPlatformEvents.ts";
 import {PlatformEventsSymbol} from "@/modules/EventsModule/symbols.ts";
 import GameItems from "@/components/pages/Home/GameItems.vue";
+import {isWeb, capabilities} from '@/platform/launch';
+import {logoutWeb} from '@/auth/web-session';
+const signOut = async () => {
+  try { await logoutWeb(); } catch (error) { window.alert(error instanceof Error ? error.message : 'Не удалось выйти'); }
+};
 
 
 const {id, firstName, avatar, subscription} = storeToRefs(ecosystemStore());
@@ -92,7 +98,7 @@ const addToRecommended = () => {
 
 
 const shouldShowAddToBlock = computed(() => {
-  return !inRecommended.value || !inFavorites.value;
+  return capabilities.vkSocial && (!inRecommended.value || !inFavorites.value);
 })
 
 onMounted(() => {
@@ -112,6 +118,16 @@ watch(id, (neoVal) => {
 
 </script>
 <style lang="scss" scoped>
+.web-logout {
+  display: block;
+  margin: 10px 0 10px auto;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-top: -25px;
+}
 .page-container{
   padding: 20px;
   overflow-y: auto;
@@ -133,6 +149,7 @@ watch(id, (neoVal) => {
 }*/
 
 .btn-list{
+  min-height: 104px;
   display: flex;
   flex-wrap: nowrap;
   gap: 15px;

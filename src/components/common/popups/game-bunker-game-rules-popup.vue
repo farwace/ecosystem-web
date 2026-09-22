@@ -9,7 +9,7 @@
       </div>
     </div>
     <div class="game__data">
-      <div class="game__content" v-html="gameContent" v-if="gameContent"></div>
+      <div class="game__content" v-html="sanitizeHtml(gameContent)" v-if="gameContent"></div>
     </div>
   </div>
 </template>
@@ -18,6 +18,7 @@
 import {inject, onMounted, ref} from "vue";
 import type {IGameApiProvider} from "@/modules/ApiModule/Interfaces/IGameApiProvider.ts";
 import {GameApiProviderSymbol} from "@/modules/ApiModule/symbols.ts";
+import {sanitizeHtml} from '@/utils/sanitize-html';
 const isLoading = ref<boolean>(true);
 
 const gameApi: IGameApiProvider | undefined  = inject(GameApiProviderSymbol);

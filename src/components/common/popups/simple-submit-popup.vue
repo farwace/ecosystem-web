@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-html="message"></div>
+    <div v-html="sanitizeHtml(message)"></div>
     <br/>
     <div>
       <span class="btn" @click="onSubmitClick">Хорошо</span>
@@ -8,6 +8,8 @@
   </div>
 </template>
 <script lang="ts" setup>
+import {sanitizeHtml} from '@/utils/sanitize-html';
+
 const props = defineProps<{
   message?:string,
   onSubmit?: () => void
