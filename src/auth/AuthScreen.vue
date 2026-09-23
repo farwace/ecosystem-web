@@ -59,6 +59,12 @@
             </span>
           </label>
         </template>
+        <RecaptchaChallenge
+          v-if="captchaRequired"
+          ref="fallbackCaptcha"
+          @verified="captchaToken = $event"
+          @error="error = $event"
+        />
         <button :disabled="busy">{{ busy ? 'Подождите…' : buttonTitle }}</button>
         <nav>
           <button v-if="mode !== 'login'" type="button" class="secondary" @click="switchMode('login')">Уже есть аккаунт?
@@ -81,6 +87,8 @@ import {computed, ref} from 'vue';
 import {applicationState, loadWebSession, logoutWeb, webRequest, passwordResetLink} from './web-session';
 import LoadingPage from '@/components/pages/LoadingPage.vue';
 import UiIcon from '@/components/common/icons/UiIcon.vue';
+import {getRecaptchaToken} from './recaptcha';
+import RecaptchaChallenge from './RecaptchaChallenge.vue';
 
 type Mode = 'login' | 'register' | 'forgot' | 'reset';
 const mode = ref<Mode>(passwordResetLink.token ? 'reset' : 'login');
@@ -92,6 +100,9 @@ const showPassword = ref(false);
 const showConfirmation = ref(false);
 const busy = ref(false);
 const error = ref('');
+const captchaRequired = ref(false);
+const captchaToken = ref('');
+const fallbackCaptcha = ref<{reset: () => void} | null>(null);
 const message = ref(new URLSearchParams(location.search).has('verified') ? 'Почта подтверждена. Войдите в аккаунт.' : '');
 const title = computed(() => applicationState.user && !applicationState.user.verified && mode.value !== 'reset'
     ? 'Подтвердите почту' : ({
@@ -116,6 +127,9 @@ function switchMode(next: Mode) {
   confirmation.value = '';
   showPassword.value = false;
   showConfirmation.value = false;
+  captchaRequired.value = false;
+  captchaToken.value = '';
+  fallbackCaptcha.value?.reset();
 }
 
 const reload = () => location.reload();
@@ -128,6 +142,12 @@ async function run(action: () => Promise<void>) {
   try {
     await action();
   } catch (e) {
+    if (e instanceof Error && e.message.includes('Не удалось подтвердить, что запрос отправлен человеком')) {
+      captchaRequired.value = true;
+      captchaToken.value = '';
+      fallbackCaptcha.value?.reset();
+      return;
+    }
     error.value = e instanceof Error ? e.message : 'Не удалось выполнить запрос.';
   } finally {
     busy.value = false;
@@ -149,12 +169,22 @@ const submit = () => run(async () => {
     throw new Error('Пароли не совпадают.');
   }
   const path = {login: 'login', register: 'register', forgot: 'forgot-password', reset: 'reset-password'}[mode.value];
+  const action = {login: 'login', register: 'register', forgot: 'forgot_password', reset: 'reset_password'}[mode.value];
+  if (captchaRequired.value && !captchaToken.value) {
+    throw new Error('Пройдите проверку капчи.');
+  }
+  const recaptchaVersion = captchaRequired.value ? 'v2' : 'v3';
+  const recaptchaToken = captchaRequired.value ? captchaToken.value : await getRecaptchaToken(action);
   const data = await webRequest(`/auth/${path}`, {
     method: 'POST', body: JSON.stringify({
       email: email.value, name: name.value, password: password.value,
       password_confirmation: confirmation.value, token: passwordResetLink.token,
+      recaptcha_token: recaptchaToken,
+      recaptcha_version: recaptchaVersion,
     })
   });
+  captchaRequired.value = false;
+  captchaToken.value = '';
   password.value = '';
   confirmation.value = '';
   if (mode.value === 'reset') {
